@@ -1,0 +1,224 @@
+/* style.css 08-01-2024 */
+body {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Safari */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently supported by Chrome, Opera, and many mobile browsers */
+    touch-action: manipulation;  /* Improve touch behavior on some mobile devices */
+}
+.h1 {
+    font-size: 32px;
+    color: white;
+}
+.h1_yellow_font {
+    font-size: 32px;
+    color: yellow;
+}
+.normal {
+    font-size: 16px;
+    color: white;
+}
+.center {
+    text-align: center;
+}
+.box {
+    display: flex;
+}
+.box_15 {
+    width: 10%;
+    background: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.box_35_left {
+    font-size: 24px;
+    text-align: left;
+    width: 40%;
+    background: gray;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+.box_35_right {
+    font-size: 24px;
+    text-align: right;
+    width: 40%;
+    background: gray;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+}
+.char_health_bar {
+    text-align: center;
+    font-size: 18px;
+    width: 40%;
+    background: green;
+}
+.health_bar_spacer {
+    width: 20%;
+}
+.enemy_health_bar {
+    text-align: center;
+    font-size: 18px;
+    width: 40%;
+    background: black;
+    border: solid;
+    border-color: white;
+}
+.enemy_health_fill {
+    height: 100%; /* Fill the entire height of the bar */
+    background-color: red; /* Color of the filled portion */
+    width: 100%; /* Initially full width */
+}
+.location_box_style {
+    font-size: 24px;
+    background-color: #333;
+    color: #00FFFF;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.location_box_style_20_left {
+    width: 20%;
+    text-align: left;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.location_box_style_20_right {
+    font-size: 24px;
+    width: 20%;
+    text-align: right;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.location_box_style_60 {
+    font-size: 24px;
+    width: 60%;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.enemy_levels_style_30_left {
+    width: 30%;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.enemy_levels_style_10 {
+    width: 10%;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.inv_parent {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 100px);
+  grid-auto-rows: 100px;
+  gap: 5px; /* Optional: Add some space between the boxes */
+}
+
+.inv_slot {
+  width: 100px;
+  height: 100px;
+  border: solid 1px black;
+  position: relative; /* Makes the inner box position relative to this */
+  background-color: gray; /* Optional: For visibility */
+}
+
+.inv_slot_counter {
+  width: 40px;
+  height: 20px;
+  background-color: darkblue; /* Just for visibility */
+  color: white; /* Ensure the text is visible */
+  position: absolute; /* Position this box absolutely within its parent */
+  bottom: 0;
+  right: 0;
+  z-index: 2; /* Ensure it’s above other content */
+  text-align: center; /* Center the text horizontally */
+  line-height: 20px; /* Vertically center the text */
+}
+
+
+/*
+.inv_parent {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 100px);
+  grid-auto-rows: 100px;
+  gap: 5px; 
+}
+.inv_slot {
+  width: 100px;
+  height: 100px;
+  border: solid;
+  position: relative;
+}
+.inv_slot_counter {
+  width: 40px;
+  height: 20px;
+  background-color: darkblue;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+}
+*/
+
+/* BUTTONS */
+.button {
+    background-color: black;
+    color: #FFCB30;
+}
+.button_container {
+    white-space: nowrap;
+}
+
+/* MISC */
+.remove-outline {
+    outline: none;
+}
+.divsections {
+    color: yellow;
+    font-size: 18px;
+    text-decoration: underline;
+    padding: 10px;
+}
+.divsections_no_ul {
+    color: yellow;
+    font-size: 18px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 0px;
+}
+.section_title {
+    background-color: #1A1A1A;
+    border-top: solid;
+    border-bottom: solid;
+}
+.section_text {
+    box-sizing: border-box;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 0px;
+}
+.light_small {
+    font-size: 12px;
+    color: #CCCCCC;
+}
+.level {
+  display: none; /* Initially hide all levels */
+}
+.active {
+  display: block; /* Show the active level */
+}
+.details {
+  display: none;
+}
+.crossed-out {
+    text-decoration: line-through;
+    display: inline;
+}
+.tooltip-style {
+    border: thick solid #CCFFF8;
+}

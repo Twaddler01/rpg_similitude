@@ -344,9 +344,19 @@ export function init_elementsData() {
         section_cat: true, 
         type: 'div', 
         parent_el: 'body', 
-        //content: 'Character Section', 
+        content: 'Character Section', 
         css_class: 'h1_yellow_font', 
         },
+
+        // section
+        { id: 'test_section', 
+        section_cat: true, 
+        type: 'div', 
+        parent_el: 'body', 
+        content: 'TEST Section', 
+        css_class: 'h1_yellow_font', 
+        },
+
 /*
         // tables
         { id: 'battle_table', 
@@ -433,19 +443,38 @@ export function init_characterData() {
         level: 1, 
         char_race: 'Human', 
         char_class: 'Fighter', 
-        stat_armor: 100, 
-        stat_attack: 1.0, 
+        stat_base_armor: 100, 
+        stat_armor_desc: 'Reduces damage taken by 0.1% per point above base amount.', 
+        stat_base_str: 10, 
+        stat_str_desc: 'Increases both physical damage dealt by 0.1% and total energy by 10 per point above base amount.', 
+        stat_base_dex: 10, 
+        stat_dex_desc: 'Increses hit chance by 0.1% per point above base amount. Default hit chance is 90%, or 100% at 100+ dex', 
+        stat_base_con: 10, 
+        stat_con_desc: 'Increases health by 0.1% per point above base amount.', 
+        stat_base_int: 5, 
+        stat_int_desc: 'Increses both spell damage dealt by 0.1% and total mana by 10 per point above base amount.', 
+        stat_base_agi: 10, 
+        stat_agi_desc: 'Increses critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.', 
+        stat_base_attack: 1.0, 
+        stat_attack_min: 3.0, 
+        stat_attack_max: 5.0, // rounded(stat_attack_min * 1.9)
         stat_power: 1.0, 
+        stat_hit_chance: 0.9, 
         }, 
         { id: 'enemy_gnome', 
         type: 'basic_enemy', 
         char_img: '', 
         level: 1, 
+        level_power_increase: 1.2, 
         char_race: 'Goblin', 
         char_class: 'Scavenger', 
         stat_health: 100, 
-        stat_armor: 100, 
-        stat_attack: 0.8, 
+        stat_armor: 1, // physical damage reduction
+        stat_resist: 1, // spell damage reduction
+        stat_attack_min: 0.8, 
+        stat_attack_max: 3.0, 
+        stat_crit_chance: 5, // doubles damage
+        
         stat_power: 0.8, 
         drops: [
             { item: 'GOLD', rate: 0.9, min: 1, max: 3 }, 

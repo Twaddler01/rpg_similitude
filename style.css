@@ -1,4 +1,4 @@
-/* style.css 08-01-2024 */
+/* style.css 08-09-2024 */
 body {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Safari */
@@ -110,58 +110,56 @@ body {
     padding-top: 20px;
     padding-bottom: 20px;
 }
-.inv_parent {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 100px);
-  grid-auto-rows: 100px;
-  gap: 5px; /* Optional: Add some space between the boxes */
+
+/* NEW */
+
+.inv_slot_container {
+    /* Default background color for non-empty slots */
+    background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    display: inline-block;
+    width: 100px;
+
 }
 
 .inv_slot {
-  width: 100px;
-  height: 100px;
-  border: solid 1px black;
-  position: relative; /* Makes the inner box position relative to this */
-  background-color: gray; /* Optional: For visibility */
+    background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
+    padding: 10px;
+    text-align: center;
 }
 
 .inv_slot_counter {
-  width: 40px;
-  height: 20px;
-  background-color: darkblue; /* Just for visibility */
-  color: white; /* Ensure the text is visible */
-  position: absolute; /* Position this box absolutely within its parent */
-  bottom: 0;
-  right: 0;
-  z-index: 2; /* Ensure it’s above other content */
-  text-align: center; /* Center the text horizontally */
-  line-height: 20px; /* Vertically center the text */
+    background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
+    padding: 5px;
+    text-align: right;
+    padding-right: 5px;
+    padding-bottom: 5px;
 }
-
 
 /*
-.inv_parent {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 100px);
-  grid-auto-rows: 100px;
-  gap: 5px; 
+// OLD
+
+.inv_slot_container {
+    border-style: solid;
+    border-color: black;
+    float: left;
+    line-height: 76px;
+    width: 100px;
+    background-color: gray;
+    /* EMPTY color #3B3B3B light #7C7C7C */
+/*
+// OLD
 }
-.inv_slot {
-  width: 100px;
-  height: 100px;
-  border: solid;
-  position: relative;
-}
+
 .inv_slot_counter {
-  width: 40px;
-  height: 20px;
-  background-color: darkblue;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: 1;
-}
-*/
+    text-align: right;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    line-height: 16px;
+    background-color: gray;
+} */
 
 /* BUTTONS */
 .button {

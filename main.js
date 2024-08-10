@@ -79,7 +79,18 @@ exportHTMLButton.addEventListener("click", function () {
 
 functions.add_allElements();
 functions.start_battle('battle_section');
-functions.process_loot();
+
+
+
+
+
+let test_section = document.getElementById('test_section');
+test_section.innerHTML = '<button id="test_button">LOOT</button>';
+test_button.addEventListener("click", function () {
+    functions.process_loot();
+});
+
+
 
 // add_divFlex(newContainerId, newId, parentId, qtyNum)
 //functions.add_divFlex('flexDiv_container', 'flexDiv', 'battle_section_container', 5);

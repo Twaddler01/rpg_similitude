@@ -540,8 +540,6 @@ export function attack_box_button(elementId) {
                 enemy_health_cnt.innerHTML = d_enemy_health_cnt.cnt;
                 enemy_health_total.innerHTML = d_enemy_health_total.cnt;
 
-
-                
             }
 
             if (d_combat_div.cnt >= d_combat_div.cap) {
@@ -566,32 +564,34 @@ function getElapsedTime() {
 // EXAMPLE
 // const elapsedTime = getElapsedTime();
 
+/* // TEMP
 export function process_loot() {
     let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
 
     // setup inventory
     if (!d_inventory.setup) {
         let inventory_section = document.getElementById('inventory_section');
+        
         let inv_parent = document.createElement('div');
-        inv_parent.className = 'inv_parent';
         inventory_section.appendChild(inv_parent);
         
         for (let i = 1; i <= d_inventory.size; i++) {
+            let slot_container = document.createElement('div');
+            inv_parent.appendChild(slot_container);
+            slot_container.id = 'slot_container_' + i;
+            slot_container.classList.add('inv_slot_container');
+            
             let new_slot = document.createElement('div');
-            inv_parent.appendChild(new_slot);
+            slot_container.appendChild(new_slot);
             new_slot.id = 'inventory_slot_' + i;
-            new_slot.classList.add('normal');
-            new_slot.classList.add('center');
-            new_slot.classList.add('inv_slot');
-            
+            new_slot.classList.add('normal', 'center', 'inv_slot');
             new_slot.innerHTML = '[ EMPTY ]';
-            
+
             let new_slot_counter = document.createElement('div');
-            new_slot.appendChild(new_slot_counter);
+            slot_container.appendChild(new_slot_counter);
             new_slot_counter.id = 'inventory_slot_counter_' + i;
-            new_slot_counter.classList.add('inv_slot_counter');
- 
-            new_slot_counter.innerHTML = '005';
+            new_slot_counter.classList.add('normal', 'inv_slot_counter');
+            new_slot_counter.innerHTML = 0;
         }
         d_inventory.setup = true;
     }
@@ -605,13 +605,12 @@ export function process_loot() {
                         let quantity = Math.floor(Math.random() * (drop.max - drop.min + 1)) + drop.min;
                         console.log(`${drop.item}: ${quantity}`);
                         updateLootCount(drop.item, quantity);
-                        
                     }
                 }
             });
         }
     });
-
+    
     //else {}
 }
 
@@ -623,131 +622,323 @@ export function updateLootCount(itemId, quantity) {
     if (lootItem) {
         lootItem.cnt += quantity;
     }
-    // update inventory DOM
-    updateSlot(3, itemId, quantity);
-}
 
-// Later, when you need to update the content dynamically:
-export function updateSlot(slotNumber, content, counterContent) {
-    let slot = document.getElementById('inventory_slot_' + slotNumber);
-    let slotCounter = document.getElementById('inventory_slot_counter_' + slotNumber);
+    let itemAdded = false;
+    // First, check for a matching item in the inventory slots
+    for (let i = 1; i <= 10; i++) {
+        let slot = document.getElementById(`inventory_slot_${i}`);
+        let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
+        
+        if (slot && slot.innerHTML === itemId) {
+            // If the item already exists in this slot, add the quantity
+            slotCounter.innerHTML = parseInt(slotCounter.innerHTML) + quantity;
+            lootItem.inv_added = true;
+            itemAdded = true;
+            break; // Exit the loop once the item quantity is updated
+        }
+    }
     
-    if (slot && slotCounter) {
-        // create content div above with z-index 1?
-            slot.classList.add('normal');
-            slot.classList.add('center');
-            slot.classList.add('inv_slot');
-        slot.innerHTML = content;
-            slotCounter.classList.add('inv_slot_counter');
-        slotCounter.innerHTML = counterContent;
+    // If the item was not found, add it to the first empty slot
+    if (!itemAdded) {
+        for (let i = 1; i <= 10; i++) {
+            let slot = document.getElementById(`inventory_slot_${i}`);
+            let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
+            
+            if (slot && slot.innerHTML === '[ EMPTY ]') {
+                slot.innerHTML = itemId;
+                slotCounter.innerHTML = quantity;
+                lootItem.inv_added = true;
+                break; // Exit the loop once the item is added
+            }
+        }
     }
 }
+*/ // TEMP
 
 // Example usage:
 // updateSlot(1, '[ FILLED ]', '123');
 
-export function process_inventory() {
+let selectedSlot = null;
+export function process_loot() {
     
+    let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
+
+    // setup inventory
+    if (!d_inventory.setup) {
+        let inventory_section = document.getElementById('inventory_section');
+        
+        let inv_parent = document.createElement('div');
+        inventory_section.appendChild(inv_parent);
+        
+        for (let i = 1; i <= d_inventory.size; i++) {
+            let slot_container = document.createElement('div');
+            inv_parent.appendChild(slot_container);
+            slot_container.id = 'slot_container_' + i;
+            slot_container.classList.add('inv_slot_container');
+            
+            let new_slot = document.createElement('div');
+            slot_container.appendChild(new_slot);
+            new_slot.id = 'inventory_slot_' + i;
+            new_slot.classList.add('normal', 'center', 'inv_slot');
+            new_slot.innerHTML = '[ EMPTY ]';
+
+            let new_slot_counter = document.createElement('div');
+            slot_container.appendChild(new_slot_counter);
+            new_slot_counter.id = 'inventory_slot_counter_' + i;
+            new_slot_counter.classList.add('normal', 'inv_slot_counter');
+            new_slot_counter.innerHTML = 0;
+
+            // Add event listener to slot_container
+            slot_container.addEventListener('click', () => {
+                handleSlotClick(slot_container, new_slot, new_slot_counter);
+            });
+            
+        }
+        d_inventory.setup = true;
+    }
+
+    // setup drop rates
+    characterData.forEach(char => {
+        if (char.drops) {
+            char.drops.forEach(drop => {
+                if (drop.item) {
+                    if (Math.random() < drop.rate) {
+                        let quantity = Math.floor(Math.random() * (drop.max - drop.min + 1)) + drop.min;
+                        //console.log(`${drop.item}: ${quantity}`);
+                        updateLootCount(drop.item, quantity);
+                        
+                    }
+                }
+            });
+        }
+    });
+    
+    // reset empty slots
+    //applyTransparencyToEmptySlots();
 }
 
+// Function to handle slot click
+function handleSlotClick(slot_container, slot, slotCounter) {
+    //applyTransparencyToEmptySlots();
 
+    if (selectedSlot === null) {
+        // First click: selecting the filled slot
+        if (slot.innerHTML !== '[ EMPTY ]') {
+            selectedSlot = {
+                slot_container,
+                slot,
+                slotCounter,
+                itemId: slot.innerHTML,
+                quantity: slotCounter.innerHTML
+            };
+            slot.style.backgroundColor = 'green';
+            slotCounter.style.backgroundColor = 'green';
+        }
+    } else {
+        if (selectedSlot.slot_container === slot_container) {
+            // If the selected slot is clicked again, deselect it
+            slot.style.backgroundColor = 'gray';
+            slotCounter.style.backgroundColor = 'gray';
+            //selectedSlot.slotCounter.style.backgroundColor = 'gray';
+            selectedSlot = null;
+        } else if (slot.innerHTML === '[ EMPTY ]') {
+            // Second click: selecting the destination slot
+            // Move the item to the new slot
+            slot.innerHTML = selectedSlot.itemId;
+            slotCounter.innerHTML = selectedSlot.quantity;
 
+            // Clear the original slot
+            selectedSlot.slot.innerHTML = '[ EMPTY ]';
+            selectedSlot.slotCounter.innerHTML = 0;
 
+            // Reset the background colors
+            //selectedSlot.slot_container.style.backgroundColor = 'gray';
+            slot.style.backgroundColor = 'gray';
+            slotCounter.style.backgroundColor = 'gray';
+            //selectedSlot.slotCounter.style.backgroundColor = 'gray';
 
+            // Reset the selectedSlot
+            selectedSlot = null;
+        ////
+        } else if (slot.innerHTML !== '[ EMPTY ]') {
+            // Swap the items between the two slots
+            let tempItemId = slot.innerHTML;
+            let tempQuantity = slotCounter.innerHTML;
 
-/*
+            // Move the selected slot's item to the clicked slot
+            slot.innerHTML = selectedSlot.itemId;
+            slotCounter.innerHTML = selectedSlot.quantity;
 
-const characterData = [ 
-    { 
-        id: 'my_character', 
-        char_img: '', 
-        name: 'Legalos', 
-        level: 1, 
-        char_race: 'Human', 
-        char_class: 'Fighter', 
-        stat_armor: 100, 
-        stat_attack: 1.0, 
-        stat_power: 1.0 
-    }, 
-    { 
-        id: 'enemy_gnome', 
-        type: 'basic_enemy', 
-        char_img: '', 
-        level: 1, 
-        char_race: 'Goblin', 
-        char_class: 'Scavenger', 
-        stat_armor: 100, 
-        stat_attack: 0.8, 
-        stat_power: 0.8, 
-        drops: [
-            { item: 'GOLD', rate: 0.9, min: 1, max: 3 }, 
-            { item: 'CLOTH_LINEN', rate: 0.4, min: 1, max: 2 }, 
-            { item: 'BASIC_HELMET', rate: 0.2, min: 1, max: 1 }, 
-            { item: 'TOOTH', rate: 0.6, min: 1, max: 2 } 
-        ] 
-    } 
-];
+            // Move the clicked slot's item to the previously selected slot
+            selectedSlot.slot.innerHTML = tempItemId;
+            selectedSlot.slotCounter.innerHTML = tempQuantity;
 
-const lootData = [ 
-    { id: 'GOLD', type: 'currency', name: 'Gold', cnt: 0 }, 
-    { id: 'CLOTH_LINEN', type: 'material', name: 'Linen Cloth', cnt: 0, value: 2 }, 
-    { id: 'BASIC_HELMET', type: 'armor', name: 'Basic Helm', cnt: 0, value: 6 },  
-    { id: 'TOOTH', type: 'junk', name: 'Tooth', cnt: 0, value: 1 } 
-];
+            // Reset the background colors
+            selectedSlot.slot.style.backgroundColor = 'gray';
+            selectedSlot.slotCounter.style.backgroundColor = 'gray';
+
+            // Reset the selectedSlot
+            selectedSlot = null;
+        }
+    }
+    applyTransparencyToEmptySlots();
+}
 
 // Function to find the corresponding loot item and increment its count
-function updateLootCount(itemId, quantity) {
+export function updateLootCount(itemId, quantity) {
     const lootItem = lootData.find(loot => loot.id === itemId);
+    let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
+
     if (lootItem) {
         lootItem.cnt += quantity;
     }
+
+    let itemAdded = false;
+    // First, check for a matching item in the inventory slots
+    for (let i = 1; i <= 10; i++) {
+        let slot = document.getElementById(`inventory_slot_${i}`);
+        let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
+        
+        if (slot && slot.innerHTML === itemId) {
+            // If the item already exists in this slot, add the quantity
+            slotCounter.innerHTML = parseInt(slotCounter.innerHTML) + quantity;
+            lootItem.inv_added = true;
+            itemAdded = true;
+            break; // Exit the loop once the item quantity is updated
+        }
+    }
+    
+    // If the item was not found, add it to the first empty slot
+    if (!itemAdded) {
+        for (let i = 1; i <= 10; i++) {
+            let slot = document.getElementById(`inventory_slot_${i}`);
+            let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
+            
+            if (slot && slot.innerHTML === '[ EMPTY ]') {
+                slot.style.backgroundColor = 'gray';
+                slot.innerHTML = itemId;
+                slotCounter.style.backgroundColor = 'gray';
+                slotCounter.innerHTML = quantity;
+                lootItem.inv_added = true;
+                break; // Exit the loop once the item is added
+            }
+        }
+    }
 }
 
-// Process the drops and update the loot counts
-characterData.forEach(char => {
-    if (char.drops) {
-        char.drops.forEach(drop => {
-            if (drop.item) {
-                if (Math.random() < drop.rate) {
-                    let quantity = Math.floor(Math.random() * (drop.max - drop.min + 1)) + drop.min;
-                    updateLootCount(drop.item, quantity);
-                    console.log(`${drop.item}: ${quantity}`);
-                }
-            }
-        });
-    }
-});
-
-console.log(lootData);
-
-*/
 /*
+.inv_slot_container {
+    border-style: solid;
+    border-color: black;
+    float: left;
+    line-height: 76px;
+    width: 100px;
+    background-color: gray;
+}
 
-// setup inventory
-if (!d_inventory.setup) {
-    let inventory_section = document.getElementById('inventory_section');
-    let inv_parent = document.createElement('div');
-    inv_parent.className = 'inv_parent';
-    inventory_section.appendChild(inv_parent);
+.inv_slot {
+    
+}
+
+.inv_slot_counter {
+    text-align: right;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    line-height: 16px;
+    background-color: gray;
+}*/
+
+/// CHAT GDP ********
+
+// Function to handle slot click
+/*
+function handleSlotClick(slot_container, slot, slotCounter) {
+    if (selectedSlot === null) {
+        // First click: selecting the filled slot
+        if (slot.innerHTML !== '[ EMPTY ]') {
+            selectedSlot = {
+                slot_container,
+                slot,
+                slotCounter,
+                itemId: slot.innerHTML,
+                quantity: slotCounter.innerHTML
+            };
+            slot_container.style.backgroundColor = 'green';
+            slotCounter.style.backgroundColor = 'green';
+        }
+    } else {
+        if (selectedSlot.slot_container === slot_container) {
+            // If the selected slot is clicked again, deselect it
+            slot_container.style.backgroundColor = 'gray';
+            selectedSlot.slotCounter.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'; // Reapply transparency
+            selectedSlot = null;
+        } else if (slot.innerHTML === '[ EMPTY ]') {
+            // Second click: selecting the destination slot
+            // Move the item to the new slot
+            slot.innerHTML = selectedSlot.itemId;
+            slotCounter.innerHTML = selectedSlot.quantity;
+
+            // Clear the original slot
+            selectedSlot.slot.innerHTML = '[ EMPTY ]';
+            selectedSlot.slotCounter.innerHTML = 0;
+
+            // Reapply transparency to the original slot
+            selectedSlot.slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            selectedSlot.slotCounter.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+
+            // Reset the selectedSlot
+            selectedSlot = null;
+
+            // Update the clicked slot's background
+            slot_container.style.backgroundColor = 'gray';
+            slotCounter.style.backgroundColor = 'gray';
+        } else if (slot.innerHTML !== '[ EMPTY ]') {
+            // Swap the items between the two slots
+            let tempItemId = slot.innerHTML;
+            let tempQuantity = slotCounter.innerHTML;
+
+            // Move the selected slot's item to the clicked slot
+            slot.innerHTML = selectedSlot.itemId;
+            slotCounter.innerHTML = selectedSlot.quantity;
+
+            // Move the clicked slot's item to the previously selected slot
+            selectedSlot.slot.innerHTML = tempItemId;
+            selectedSlot.slotCounter.innerHTML = tempQuantity;
+
+            // Reset the background colors
+            selectedSlot.slot_container.style.backgroundColor = 'gray';
+            slot_container.style.backgroundColor = 'gray';
+            selectedSlot.slotCounter.style.backgroundColor = 'gray';
+
+            // Reset the selectedSlot
+            selectedSlot = null;
+        }
+    }
+}
+*/
+
+// Ensure empty slots have the transparent background
+function applyTransparencyToEmptySlots() {
+    let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
     
     for (let i = 1; i <= d_inventory.size; i++) {
-        let new_slot = document.createElement('div');
-        inv_parent.appendChild(new_slot);
-        
-        let new_slot_counter = document.createElement('div');
-        new_slot.appendChild(new_slot_counter);
-        
-        new_slot_counter.id = 'slot_counter_' + i;
-        new_slot.id = 'slot_' + i;
-        
-        new_slot_counter.classList.add('inv_slot_counter');
-        new_slot.classList.add('inv_slot');
-        
-        // Initially set content using text nodes or elements
-        new_slot.innerHTML = '<span>[ EMPTY ]</span>';
-        new_slot_counter.textContent = '000';
+        let slot = document.getElementById(`inventory_slot_${i}`);
+        let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
+        let slotContainer = document.getElementById(`slot_container_${i}`);
+
+        if (slot.innerHTML === '[ EMPTY ]') {
+            slot.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            slotContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            slotCounter.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        } else {
+            //slot.style.backgroundColor = 'gray';
+            //slotContainer.style.backgroundColor = 'gray';
+            //slotCounter.style.backgroundColor = 'gray';
+        }
     }
-    d_inventory.setup = true;
 }
 
-*/
+// Call this function after setting up the inventory or updating it
+// applyTransparencyToEmptySlots();
+
+/// ********

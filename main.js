@@ -1,6 +1,6 @@
 // main.js
 
-import { elementsData, battleData, characterData, inventoryData, lootData } from './data.js';
+import { elementsData, locationData, battleData, characterData, inventoryData, lootData } from './data.js';
 
 import * as functions from  './functions.js';
 
@@ -75,11 +75,29 @@ exportHTMLButton.addEventListener("click", function () {
     document.body.removeChild(link);
 });
 
+// Iterate over the array and set other variables dynamically
+function outside_iteration() {
+    for (let i = 0; i < characterData.length; i++) {
+        const characterIndex = characterData[i];
+        const characterDataUpdates = {};
+        let group_1 = locationData.find(loc => loc.enemy === 'enemy_group_1');
+        for (let level = 1; level <= group_1.total_levels; level++) {
+            if (characterIndex.id !== 'my_character') {
+                characterIndex.enemy_defeated_count.push({ [characterIndex.id + '_def_count_level_' + level]: 0 });
+                //console.log(characterIndex.enemy_defeated_count);
+            }
+        }
+        // Assign updates to resourcesIndex properties
+        Object.assign(characterIndex, characterDataUpdates);
+    }
+}
+
+outside_iteration();
+
 // **** SECTIONS ****
 
 functions.add_allElements();
-functions.start_battle('battle_section');
-
+functions.setup_location()
 
 
 

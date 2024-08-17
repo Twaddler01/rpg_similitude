@@ -1,7 +1,7 @@
 // functions.js
 
 // import arrays
-import { elementsData, battleData, characterData, inventoryData, lootData } from './data.js';
+import { elementsData, locationData, battleData, characterData, inventoryData, lootData } from './data.js';
 
 // to create new elements
 export function createNewSection(newType, newId, newClass, content, parentID) {
@@ -348,6 +348,10 @@ export function add_allElements() {
             if (element.css_class2) {
                 element_id.classList.add(element.css_class2);
             }
+            
+            if (element.css_class3) {
+                element_id.classList.add(element.css_class3);
+            }
                 
             // 'hidden' flag (if set TRUE in array) to hide element
             if (element.hidden) {
@@ -355,7 +359,6 @@ export function add_allElements() {
             }
             
             // add click event
-            ////
             if (element.on_click) {
                 let element_click_DOM = document.getElementById(element.id);
                 if (element_click_DOM) {
@@ -454,51 +457,63 @@ export function add_divFlex(newContainerId, newId, parentId, qtyNum) {
     }
 }
 
-export function start_battle(section) {
-    let section_comtainer = document.getElementById(section + '_container');
-    
-    battleData.forEach(battle => {
-        let locationBox = document.getElementById('location_center');
-        if (locationBox && battle.label) {
-            locationBox.innerHTML = battle.label;
-        }
-
-    });
-}
-
 export function start_battle_button(elementId) {
+
+    let combat_log = document.getElementById('combat_log');
+    combat_log.innerHTML = '';
     toggleElement('h', 'start_battle_button');
+    toggleElement('h', 'enemy_levels');
     toggleElement('s', 'attack_box_button');
     toggleElement('sf', 'verses_box');
     toggleElement('sf', 'health_bars');
 
     let character = characterData.find(char => char.id === 'my_character');
-    let enemy = characterData.find(char => char.id === 'enemy_gnome');
     let d_char_battle_name = document.getElementById('char_name');
     d_char_battle_name.innerHTML = character.name;
-    let d_eneny_battle_name = document.getElementById('eme_name');
-    d_eneny_battle_name.innerHTML = enemy.char_race + '&nbsp;' + enemy.char_class;
+    
+    // randomize enemy names
+    let enemy = characterData.find(char => char.id === 'enemy_group_1');
+    let enemy_battle_name = document.getElementById('enemy_name');
+    let random_race = enemy.char_race[Math.floor(Math.random() * enemy.char_race.length)];
+    let random_class = enemy.char_class[Math.floor(Math.random() * enemy.char_class.length)];
+    // store name in array
+    enemy.char_name = random_race + '&nbsp;' + random_class;
+    enemy_battle_name.innerHTML = enemy.char_name;
 }
 
 export function attack_box_button(elementId) {
 
     let d_enemy_health_cnt = elementsData.find(char => char.id === 'enemy_health_cnt');
-    if (!d_enemy_health_cnt.startTimeActive) {
-        d_enemy_health_cnt.startTime = Date.now();
-        d_enemy_health_cnt.startTimeActive = true;
-    }
+    // player character
+    let character = characterData.find(char => char.id === 'my_character');
+
     let d_enemy_health_total = elementsData.find(char => char.id === 'enemy_health_total');
+    let enemy = characterData.find(char => char.id === 'enemy_group_1');
     let enemy_health_total = document.getElementById('enemy_health_total');
-    enemy_health_total.innerHTML = d_enemy_health_total.cnt;
-    let enemy = characterData.find(char => char.id === 'enemy_gnome');
+    enemy_health_total.innerHTML = enemy.enemy_health_total;
     let combat_log = document.getElementById('combat_log');
 
-    if (d_enemy_health_cnt.cnt > 0 && !d_enemy_health_cnt.dead) {
-        const elapsedTime = getElapsedTime();
+    // start battle
+    if (enemy.enemy_health > 0 && !enemy.dead) {
         toggleElement('s', 'combat_log');
-        d_enemy_health_cnt.cnt -= 10;
+
+        // Generate a random number to determine if the attack misses (10% chance)
+        let missChance = Math.random();
+        
+        // Check if the attack misses
+        if (missChance < 0.1) {  // 10% chance to miss
+            character.stat_damage_caused = 0;
+        } else {
+            let increments = Math.floor((character.stat_attack_max - character.stat_attack_min) * 10) + 1;
+            let randomIncrement = Math.floor(Math.random() * increments);
+            character.stat_damage_caused = (character.stat_attack_min + randomIncrement * 0.1).toFixed(1);
+        }
+
+        // Deduct damage caused
+        enemy.enemy_health -= parseFloat(character.stat_damage_caused);
+
         let enemy_health_fill = document.getElementById('enemy_health_fill');
-        let healthPercentage = (d_enemy_health_cnt.cnt / d_enemy_health_total.cnt) * 100;
+        let healthPercentage = (enemy.enemy_health / enemy.enemy_health_total) * 100;
         enemy_health_fill.style.width = healthPercentage + '%';
 
         // add to combat log
@@ -506,24 +521,57 @@ export function attack_box_button(elementId) {
         if (!d_combat_div.capped && d_combat_div.cnt <= d_combat_div.cap) {
             d_combat_div.cnt++;
             let new_div = document.createElement('div');
-            combat_log.appendChild(new_div);
+            combat_log.insertBefore(new_div, combat_log.firstChild);
+
             new_div.id = d_combat_div.id + d_combat_div.cnt;
-            
-            new_div.innerHTML += elapsedTime + '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;You dealt 10 physical damage to ' + enemy.char_race + '&nbsp;' + enemy.char_class + '.</span></p>';
+            new_div.innerHTML += 'TURN #' + d_combat_div.cnt;
+            if (character.stat_damage_caused === 0) {
+                new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;Your attack against ' + enemy.char_name + ' missed!</span></p>';
+            } else {
+                new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;You dealt ' + character.stat_damage_caused + ' physical damage to ' + enemy.char_name + '.</span></p>';
+            }
 
             let enemy_health_cnt = document.getElementById('enemy_health_cnt');
-            enemy_health_cnt.innerHTML = d_enemy_health_cnt.cnt;
-            if (d_enemy_health_cnt.cnt <= 0 && !d_enemy_health_cnt.dead) {
-                d_enemy_health_cnt.cnt = 0;
-                d_enemy_health_cnt.dead = true;
-            } else {
-                new_div.innerHTML += '<p><span class="material-symbols-outlined">heart_minus</span><span style="color:#FF9393;">&nbsp;' + enemy.char_race + '&nbsp;' + enemy.char_class + '&nbsp;physical attack inflicts 10 damage to you.</span></p>';
-            }
-            if (d_enemy_health_cnt.dead) {
-                new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated ' + enemy.char_race + '&nbsp;' + enemy.char_class + '.</span></p>';
+            enemy_health_cnt.innerHTML = Math.round(enemy.enemy_health * 10) / 10;
+            // enemy death
+            if (enemy.enemy_health <= 0 && !enemy.dead) {
+                enemy.enemy_health = 0;
+                enemy.dead = true;
+                // add to enemy defeated_count
+                ////
+                enemy.defeated_count += 1;
                 
+            } else {
+                new_div.innerHTML += '<p><span class="material-symbols-outlined">heart_minus</span><span style="color:#FF9393;">&nbsp;' + enemy.char_name + '&nbsp;physical attack inflicts 10 damage to you.</span></p>';
+            }
+            if (enemy.dead) {
+                new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated ' + enemy.char_name + '.</span></p>';
                 // get loot from battle
-                //process_loot();
+                process_loot();
+
+                //d_inventory.current_loot.push({ id: lootItem.name, cnt: quantity });
+                let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
+
+                if (d_inventory && d_inventory.current_loot) {
+                    // Iterate over each item in current_loot
+                    d_inventory.current_loot.forEach(item => {
+                        // Append each item as a new <p> element
+                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${item.id} x${item.cnt}</span></p>`;
+                    });
+                }
+
+                // setup level 2+
+                //// call setup_location()
+                let this_location = locationData.find(loc => loc.loc_num === 1);
+                if (enemy.defeated_count === this_location.kills_to_next_level) {
+                    console.log(this_location.id);
+                    console.log(this_location.curr_loc_levels_num);
+                    handle_location(this_location.id, this_location.curr_loc_levels_num);
+                }
+
+                // reset div count
+                d_combat_div.cnt = 0;
+                d_inventory.current_loot = [];
 
                 // setup new battle
                 toggleElement('h', 'attack_box_button');
@@ -532,14 +580,14 @@ export function attack_box_button(elementId) {
                 
                 toggleElement('h', 'health_bars');
                 toggleElement('s', 'start_battle_button');
-                d_enemy_health_cnt.dead = false;
-                d_enemy_health_cnt.cnt = enemy.stat_health;
-                d_enemy_health_total.cnt = enemy.stat_health;
-                healthPercentage = (d_enemy_health_cnt.cnt / enemy.stat_health) * 100;
+                toggleElement('s', 'enemy_levels');
+                enemy.dead = false;
+                enemy.enemy_health = enemy.enemy_health_total;
+                d_enemy_health_total.cnt = enemy.enemy_health;
+                healthPercentage = (enemy.enemy_health / enemy.enemy_health_total) * 100;
                 enemy_health_fill.style.width = healthPercentage + '%';
-                enemy_health_cnt.innerHTML = d_enemy_health_cnt.cnt;
-                enemy_health_total.innerHTML = d_enemy_health_total.cnt;
-
+                enemy_health_cnt.innerHTML = enemy.enemy_health;
+                enemy_health_total.innerHTML = enemy.enemy_health_total;
             }
 
             if (d_combat_div.cnt >= d_combat_div.cap) {
@@ -548,115 +596,6 @@ export function attack_box_button(elementId) {
         }
     }
 }
-
-// Function to get the elapsed time since the start
-function getElapsedTime() {
-    let d_enemy_health_cnt = elementsData.find(el => el.id === 'enemy_health_cnt');
-    let startTime = d_enemy_health_cnt.startTime;
-    let now = Date.now();
-    const elapsedTime = (now - startTime) / 1000;
-    if (d_enemy_health_cnt.startTime !== null) {
-        return elapsedTime.toFixed(2) + ' sec';
-    } else {
-        return 0;
-    }
-}
-// EXAMPLE
-// const elapsedTime = getElapsedTime();
-
-/* // TEMP
-export function process_loot() {
-    let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
-
-    // setup inventory
-    if (!d_inventory.setup) {
-        let inventory_section = document.getElementById('inventory_section');
-        
-        let inv_parent = document.createElement('div');
-        inventory_section.appendChild(inv_parent);
-        
-        for (let i = 1; i <= d_inventory.size; i++) {
-            let slot_container = document.createElement('div');
-            inv_parent.appendChild(slot_container);
-            slot_container.id = 'slot_container_' + i;
-            slot_container.classList.add('inv_slot_container');
-            
-            let new_slot = document.createElement('div');
-            slot_container.appendChild(new_slot);
-            new_slot.id = 'inventory_slot_' + i;
-            new_slot.classList.add('normal', 'center', 'inv_slot');
-            new_slot.innerHTML = '[ EMPTY ]';
-
-            let new_slot_counter = document.createElement('div');
-            slot_container.appendChild(new_slot_counter);
-            new_slot_counter.id = 'inventory_slot_counter_' + i;
-            new_slot_counter.classList.add('normal', 'inv_slot_counter');
-            new_slot_counter.innerHTML = 0;
-        }
-        d_inventory.setup = true;
-    }
-
-    // setup drop rates
-    characterData.forEach(char => {
-        if (char.drops) {
-            char.drops.forEach(drop => {
-                if (drop.item) {
-                    if (Math.random() < drop.rate) {
-                        let quantity = Math.floor(Math.random() * (drop.max - drop.min + 1)) + drop.min;
-                        console.log(`${drop.item}: ${quantity}`);
-                        updateLootCount(drop.item, quantity);
-                    }
-                }
-            });
-        }
-    });
-    
-    //else {}
-}
-
-// Function to find the corresponding loot item and increment its count
-export function updateLootCount(itemId, quantity) {
-    const lootItem = lootData.find(loot => loot.id === itemId);
-    let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
-
-    if (lootItem) {
-        lootItem.cnt += quantity;
-    }
-
-    let itemAdded = false;
-    // First, check for a matching item in the inventory slots
-    for (let i = 1; i <= 10; i++) {
-        let slot = document.getElementById(`inventory_slot_${i}`);
-        let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
-        
-        if (slot && slot.innerHTML === itemId) {
-            // If the item already exists in this slot, add the quantity
-            slotCounter.innerHTML = parseInt(slotCounter.innerHTML) + quantity;
-            lootItem.inv_added = true;
-            itemAdded = true;
-            break; // Exit the loop once the item quantity is updated
-        }
-    }
-    
-    // If the item was not found, add it to the first empty slot
-    if (!itemAdded) {
-        for (let i = 1; i <= 10; i++) {
-            let slot = document.getElementById(`inventory_slot_${i}`);
-            let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
-            
-            if (slot && slot.innerHTML === '[ EMPTY ]') {
-                slot.innerHTML = itemId;
-                slotCounter.innerHTML = quantity;
-                lootItem.inv_added = true;
-                break; // Exit the loop once the item is added
-            }
-        }
-    }
-}
-*/ // TEMP
-
-// Example usage:
-// updateSlot(1, '[ FILLED ]', '123');
 
 let selectedSlot = null;
 export function process_loot() {
@@ -668,6 +607,7 @@ export function process_loot() {
         let inventory_section = document.getElementById('inventory_section');
         
         let inv_parent = document.createElement('div');
+        inv_parent.classList.add('inv_parent');
         inventory_section.appendChild(inv_parent);
         
         for (let i = 1; i <= d_inventory.size; i++) {
@@ -705,6 +645,9 @@ export function process_loot() {
                     if (Math.random() < drop.rate) {
                         let quantity = Math.floor(Math.random() * (drop.max - drop.min + 1)) + drop.min;
                         //console.log(`${drop.item}: ${quantity}`);
+                        // Setup gold storage
+                        handle_gold();
+                        // update loot
                         updateLootCount(drop.item, quantity);
                         
                     }
@@ -759,7 +702,7 @@ function handleSlotClick(slot_container, slot, slotCounter) {
 
             // Reset the selectedSlot
             selectedSlot = null;
-        ////
+
         } else if (slot.innerHTML !== '[ EMPTY ]') {
             // Swap the items between the two slots
             let tempItemId = slot.innerHTML;
@@ -791,6 +734,10 @@ export function updateLootCount(itemId, quantity) {
 
     if (lootItem) {
         lootItem.cnt += quantity;
+        if (!d_inventory.current_loot) {
+            d_inventory.current_loot = [];
+        }
+            d_inventory.current_loot.push({ id: lootItem.name, cnt: quantity });
     }
 
     let itemAdded = false;
@@ -799,7 +746,7 @@ export function updateLootCount(itemId, quantity) {
         let slot = document.getElementById(`inventory_slot_${i}`);
         let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
         
-        if (slot && slot.innerHTML === itemId) {
+        if (slot && slot.innerHTML === lootItem.name) {
             // If the item already exists in this slot, add the quantity
             slotCounter.innerHTML = parseInt(slotCounter.innerHTML) + quantity;
             lootItem.inv_added = true;
@@ -815,107 +762,23 @@ export function updateLootCount(itemId, quantity) {
             let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
             
             if (slot && slot.innerHTML === '[ EMPTY ]') {
-                slot.style.backgroundColor = 'gray';
-                slot.innerHTML = itemId;
-                slotCounter.style.backgroundColor = 'gray';
-                slotCounter.innerHTML = quantity;
-                lootItem.inv_added = true;
+                if (itemId !== 'GOLD') {
+                    slot.style.backgroundColor = 'gray';
+                    slot.innerHTML = lootItem.name;
+                    slotCounter.style.backgroundColor = 'gray';
+                    slotCounter.innerHTML = quantity;
+                    lootItem.inv_added = true;
+                } else {
+                    let gold_span = document.getElementById('gold_span');
+                    if (gold_span && lootItem.cnt > 0) {
+                        gold_span.innerHTML = '<b>GOLD:</b>&nbsp;' + lootItem.cnt;
+                    }
+                }
                 break; // Exit the loop once the item is added
             }
         }
     }
 }
-
-/*
-.inv_slot_container {
-    border-style: solid;
-    border-color: black;
-    float: left;
-    line-height: 76px;
-    width: 100px;
-    background-color: gray;
-}
-
-.inv_slot {
-    
-}
-
-.inv_slot_counter {
-    text-align: right;
-    padding-right: 5px;
-    padding-bottom: 5px;
-    line-height: 16px;
-    background-color: gray;
-}*/
-
-/// CHAT GDP ********
-
-// Function to handle slot click
-/*
-function handleSlotClick(slot_container, slot, slotCounter) {
-    if (selectedSlot === null) {
-        // First click: selecting the filled slot
-        if (slot.innerHTML !== '[ EMPTY ]') {
-            selectedSlot = {
-                slot_container,
-                slot,
-                slotCounter,
-                itemId: slot.innerHTML,
-                quantity: slotCounter.innerHTML
-            };
-            slot_container.style.backgroundColor = 'green';
-            slotCounter.style.backgroundColor = 'green';
-        }
-    } else {
-        if (selectedSlot.slot_container === slot_container) {
-            // If the selected slot is clicked again, deselect it
-            slot_container.style.backgroundColor = 'gray';
-            selectedSlot.slotCounter.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'; // Reapply transparency
-            selectedSlot = null;
-        } else if (slot.innerHTML === '[ EMPTY ]') {
-            // Second click: selecting the destination slot
-            // Move the item to the new slot
-            slot.innerHTML = selectedSlot.itemId;
-            slotCounter.innerHTML = selectedSlot.quantity;
-
-            // Clear the original slot
-            selectedSlot.slot.innerHTML = '[ EMPTY ]';
-            selectedSlot.slotCounter.innerHTML = 0;
-
-            // Reapply transparency to the original slot
-            selectedSlot.slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-            selectedSlot.slotCounter.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-
-            // Reset the selectedSlot
-            selectedSlot = null;
-
-            // Update the clicked slot's background
-            slot_container.style.backgroundColor = 'gray';
-            slotCounter.style.backgroundColor = 'gray';
-        } else if (slot.innerHTML !== '[ EMPTY ]') {
-            // Swap the items between the two slots
-            let tempItemId = slot.innerHTML;
-            let tempQuantity = slotCounter.innerHTML;
-
-            // Move the selected slot's item to the clicked slot
-            slot.innerHTML = selectedSlot.itemId;
-            slotCounter.innerHTML = selectedSlot.quantity;
-
-            // Move the clicked slot's item to the previously selected slot
-            selectedSlot.slot.innerHTML = tempItemId;
-            selectedSlot.slotCounter.innerHTML = tempQuantity;
-
-            // Reset the background colors
-            selectedSlot.slot_container.style.backgroundColor = 'gray';
-            slot_container.style.backgroundColor = 'gray';
-            selectedSlot.slotCounter.style.backgroundColor = 'gray';
-
-            // Reset the selectedSlot
-            selectedSlot = null;
-        }
-    }
-}
-*/
 
 // Ensure empty slots have the transparent background
 function applyTransparencyToEmptySlots() {
@@ -930,15 +793,148 @@ function applyTransparencyToEmptySlots() {
             slot.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
             slotContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
             slotCounter.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-        } else {
-            //slot.style.backgroundColor = 'gray';
-            //slotContainer.style.backgroundColor = 'gray';
-            //slotCounter.style.backgroundColor = 'gray';
         }
     }
 }
-
 // Call this function after setting up the inventory or updating it
 // applyTransparencyToEmptySlots();
 
-/// ********
+// Setup gold elements, purchases, etc
+export function handle_gold() {
+    let inventory_section = document.getElementById('inventory_section');
+    let d_gold = inventoryData.find(inv => inv.id === 'GOLD');
+    
+    if (!d_gold.setup && inventory_section) {
+        let gold_container = document.createElement('div');
+        gold_container.id = 'gold_container';
+        inventory_section.appendChild(gold_container);
+        gold_container.classList.add('gold_div');
+        
+        let gold_span_lbl = document.createElement('span');
+        gold_span_lbl.id = 'gold_span';
+        gold_container.appendChild(gold_span_lbl);
+        gold_span_lbl.classList.add('gold_span');
+        gold_span_lbl.innerHTML = '<b>GOLD:</b>&nbsp;' + d_gold.cnt;
+
+        d_gold.setup = true;
+    }
+}
+
+// initial location setup
+export function setup_location() {
+    let section_comtainer = document.getElementById('battle_section_container');
+    
+    locationData.forEach(loc => {
+        let locationBox = document.getElementById('location_center');
+        // for first location
+        if (loc.top_loc && locationBox) {
+            let location_left = document.getElementById('location_left');
+            location_left.innerHTML = '';
+            locationBox.innerHTML = loc.label;
+        }
+        
+    });
+    
+    // initial location
+    handle_location('01_DARK_PLAINS', 1);
+    ////
+    //handle_location('01_DARK_PLAINS', 2);
+}
+
+// Setup location action
+export function handle_location(locId, LevId) {
+    let location_container = document.getElementById('location_container');
+    let d_location = locationData.find(loc => loc.id === locId);
+    let enemy_levels_lbl = document.getElementById('enemy_levels_lbl');
+    let enemy_levels = document.getElementById('enemy_levels');
+
+    // location label
+    let location_center = document.getElementById('location_center');
+    location_center.style.fontWeight = 'bold';
+    
+    // hide until last location [99]
+    let location_right = document.getElementById('location_right');
+    location_right.innerHTML = '';
+
+    // for testing
+    let start_battle_container = document.getElementById('start_battle_container');
+    let test_div = document.getElementById('test_div');
+    if (!test_div) {
+        test_div = document.createElement('div');
+        test_div.id = 'test_div';
+        start_battle_container.appendChild(test_div);
+    }
+    test_div.classList.add('normal');
+
+    for (let i = 0; i < locationData.length; i++) {
+        const this_location = locationData[i];
+
+        for (let level = 1; level <= this_location.total_levels; level++) {
+            d_location.loc_levels = 'loc_' + this_location.id + '_level_' + level;
+
+            let loc_levels_div = document.createElement('span');
+            enemy_levels.appendChild(loc_levels_div);
+            loc_levels_div.id = d_location.loc_levels;
+            loc_levels_div.classList.add('normal');  // Initially, set the class to "normal"
+            loc_levels_div.style.display = 'none'; // hide initially
+            
+            // initial location is 1
+            if (d_location.loc_num === 1 && loc_levels_div.id === 'loc_' + locId + '_level_' + level) {
+                if (loc_levels_div.id === 'loc_' + locId + '_level_' + LevId) {
+                    loc_levels_div.style.display = 'inline-block';
+                    if (!d_location.init) {
+                        loc_levels_div.classList.remove('normal');
+                        loc_levels_div.classList.add('selected');
+                        d_location.init = true;
+                        test_div.innerHTML = 'first...loc id:&nbsp;' + locId + '&nbsp;level:&nbsp;' + level;
+                    }
+                }
+            }
+            
+            let loc_levels_num = d_location.loc_levels.replace('loc_' + locId + '_level_', '');
+            loc_levels_div.innerHTML = '&nbsp;[&nbsp;' + loc_levels_num + '&nbsp;]&nbsp;';
+
+            // Add event listener
+            loc_levels_div.addEventListener("click", function () {
+                // If the element is already selected, do nothing
+                if (this.classList.contains('selected')) {
+                    return;
+                }
+    
+                // Reset all levels to class "normal"
+                let allLevels = enemy_levels.querySelectorAll('span');
+                allLevels.forEach(lvl => {
+                    lvl.classList.remove('selected');
+                    lvl.classList.add('normal');
+                });
+
+                // Set the clicked level to class "selected"
+                this.classList.remove('normal');
+                this.classList.add('selected');
+                
+                test_div.innerHTML = 'clicked...loc id:&nbsp;' + locId + '&nbsp;level:&nbsp;' + loc_levels_num;
+                // Extracted current level
+                ////
+                d_location.curr_loc_levels_num = loc_levels_num;
+                console.log(d_location.curr_loc_levels_num);
+
+                /*
+                let enemy_counter_lvl_1 = document.getElementById('enemy_counter_lvl_1');
+                if (enemy_counter_lvl_1 && d_location.level_num !== 1) {
+                    let d_enemy_health_cnt = elementsData.find(char => char.id === 'enemy_health_cnt');
+                    d_location.enemy_counter_inner = 'Level [ 1 ] Enemies Defeated:&nbsp;' + d_enemy_health_cnt.defeated_count;
+                    d_location.enemy_counter_inner_css = 'location_eme_cnt';
+                    d_location.enemy_counter_inner_css2 = 'center';
+                    enemy_counter_lvl_1.innerHTML = '';
+                } else if (enemy_counter_lvl_1) {
+                    enemy_counter_lvl_1.innerHTML = d_location.enemy_counter_inner;
+                }*/
+    
+                // needs to be added to data
+                // if x enemy defeated -> total_levels = 2 (unlocks next +1 current_level)
+                //test_div.innerHTML = 'level:&nbsp;' + d_location.current_level;
+    
+            });
+        }
+    }
+}

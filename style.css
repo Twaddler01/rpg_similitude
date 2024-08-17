@@ -25,6 +25,7 @@ body {
 .box {
     display: flex;
 }
+
 .box_15 {
     width: 10%;
     background: white;
@@ -45,7 +46,7 @@ body {
     text-align: right;
     width: 40%;
     background: gray;
-    padding-top: 10px;
+    padding: 10px;
     padding-bottom: 10px;
     padding-right: 10px;
 }
@@ -77,6 +78,12 @@ body {
     color: #00FFFF;
     padding-top: 20px;
     padding-bottom: 20px;
+}
+.location_eme_cnt {
+    font-weight: normal;
+    font-size: 18px;
+    background-color: #333;
+    color: lightgreen;
 }
 .location_box_style_20_left {
     width: 20%;
@@ -112,6 +119,31 @@ body {
 }
 
 /* NEW */
+
+.gold_div {
+    background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    display: inline-block;
+    width: 200px;
+    line-height: 16px;
+}
+.gold_span {
+    text-align: center;
+    font-size: 16px;
+    color: yellow;
+    padding: 5px;
+    display: inline-block;
+    line-height: 16px;
+    width: 190px;
+    background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
+}
+
+.inv_parent {
+    border: 1px solid #ccc;
+    width: 490px;
+}
 
 .inv_slot_container {
     /* Default background color for non-empty slots */

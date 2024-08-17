@@ -87,88 +87,99 @@ export function init_elementsData() {
                 fetch_cat: true, 
                 type: 'div', 
                 parent_el: 'start_battle_container', 
-                css_class: 'box', 
+                css_class: 'center', 
                 css_class2: 'location_box_style', 
                 }, 
                     // attach (enemy_levels)
                     { id: 'enemy_levels_lbl', 
                     section_cat: true, 
                     fetch_cat: true, 
-                    type: 'div', 
+                    type: 'span', 
                     parent_el: 'enemy_levels', 
-                    content: 'LEVEL:', 
-                    css_class: 'enemy_levels_style_30_left', 
+                    content: '<b>LEVEL:</b>&nbsp;', 
+                    css_class: 'location_box_style', 
                     }, 
                     // attach (enemy_levels)
                     { id: 'enemy_levels_1', 
                     section_cat: true, 
                     fetch_cat: true, 
-                                            type: 'div', 
+                    type: 'span', 
                     parent_el: 'enemy_levels', 
-                    content: '[ 1 ]', 
+                    //content: '[ 1 ]', 
                     css_class: 'enemy_levels_style_10', 
                     }, 
                     // attach (enemy_levels)
                     { id: 'enemy_levels_2', 
                     section_cat: true, 
                     fetch_cat: true, 
-                    type: 'div', 
+                    type: 'span', 
                     parent_el: 'enemy_levels', 
-                    content: '[ 2 ]', 
+                    //content: '[ 2 ]', 
                     css_class: 'enemy_levels_style_10', 
                     }, 
                     // attach (enemy_levels)
                     { id: 'enemy_levels_3', 
                     section_cat: true, 
                     fetch_cat: true, 
-                    type: 'div', 
+                    type: 'span', 
                     parent_el: 'enemy_levels', 
-                    content: '[ 3 ]', 
+                    //content: '[ 3 ]', 
                     css_class: 'enemy_levels_style_10', 
                     }, 
                     // attach (enemy_levels)
                     { id: 'enemy_levels_4', 
                     section_cat: true, 
                     fetch_cat: true, 
-                    type: 'div', 
+                    type: 'span', 
                     parent_el: 'enemy_levels', 
-                    content: '[ 4 ]', 
+                    //content: '[ 4 ]', 
                     css_class: 'enemy_levels_style_10', 
                     }, 
                     // attach (enemy_levels)
                     { id: 'enemy_levels_5', 
                     section_cat: true, 
                     fetch_cat: true, 
-                    type: 'div', 
+                    type: 'span', 
                     parent_el: 'enemy_levels', 
-                    content: '[ 5 ]', 
+                    //content: '[ 5 ]', 
                     css_class: 'enemy_levels_style_10', 
                     }, 
                     // attach (enemy_levels)
                     { id: 'enemy_levels_6', 
                     section_cat: true, 
                     fetch_cat: true, 
-                    type: 'div', 
+                    type: 'span', 
                     parent_el: 'enemy_levels', 
-                    content: '[ 6 ]', 
+                    //content: '[ 6 ]', 
                     css_class: 'enemy_levels_style_10', 
                     }, 
                     // attach (enemy_levels)
                     { id: 'enemy_levels_7', 
                     section_cat: true, 
                     fetch_cat: true, 
-                    type: 'div', 
+                    type: 'span', 
                     parent_el: 'enemy_levels', 
-                    content: '[ 7 ]', 
+                    //content: '[ 7 ]', 
                     css_class: 'enemy_levels_style_10', 
                     }, 
+                ////
+                // attach (start_battle_container)
+                { id: 'enemy_counter_div', 
+                section_cat: true, 
+                fetch_cat: true, 
+                type: 'div', 
+                parent_el: 'start_battle_container', 
+                //content: 'Level [ 1 ] Enemies Defeated:&nbsp;0', 
+                css_class: 'location_eme_cnt', 
+                css_class2: 'center', 
+                }, // CHILDREN IN CODE -> (elementsData: enemy_health_cnt.defeated_count)
                 // attach (start_battle_container)
                 { id: 'start_battle_button', 
                 section_cat: true, 
                 fetch_cat: true, 
                 type: 'div', 
                 parent_el: 'start_battle_container', 
-                content: '[ START BATTLE ]', 
+                content: '<b>[ START BATTLE ]</b>', 
                 css_class: 'location_box_style', 
                 css_class2: 'center', 
                 on_click: true, // click event
@@ -214,7 +225,7 @@ export function init_elementsData() {
                 css_class2: 'center', 
                 }, 
                 // attach (verses_box)
-                { id: 'eme_name', 
+                { id: 'enemy_name', 
                 section_cat: true, 
                 fetch_cat: true, 
                 type: 'div', 
@@ -293,10 +304,14 @@ export function init_elementsData() {
                     type: 'span', 
                     parent_el: 'enemy_health_bar', 
                     cnt: 100, 
+                    enemy_round: 0, 
                     content: '100', 
                     css_class: 'normal', 
                     css_class2: 'center', 
-                    startTime: null, 
+                    defeated_count: 0, 
+                    enemy_counter_inner: '', 
+                    enemy_counter_inner_css: '', 
+                    enemy_counter_inner_css2: '', 
                     }, 
                     // attach (enemy_health_bar)
                     { id: 'enemy_health_separator', 
@@ -314,7 +329,6 @@ export function init_elementsData() {
                     fetch_cat: true, 
                     type: 'span', 
                     parent_el: 'enemy_health_bar', 
-                    cnt: 100, 
                     content: '100', 
                     css_class: 'normal', 
                     css_class2: 'center', 
@@ -395,19 +409,78 @@ export function init_elementsData() {
     return elementsData;
 }
 
-export function init_battleData() {
-
-    const battleData = [ 
-        // encounters
-        { id: '01_dark_forest', 
+export function init_locationData() {
+        
+    const locationData = [ 
+        { id: '01_DARK_PLAINS', 
+        loc_num: 1, 
+        level_num: 1, 
         type: 'encounter', 
-        label: 'Dark Forest', 
+        label: 'Dark Plains', 
+        kills_to_next_level: 3, 
+        total_levels: 8, // 8 max
+        level_mult: 1.2, 
+        enemy: 'enemy_group_1', // characterData.id ('enemy_group_1')
+        hp_low: 20, 
+        hp_high: 30, 
+        dmg_low: 3, 
+        dmg_high: 6, 
+        top_loc: true, 
+        }, 
+        { id: '02_DARK_HIGHLANDS', 
+        loc_num: 2, 
+        level_num: 0, 
+        type: 'encounter', 
+        label: 'Dark Highlands', 
+        kills_to_next_level: 3, 
+        total_levels: 8, 
         level_mult: 1.2, 
         hp_low: 20, 
         hp_high: 30, 
         dmg_low: 3, 
         dmg_high: 6, 
         }, 
+        { id: '03_DARK_FOREST', 
+        loc_num: 3, 
+        level_num: 0, 
+        type: 'encounter', 
+        label: 'Dark Forest', 
+        //level_id: 2, 
+        kills_to_next_level: 3, 
+        total_levels: 8, 
+        level_mult: 1.2, 
+        hp_low: 20, 
+        hp_high: 30, 
+        dmg_low: 3, 
+        dmg_high: 6, 
+        }, 
+    ];
+
+    let num = 1;
+    // Iterate over the array and set other variables dynamically
+    for (let i = 0; i < locationData.length; i++) {
+        const locationIndex = locationData[i];
+        const locationUpdates = {};
+        
+        for (let level = 1; level <= locationIndex.total_levels; level++) {
+            //loc_01_DARK_PLAINS_level_1 ... 8
+            //loc_02_DARK_HIGHLANDS_level_1 ... 8
+            //loc_03_DARK_FOREST_level_1 ... 8
+            locationIndex.loc_levels = 'loc_' + locationIndex.id + '_level_' + level;
+            locationIndex.level_multiplier = 1 + Math.round((num * 0.1) * 10) / 10;
+            num++;
+            //console.log(locationIndex.loc_levels + ':' + locationIndex.level_multiplier);
+        }
+        // Assign updates to locationIndex properties
+        Object.assign(locationIndex, locationUpdates);
+    }
+
+    return locationData;
+}
+
+export function init_battleData() {
+
+    const battleData = [ 
         // names
         { id: '01_names', 
         type: 'names', 
@@ -456,19 +529,27 @@ export function init_characterData() {
         stat_base_agi: 10, 
         stat_agi_desc: 'Increses critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.', 
         stat_base_attack: 1.0, 
-        stat_attack_min: 3.0, 
-        stat_attack_max: 5.0, // rounded(stat_attack_min * 1.9)
+        stat_attack_min: 5.0, 
+        stat_attack_max: 10.0, // rounded(stat_attack_min * 1.9)
         stat_power: 1.0, 
         stat_hit_chance: 0.9, 
         }, 
-        { id: 'enemy_gnome', 
+        { id: 'enemy_group_1', 
         type: 'basic_enemy', 
         char_img: '', 
+        enemy_health: 100, 
+        enemy_health_total: 100, 
+        cnt: 100, // moving from elementsData
+        enemy_round: 0, // moving from elementsData
+        defeated_count: 0, // moving from elementsData
+        dead: false, // moving from elementsData
         level: 1, 
         level_power_increase: 1.2, 
-        char_race: 'Goblin', 
-        char_class: 'Scavenger', 
-        stat_health: 100, 
+        // kills_to_next_level: 3
+        //[{"enemy_group_1_def_count_level_1":0}]
+        enemy_defeated_count: [], 
+        char_race: [ 'Goblin', 'Orc', 'Troll', 'Gnoll' ], 
+        char_class: [ 'Scavenger', 'Roamer', 'Pillager', 'Warrior', 'Spellbinder' ], 
         stat_armor: 1, // physical damage reduction
         stat_resist: 1, // spell damage reduction
         stat_attack_min: 0.8, 
@@ -484,7 +565,10 @@ export function init_characterData() {
             ]
         }, 
     ];
-    
+
+    // (in main.js)
+    // Iterate over the array and set other variables dynamically
+
     return characterData;
 }
 
@@ -550,5 +634,7 @@ export const battleData = init_battleData();
 export const characterData = init_characterData();
 export const inventoryData = init_inventoryData();
 export const lootData = init_lootData();
+export const locationData = init_locationData();
+
 
 //{ id: 'GATHER_TWIGS', costs: { 'TWIGS': 20, 'PEBBLES': 10 }, cost_type: 'res' }, 

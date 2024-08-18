@@ -8,11 +8,11 @@ export function createNewSection(newType, newId, newClass, content, parentID) {
     var newElement = document.createElement(newType);
     newElement.id = newId;
     newElement.innerHTML = content;
-    
+
     if (newClass != null) {
         newElement.className = newClass;
     }
-    
+
     var parentElement;
     if (parentID === 'body') {
         parentElement = document.body;
@@ -112,7 +112,7 @@ export function createCustomTooltipContent() {
     TRIBE_LEADER_lbl.id = 'TRIBE_LEADER_lbl';
     tooltipContainer.appendChild(TRIBE_LEADER_lbl);
     TRIBE_LEADER_lbl.innerHTML = '...tribe leader:&nbsp'; // WIP
-    
+
     let TRIBE_LEADER_eid = document.createElement('span');
     TRIBE_LEADER_eid.id = 'TRIBE_LEADER_prod_cnt';
     TRIBE_LEADER_eid.className = 'ltgreentxt';
@@ -122,7 +122,7 @@ export function createCustomTooltipContent() {
     let gatherer_prod_div = document.createElement('div');
     gatherer_prod_div.id = 'gatherer_prod_div';
     tooltipContainer.appendChild(gatherer_prod_div);
-    
+
     let gatherer_prod_lbl = document.createElement('span');
     gatherer_prod_div.appendChild(gatherer_prod_lbl);
     gatherer_prod_lbl.id = 'gatherer_prod_lbl';
@@ -163,7 +163,7 @@ export function createCustomTooltipContent() {
     tooltipContainer.appendChild(auto_tick);
     let food_loss = document.getElementById('food_loss');
     auto_tick.innerHTML = food_loss.innerHTML;
-    
+
     let consumption = document.createElement('div');
     tooltipContainer.appendChild(consumption);
     consumption.innerHTML = '<hr>Consumption:&nbsp;';
@@ -171,7 +171,7 @@ export function createCustomTooltipContent() {
     let population = document.createElement('span');
     tooltipContainer.appendChild(population);
     population.innerHTML = '...population&nbsp';
-    
+
     let population_cnt = document.createElement('span');
     population_cnt.id = 'population_cnt';
     population.appendChild(population_cnt);
@@ -318,7 +318,7 @@ export function add_allElements() {
 
         // sections elements
         if (element.section_cat === true) {
-            
+
             let element_id = document.createElement(element.type);
             element_id.id = element.id;
             let parent_el = element.parent_el;
@@ -340,24 +340,24 @@ export function add_allElements() {
             if (element.content) {
                 element_id.innerHTML = element.content;
             }
-            
+
             if (element.css_class) {
                 element_id.className = element.css_class;
             }
-            
+
             if (element.css_class2) {
                 element_id.classList.add(element.css_class2);
             }
-            
+
             if (element.css_class3) {
                 element_id.classList.add(element.css_class3);
             }
-                
+
             // 'hidden' flag (if set TRUE in array) to hide element
             if (element.hidden) {
                 element_id.style.display = 'none';
             }
-            
+
             // add click event
             if (element.on_click) {
                 let element_click_DOM = document.getElementById(element.id);
@@ -377,11 +377,11 @@ export function add_allElements() {
             //
         }
         // battle elements
-        // 
+        //
 /*
         // tables
         if (element.table_cat === true) {
-        
+
             // table id
             let table_id = document.createElement(element.type);
             table_id.id = element.id;
@@ -405,19 +405,19 @@ export function add_allElements() {
                 for (let row = 1; row <= rows; row++) {
                     let table_row = document.createElement('tr');
                     table_id.appendChild(table_row);
-                    
+
                     // td
                     let cols = element.cols; // 4
                     if (cols >= 1 && table_row) {
                         for (let col = 1; col <= cols; col++) {
                             let cell_content = document.createElement('td');
                             table_row.appendChild(cell_content);
-                            
+
                             let contentKey = `content${row}_${col}`;
                             if (element[contentKey]) {
                                 cell_content.innerHTML = element[contentKey];
                             }
-                        }            
+                        }
                     }
                 }
             }
@@ -425,7 +425,7 @@ export function add_allElements() {
             if (element.css_class) {
                 table_id.className = element.css_class;
             }
-                
+
             // 'hidden' flag (if set TRUE in array) to hide element
             if (element.hidden) {
                 table_id.style.display = 'none';
@@ -470,7 +470,7 @@ export function start_battle_button(elementId) {
     let character = characterData.find(char => char.id === 'my_character');
     let d_char_battle_name = document.getElementById('char_name');
     d_char_battle_name.innerHTML = character.name;
-    
+
     // randomize enemy names
     let enemy = characterData.find(char => char.id === 'enemy_group_1');
     let enemy_battle_name = document.getElementById('enemy_name');
@@ -487,7 +487,19 @@ export function attack_box_button(elementId) {
     // player character
     let character = characterData.find(char => char.id === 'my_character');
 
+// matching loc_selected and level_selected
+let d_battle_location = battleData.find(bat => bat.id === 'location');
+let current_loc = locationData.find(loc => loc.id === d_battle_location.loc_selected);
+let level_data = current_loc.level_data;
+let current_level = level_data.find(lvl => lvl.id === d_battle_location.level_selected);
+
+//console.log(current_loc.id);
+//console.log('Level ' + current_level.id + ': ' + current_level.defeated_count);
+
+
+
     let d_enemy_health_total = elementsData.find(char => char.id === 'enemy_health_total');
+
     let enemy = characterData.find(char => char.id === 'enemy_group_1');
     let enemy_health_total = document.getElementById('enemy_health_total');
     enemy_health_total.innerHTML = enemy.enemy_health_total;
@@ -499,7 +511,7 @@ export function attack_box_button(elementId) {
 
         // Generate a random number to determine if the attack misses (10% chance)
         let missChance = Math.random();
-        
+
         // Check if the attack misses
         if (missChance < 0.1) {  // 10% chance to miss
             character.stat_damage_caused = 0;
@@ -538,9 +550,9 @@ export function attack_box_button(elementId) {
                 enemy.enemy_health = 0;
                 enemy.dead = true;
                 // add to enemy defeated_count
-                ////
-                enemy.defeated_count += 1;
-                
+                current_level.defeated_count += 1;
+
+
             } else {
                 new_div.innerHTML += '<p><span class="material-symbols-outlined">heart_minus</span><span style="color:#FF9393;">&nbsp;' + enemy.char_name + '&nbsp;physical attack inflicts 10 damage to you.</span></p>';
             }
@@ -559,16 +571,16 @@ export function attack_box_button(elementId) {
                         new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${item.id} x${item.cnt}</span></p>`;
                     });
                 }
-
+/*
                 // setup level 2+
-                //// call setup_location()
+                //// call (initial location) handle_location('01_DARK_PLAINS', 1);
                 let this_location = locationData.find(loc => loc.loc_num === 1);
                 if (enemy.defeated_count === this_location.kills_to_next_level) {
                     console.log(this_location.id);
                     console.log(this_location.curr_loc_levels_num);
                     handle_location(this_location.id, this_location.curr_loc_levels_num);
                 }
-
+*/
                 // reset div count
                 d_combat_div.cnt = 0;
                 d_inventory.current_loot = [];
@@ -577,7 +589,7 @@ export function attack_box_button(elementId) {
                 toggleElement('h', 'attack_box_button');
                 toggleElement('h', 'verses_box');
                 let e_verses_box = document.getElementById('verses_box');
-                
+
                 toggleElement('h', 'health_bars');
                 toggleElement('s', 'start_battle_button');
                 toggleElement('s', 'enemy_levels');
@@ -599,23 +611,23 @@ export function attack_box_button(elementId) {
 
 let selectedSlot = null;
 export function process_loot() {
-    
+
     let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
 
     // setup inventory
     if (!d_inventory.setup) {
         let inventory_section = document.getElementById('inventory_section');
-        
+
         let inv_parent = document.createElement('div');
         inv_parent.classList.add('inv_parent');
         inventory_section.appendChild(inv_parent);
-        
+
         for (let i = 1; i <= d_inventory.size; i++) {
             let slot_container = document.createElement('div');
             inv_parent.appendChild(slot_container);
             slot_container.id = 'slot_container_' + i;
             slot_container.classList.add('inv_slot_container');
-            
+
             let new_slot = document.createElement('div');
             slot_container.appendChild(new_slot);
             new_slot.id = 'inventory_slot_' + i;
@@ -632,7 +644,7 @@ export function process_loot() {
             slot_container.addEventListener('click', () => {
                 handleSlotClick(slot_container, new_slot, new_slot_counter);
             });
-            
+
         }
         d_inventory.setup = true;
     }
@@ -649,13 +661,13 @@ export function process_loot() {
                         handle_gold();
                         // update loot
                         updateLootCount(drop.item, quantity);
-                        
+
                     }
                 }
             });
         }
     });
-    
+
     // reset empty slots
     //applyTransparencyToEmptySlots();
 }
@@ -745,7 +757,7 @@ export function updateLootCount(itemId, quantity) {
     for (let i = 1; i <= 10; i++) {
         let slot = document.getElementById(`inventory_slot_${i}`);
         let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
-        
+
         if (slot && slot.innerHTML === lootItem.name) {
             // If the item already exists in this slot, add the quantity
             slotCounter.innerHTML = parseInt(slotCounter.innerHTML) + quantity;
@@ -754,13 +766,13 @@ export function updateLootCount(itemId, quantity) {
             break; // Exit the loop once the item quantity is updated
         }
     }
-    
+
     // If the item was not found, add it to the first empty slot
     if (!itemAdded) {
         for (let i = 1; i <= 10; i++) {
             let slot = document.getElementById(`inventory_slot_${i}`);
             let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
-            
+
             if (slot && slot.innerHTML === '[ EMPTY ]') {
                 if (itemId !== 'GOLD') {
                     slot.style.backgroundColor = 'gray';
@@ -783,7 +795,7 @@ export function updateLootCount(itemId, quantity) {
 // Ensure empty slots have the transparent background
 function applyTransparencyToEmptySlots() {
     let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
-    
+
     for (let i = 1; i <= d_inventory.size; i++) {
         let slot = document.getElementById(`inventory_slot_${i}`);
         let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
@@ -803,13 +815,13 @@ function applyTransparencyToEmptySlots() {
 export function handle_gold() {
     let inventory_section = document.getElementById('inventory_section');
     let d_gold = inventoryData.find(inv => inv.id === 'GOLD');
-    
+
     if (!d_gold.setup && inventory_section) {
         let gold_container = document.createElement('div');
         gold_container.id = 'gold_container';
         inventory_section.appendChild(gold_container);
         gold_container.classList.add('gold_div');
-        
+
         let gold_span_lbl = document.createElement('span');
         gold_span_lbl.id = 'gold_span';
         gold_container.appendChild(gold_span_lbl);
@@ -823,7 +835,7 @@ export function handle_gold() {
 // initial location setup
 export function setup_location() {
     let section_comtainer = document.getElementById('battle_section_container');
-    
+
     locationData.forEach(loc => {
         let locationBox = document.getElementById('location_center');
         // for first location
@@ -832,17 +844,18 @@ export function setup_location() {
             location_left.innerHTML = '';
             locationBox.innerHTML = loc.label;
         }
-        
+
     });
-    
+
     // initial location
     handle_location('01_DARK_PLAINS', 1);
     ////
-    //handle_location('01_DARK_PLAINS', 2);
+    handle_location('01_DARK_PLAINS', 2);
+    handle_location('01_DARK_PLAINS', 3);
 }
 
 // Setup location action
-export function handle_location(locId, LevId) {
+export function handle_location(locId, levId) {
     let location_container = document.getElementById('location_container');
     let d_location = locationData.find(loc => loc.id === locId);
     let enemy_levels_lbl = document.getElementById('enemy_levels_lbl');
@@ -851,7 +864,7 @@ export function handle_location(locId, LevId) {
     // location label
     let location_center = document.getElementById('location_center');
     location_center.style.fontWeight = 'bold';
-    
+
     // hide until last location [99]
     let location_right = document.getElementById('location_right');
     location_right.innerHTML = '';
@@ -866,6 +879,84 @@ export function handle_location(locId, LevId) {
     }
     test_div.classList.add('normal');
 
+    // d_location data
+    d_location.level_selected = levId;
+    let current_level = d_location.level_data.find(lvl => lvl.id === d_location.level_selected);
+
+    // get max levels
+    let max_level = 0;
+    for (let i = 1; i <= d_location.level_data.length; i++) {
+      max_level = i;
+    }
+
+    // setup element levels (initially) in loop based on levId
+    if (!d_location.first_run) {
+        for (let i = 1; i <= max_level; i++) {
+            let loc_levels_div = document.createElement('span');
+            enemy_levels.appendChild(loc_levels_div);
+            d_location.loc_levels = 'loc_' + d_location.id + '_level_' + i;
+            loc_levels_div.id = d_location.loc_levels;
+            loc_levels_div.classList.add('normal');  // Initially, set the class to "normal"
+            loc_levels_div.innerHTML = '[&nbsp;' + i + '&nbsp;]';
+            loc_levels_div.style.display = 'none'; // hide initially
+            if (levId === 1 && i === 1) {
+                loc_levels_div.style.display = 'inline-block';
+                loc_levels_div.classList.add('location_box_style');
+                loc_levels_div.classList.add('selected');
+            }
+            d_location.first_run = true;
+        }
+    }
+
+    let loc_levels_div = document.getElementById('loc_' + locId + '_level_' + levId);
+    if (levId > 1) {
+        loc_levels_div.classList.remove('location_box_style');
+        // show function called levels only
+        let this_level_id = 'loc_' + locId + '_level_' + levId;
+        if (this_level_id) {
+            loc_levels_div.style.display = 'inline-block';
+        }
+
+    }
+
+    let d_battle_location = battleData.find(bat => bat.id === 'location');
+
+    // Add event listener
+    loc_levels_div.addEventListener("click", function () {
+        // If the element is already selected, do nothing
+        if (this.classList.contains('selected')) {
+            return;
+        }
+
+        // Reset all levels to class "normal"
+        let allLevels = enemy_levels.querySelectorAll('span');
+        allLevels.forEach(lvl => {
+            lvl.classList.remove('selected');
+            lvl.classList.remove('location_box_style');
+            lvl.classList.add('normal');
+        });
+
+        // Set the clicked level to class "selected"
+        this.classList.remove('normal');
+        this.classList.add('selected');
+
+        test_div.innerHTML = 'clicked...loc id:&nbsp;' + locId + '&nbsp;level:&nbsp;' + levId;
+
+d_battle_location.loc_selected = locId;
+d_battle_location.level_selected = levId;
+//console.log(d_battle_location.loc_selected);
+//console.log(d_battle_location.level_selected);
+
+
+        ////
+
+        // needs to be added to data
+        // if x enemy defeated -> total_levels = 2 (unlocks next +1 current_level)
+        //test_div.innerHTML = 'level:&nbsp;' + d_location.current_level;
+
+    });
+
+/*
     for (let i = 0; i < locationData.length; i++) {
         const this_location = locationData[i];
 
@@ -877,10 +968,10 @@ export function handle_location(locId, LevId) {
             loc_levels_div.id = d_location.loc_levels;
             loc_levels_div.classList.add('normal');  // Initially, set the class to "normal"
             loc_levels_div.style.display = 'none'; // hide initially
-            
+
             // initial location is 1
             if (d_location.loc_num === 1 && loc_levels_div.id === 'loc_' + locId + '_level_' + level) {
-                if (loc_levels_div.id === 'loc_' + locId + '_level_' + LevId) {
+                if (loc_levels_div.id === 'loc_' + locId + '_level_' + levId) {
                     loc_levels_div.style.display = 'inline-block';
                     if (!d_location.init) {
                         loc_levels_div.classList.remove('normal');
@@ -890,7 +981,7 @@ export function handle_location(locId, LevId) {
                     }
                 }
             }
-            
+
             let loc_levels_num = d_location.loc_levels.replace('loc_' + locId + '_level_', '');
             loc_levels_div.innerHTML = '&nbsp;[&nbsp;' + loc_levels_num + '&nbsp;]&nbsp;';
 
@@ -900,7 +991,7 @@ export function handle_location(locId, LevId) {
                 if (this.classList.contains('selected')) {
                     return;
                 }
-    
+
                 // Reset all levels to class "normal"
                 let allLevels = enemy_levels.querySelectorAll('span');
                 allLevels.forEach(lvl => {
@@ -911,14 +1002,14 @@ export function handle_location(locId, LevId) {
                 // Set the clicked level to class "selected"
                 this.classList.remove('normal');
                 this.classList.add('selected');
-                
+
                 test_div.innerHTML = 'clicked...loc id:&nbsp;' + locId + '&nbsp;level:&nbsp;' + loc_levels_num;
                 // Extracted current level
                 ////
                 d_location.curr_loc_levels_num = loc_levels_num;
                 console.log(d_location.curr_loc_levels_num);
 
-                /*
+                / *
                 let enemy_counter_lvl_1 = document.getElementById('enemy_counter_lvl_1');
                 if (enemy_counter_lvl_1 && d_location.level_num !== 1) {
                     let d_enemy_health_cnt = elementsData.find(char => char.id === 'enemy_health_cnt');
@@ -928,13 +1019,13 @@ export function handle_location(locId, LevId) {
                     enemy_counter_lvl_1.innerHTML = '';
                 } else if (enemy_counter_lvl_1) {
                     enemy_counter_lvl_1.innerHTML = d_location.enemy_counter_inner;
-                }*/
-    
+                }* /
+
                 // needs to be added to data
                 // if x enemy defeated -> total_levels = 2 (unlocks next +1 current_level)
                 //test_div.innerHTML = 'level:&nbsp;' + d_location.current_level;
-    
+
             });
         }
-    }
+    }*/
 }

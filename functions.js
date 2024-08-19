@@ -490,6 +490,7 @@ export function attack_box_button(elementId) {
 // matching loc_selected and level_selected
 let d_battle_location = battleData.find(bat => bat.id === 'location');
 let current_loc = locationData.find(loc => loc.id === d_battle_location.loc_selected);
+let current_loc_num = locationData.find(loc => loc.loc_num === d_battle_location.loc_num_selected);
 let level_data = current_loc.level_data;
 let current_level = level_data.find(lvl => lvl.id === d_battle_location.level_selected);
 
@@ -551,8 +552,7 @@ let current_level = level_data.find(lvl => lvl.id === d_battle_location.level_se
                 enemy.dead = true;
                 // add to enemy defeated_count
                 current_level.defeated_count += 1;
-
-
+console.log('Level ' + current_level.id + ' / Kills: ' + current_level.defeated_count);
             } else {
                 new_div.innerHTML += '<p><span class="material-symbols-outlined">heart_minus</span><span style="color:#FF9393;">&nbsp;' + enemy.char_name + '&nbsp;physical attack inflicts 10 damage to you.</span></p>';
             }
@@ -571,16 +571,30 @@ let current_level = level_data.find(lvl => lvl.id === d_battle_location.level_se
                         new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${item.id} x${item.cnt}</span></p>`;
                     });
                 }
-/*
-                // setup level 2+
-                //// call (initial location) handle_location('01_DARK_PLAINS', 1);
-                let this_location = locationData.find(loc => loc.loc_num === 1);
-                if (enemy.defeated_count === this_location.kills_to_next_level) {
-                    console.log(this_location.id);
-                    console.log(this_location.curr_loc_levels_num);
-                    handle_location(this_location.id, this_location.curr_loc_levels_num);
-                }
-*/
+
+// locationData kills_to_next_level: 3
+// handle_location('01_DARK_PLAINS', 1);
+
+// setup level 2+
+console.log('KTNL: ' + current_level.kills_to_next_level);
+if (current_level.kills_to_next_level === current_level.defeated_count) {
+    // confirm not over max level
+    if (d_battle_location.level_selected <= 0) { // level_data.length, test: 0
+        console.log('defeated_count === kills_to_next_level');
+        d_battle_location.level_selected += 1;
+        handle_location(d_battle_location.loc_selected, d_battle_location.level_selected);
+
+
+    } else {
+        // over max level, get next location
+        d_battle_location.level_selected = 1;
+        d_battle_location.loc_num_selected += 1;
+        let next_battle_location = locationData.find(loc => loc.loc_num === d_battle_location.loc_num_selected);
+        d_battle_location.loc_selected = next_battle_location.id;
+        handle_location(d_battle_location.loc_selected, d_battle_location.level_selected);
+    }
+}
+
                 // reset div count
                 d_combat_div.cnt = 0;
                 d_inventory.current_loot = [];
@@ -849,9 +863,9 @@ export function setup_location() {
 
     // initial location
     handle_location('01_DARK_PLAINS', 1);
+    //handle_location('01_DARK_PLAINS', 2);
     ////
-    handle_location('01_DARK_PLAINS', 2);
-    handle_location('01_DARK_PLAINS', 3);
+    //handle_location('01_DARK_PLAINS', 3);
 }
 
 // Setup location action
@@ -883,11 +897,11 @@ export function handle_location(locId, levId) {
     d_location.level_selected = levId;
     let current_level = d_location.level_data.find(lvl => lvl.id === d_location.level_selected);
 
+    let d_battle_location = battleData.find(bat => bat.id === 'location');
+
     // get max levels
-    let max_level = 0;
-    for (let i = 1; i <= d_location.level_data.length; i++) {
-      max_level = i;
-    }
+    let max_level = d_location.level_data.length;
+    d_battle_location.max_level = max_level;
 
     // setup element levels (initially) in loop based on levId
     if (!d_location.first_run) {
@@ -909,8 +923,20 @@ export function handle_location(locId, levId) {
     }
 
     let loc_levels_div = document.getElementById('loc_' + locId + '_level_' + levId);
-    if (levId > 1) {
-        loc_levels_div.classList.remove('location_box_style');
+
+
+
+
+// FIX NEEDED to only add class to newest locationData.id '02_DARK_HIGHLANDS'
+    if (levId > 1 && levId === d_battle_location.loc_selected) {
+// Reset all levels to class "normal"
+let allLevels = enemy_levels.querySelectorAll('span');
+allLevels.forEach(lvl => {
+    lvl.classList.remove('selected');
+    lvl.classList.remove('location_box_style');
+    lvl.classList.add('normal');
+});
+        //loc_levels_div.classList.remove('location_box_style');
         // show function called levels only
         let this_level_id = 'loc_' + locId + '_level_' + levId;
         if (this_level_id) {
@@ -919,8 +945,7 @@ export function handle_location(locId, levId) {
 
     }
 
-    let d_battle_location = battleData.find(bat => bat.id === 'location');
-
+test_div.innerHTML = 'init...loc id:&nbsp;' + locId + '&nbsp;loc_num:&nbsp;' + d_location.loc_num + '&nbsp;level:&nbsp;' + levId;
     // Add event listener
     loc_levels_div.addEventListener("click", function () {
         // If the element is already selected, do nothing
@@ -940,12 +965,15 @@ export function handle_location(locId, levId) {
         this.classList.remove('normal');
         this.classList.add('selected');
 
-        test_div.innerHTML = 'clicked...loc id:&nbsp;' + locId + '&nbsp;level:&nbsp;' + levId;
-
 d_battle_location.loc_selected = locId;
+d_battle_location.loc_num_selected = d_location.loc_num;
 d_battle_location.level_selected = levId;
-//console.log(d_battle_location.loc_selected);
-//console.log(d_battle_location.level_selected);
+
+test_div.innerHTML = 'clicked...loc id:&nbsp;' + d_battle_location.loc_selected + '&nbsp;loc_num:&nbsp;' + d_battle_location.loc_num_selected + '&nbsp;level:&nbsp;' + d_battle_location.level_selected;
+
+
+//console.log('LOC: ' + d_battle_location.loc_selected +'num: ' + d_battle_location.loc_num_selected);
+//console.log('level: ' + d_battle_location.level_selected);
 
 
         ////

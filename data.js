@@ -418,16 +418,16 @@ export function init_locationData() {
         type: 'encounter',
         label: 'Dark Plains',
         kills_to_next_level: 3,
-        //total_levels: 8, // 8 max
+        //total_levels: 8,
         level_data: [
-          { id: 1, mult: 1.0, defeated_count: 0 },
-          { id: 2, mult: 1.2, defeated_count: 0 },
-          { id: 3, mult: 1.4, defeated_count: 0 },
-          { id: 4, mult: 1.6, defeated_count: 0 },
-          { id: 5, mult: 1.8, defeated_count: 0 },
-          { id: 6, mult: 2.0, defeated_count: 0 },
-          { id: 7, mult: 2.2, defeated_count: 0 },
-          { id: 8, mult: 2.4, defeated_count: 0 },
+          { id: 1, mult: 1.0, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 2, mult: 1.2, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 3, mult: 1.4, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 4, mult: 1.6, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 5, mult: 1.8, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 6, mult: 2.0, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 7, mult: 2.2, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 8, mult: 2.4, kills_to_next_level: 3, defeated_count: 0 },
         ],
         level_mult: 1.2,
         enemy: 'enemy_group_1', // characterData.id ('enemy_group_1')
@@ -443,7 +443,17 @@ export function init_locationData() {
         type: 'encounter',
         label: 'Dark Highlands',
         kills_to_next_level: 3,
-        total_levels: 8,
+        //total_levels: 8,
+        level_data: [
+          { id: 1, mult: 2.6, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 2, mult: 2.8, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 3, mult: 3.0, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 4, mult: 3.2, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 5, mult: 3.4, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 6, mult: 3.6, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 7, mult: 3.8, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 8, mult: 4.0, kills_to_next_level: 3, defeated_count: 0 },
+        ],
         level_mult: 1.2,
         hp_low: 20,
         hp_high: 30,
@@ -493,7 +503,10 @@ export function init_battleData() {
     const battleData = [
         { id: 'location',
         loc_selected: '01_DARK_PLAINS', // default
-        level_selected: 1 }, // default
+        loc_num_selected: 1, // default
+        level_selected: 1, // default
+        max_level: 0, // set by handle_location()
+        },
         // names
         { id: '01_names',
         type: 'names',

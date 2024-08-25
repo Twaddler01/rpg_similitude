@@ -1,7 +1,7 @@
 // functions.js
 
 // import arrays
-import { elementsData, locationData, battleData, characterData, inventoryData, lootData } from './data.js';
+import { elementsData, locationData, battleData, characterData, inventoryData, lootData, gameState } from './data.js';
 
 // to create new elements
 export function createNewSection(newType, newId, newClass, content, parentID) {
@@ -302,10 +302,18 @@ export function toggleElement(method, elementId) {
     if (element_id) {
         if (method === 's') {
             element_id.style.display = 'block';
+        } else if (method === 'sv') {
+            element_id.visibility = 'visible';
         } else if (method === 'sf') {
             element_id.style.display = 'flex';
-        } else {
+        } else if (method === 'sib') {
+            element_id.style.display = 'inline-block';
+        } else if (method === 'hv') {
+            element_id.visibility = 'hidden';
+        } else if (method === 'h') {
             element_id.style.display = 'none';
+        } else {
+            console.error('Invalid method specified: "' + method + ', ' + elementId + '"');
         }
     } else {
         console.error('toggleElement(), element "' + elementId + '" not found. ');
@@ -462,7 +470,7 @@ export function start_battle_button(elementId) {
     let combat_log = document.getElementById('combat_log');
     combat_log.innerHTML = '';
     toggleElement('h', 'start_battle_button');
-    toggleElement('h', 'enemy_levels');
+    //toggleElement('h', 'enemy_levels');
     toggleElement('s', 'attack_box_button');
     toggleElement('sf', 'verses_box');
     toggleElement('sf', 'health_bars');
@@ -523,7 +531,7 @@ let current_level = level_data.find(lvl => lvl.id === d_battle_location.level_se
         }
 
         // Deduct damage caused
-        enemy.enemy_health -= parseFloat(character.stat_damage_caused);
+        enemy.enemy_health -= parseFloat(character.stat_damage_caused) + 100; // test: +100
 
         let enemy_health_fill = document.getElementById('enemy_health_fill');
         let healthPercentage = (enemy.enemy_health / enemy.enemy_health_total) * 100;
@@ -571,7 +579,7 @@ console.log('Level ' + current_level.id + ' / Kills: ' + current_level.defeated_
                         new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${item.id} x${item.cnt}</span></p>`;
                     });
                 }
-
+/*
 // locationData kills_to_next_level: 3
 // handle_location('01_DARK_PLAINS', 1);
 
@@ -579,22 +587,37 @@ console.log('Level ' + current_level.id + ' / Kills: ' + current_level.defeated_
 console.log('KTNL: ' + current_level.kills_to_next_level);
 if (current_level.kills_to_next_level === current_level.defeated_count) {
     // confirm not over max level
-    if (d_battle_location.level_selected <= 0) { // level_data.length, test: 0
+    if (d_battle_location.level_selected <= 2) { // level_data.length, test: 2
         console.log('defeated_count === kills_to_next_level');
-        d_battle_location.level_selected += 1;
-        handle_location(d_battle_location.loc_selected, d_battle_location.level_selected);
+        //d_battle_location.level_selected += 1;
+        handle_location(d_battle_location.loc_selected, d_battle_location.level_selected + 1);
 
 
     } else {
         // over max level, get next location
+        console.log('NEXT LOCATION');
         d_battle_location.level_selected = 1;
         d_battle_location.loc_num_selected += 1;
         let next_battle_location = locationData.find(loc => loc.loc_num === d_battle_location.loc_num_selected);
         d_battle_location.loc_selected = next_battle_location.id;
         handle_location(d_battle_location.loc_selected, d_battle_location.level_selected);
+
+// ***********************
+// update elements for new location
+let location_right = document.getElementById('location_right');
+location_right.innerHTML = '>>&nbsp;&nbsp;';
+location_right.addEventListener("click", function () {
+    location_right.innerHTML = '';
+    let location_center = document.getElementById('location_center');
+    location_center.innerHTML = next_battle_location.label;
+    
+});
+
+
+
     }
 }
-
+*/
                 // reset div count
                 d_combat_div.cnt = 0;
                 d_inventory.current_loot = [];
@@ -848,212 +871,254 @@ export function handle_gold() {
 
 // initial location setup
 export function setup_location() {
-    let section_comtainer = document.getElementById('battle_section_container');
 
-    locationData.forEach(loc => {
-        let locationBox = document.getElementById('location_center');
-        // for first location
-        if (loc.top_loc && locationBox) {
-            let location_left = document.getElementById('location_left');
-            location_left.innerHTML = '';
-            locationBox.innerHTML = loc.label;
+    // locationData
+    let location_container = document.getElementById('location_container');
+    let enemy_levels_lbl = document.getElementById('enemy_levels_lbl');
+    let enemy_levels = document.getElementById('enemy_levels');
+    let current_location = battleData[0];
+
+    for (let i = 1; i <= locationData.length; i++) {
+        let d_all_locations = locationData.find(loc => loc.loc_num === i);
+
+        // div containers
+        let current_location = document.createElement('div');
+        location_container.appendChild(current_location);
+        current_location.id = 'location_div_' + d_all_locations.loc_num;
+        current_location.classList.add('location_box_style', 'center');
+        current_location.style.width = '100%';
+        current_location.style.display = 'none'; // hide all initially
+        if (current_location.id === 'location_div_1') {
+            current_location.style.display = 'inline-block'; // show initially
+        }
+        // (attach) headers I
+        let location_left = document.createElement('span');
+        current_location.appendChild(location_left);
+        location_left.id = 'location_left_' + d_all_locations.loc_num;
+        location_left.classList.add('location_box_style', 'location_box_style_20_left');
+        location_left.innerHTML = '&nbsp;&nbsp;<<';
+        if (d_all_locations.loc_num === 1) {
+            location_left.classList.add('hide');
+        }
+        // (attach) headers II
+        let location_center = document.createElement('span');
+        current_location.appendChild(location_center);
+        location_center.id = 'location_center_' + d_all_locations.loc_num;
+        location_center.classList.add('location_box_style', 'location_box_style_60');
+        location_center.style.fontWeight = 'bold';
+        location_center.innerHTML = d_all_locations.label;
+        // (attach) headers III
+        let location_right = document.createElement('span');
+        current_location.appendChild(location_right);
+        location_right.id = 'location_right_' + d_all_locations.loc_num;
+        location_right.classList.add('location_box_style', 'location_box_style_20_right');
+        location_right.innerHTML = '>>&nbsp;&nbsp;';
+        if (d_all_locations.loc_num === locationData.length) {
+            location_right.classList.add('hide');
         }
 
-    });
+        let loc_levels_container = document.createElement('span');
+        enemy_levels.appendChild(loc_levels_container);
+        loc_levels_container.id = 'loc_' + i + '_lvls_container';
 
+        // get max levels
+        let level_data = d_all_locations.level_data;
+        let max_levels = level_data.length;
+
+        for (let lvl = 1; lvl <= max_levels; lvl++) {
+            let loc_levels_div = document.createElement('span');
+            loc_levels_div.id = 'loc_' + i + '_level_' + lvl;
+            loc_levels_container.appendChild(loc_levels_div);
+            loc_levels_div.classList.add('normal');  // Initially, set the class to "normal"
+            loc_levels_div.innerHTML = '[&nbsp;' + lvl + '&nbsp;]' + loc_levels_div.id; // test: + loc_levels_div.id
+            loc_levels_div.style.display = 'none'; // hide initially
+            if (loc_levels_div.id === 'loc_1_level_1') {
+                loc_levels_div.style.display = 'inline-block'; // show Initially
+            }
+        }
+    }
+    
+    // update tracking array
+    current_location.loc_num_selected = 1;
+    current_location.lvl_num_selected = 1;
+    let first_loc = locationData.find(loc => loc.loc_num === current_location.lvl_num_selected);
+    current_location.max_levels = first_loc.level_data.length;
+    current_location.unlocked = 1.1;
+
+    add_click_event('loc_nav');
+    
     // initial location
-    handle_location('01_DARK_PLAINS', 1);
-    //handle_location('01_DARK_PLAINS', 2);
-    ////
-    //handle_location('01_DARK_PLAINS', 3);
+    //handle_location(1, 1);
 }
 
 // Setup location action
-export function handle_location(locId, levId) {
-    let location_container = document.getElementById('location_container');
-    let d_location = locationData.find(loc => loc.id === locId);
+export function handle_location(locNum, lvlNum) {
+
+    let d_location = locationData.find(loc => loc.loc_num === locNum);
     let enemy_levels_lbl = document.getElementById('enemy_levels_lbl');
     let enemy_levels = document.getElementById('enemy_levels');
+    let current_location = battleData[0];
+    current_location.unlocked = locNum + '.' + lvlNum;
 
-    // location label
-    let location_center = document.getElementById('location_center');
-    location_center.style.fontWeight = 'bold';
+// for testing
+let test_section = document.getElementById('test_section');
+let test_div = document.getElementById('test_div');
+if (!test_div) {
+    test_div = document.createElement('div');
+    test_div.id = 'test_div';
+    test_section.appendChild(test_div);
+}
+test_div.classList.add('normal');
 
-    // hide until last location [99]
-    let location_right = document.getElementById('location_right');
-    location_right.innerHTML = '';
-
-    // for testing
-    let start_battle_container = document.getElementById('start_battle_container');
-    let test_div = document.getElementById('test_div');
-    if (!test_div) {
-        test_div = document.createElement('div');
-        test_div.id = 'test_div';
-        start_battle_container.appendChild(test_div);
-    }
-    test_div.classList.add('normal');
-
-    // d_location data
-    d_location.level_selected = levId;
-    let current_level = d_location.level_data.find(lvl => lvl.id === d_location.level_selected);
-
-    let d_battle_location = battleData.find(bat => bat.id === 'location');
-
-    // get max levels
-    let max_level = d_location.level_data.length;
-    d_battle_location.max_level = max_level;
-
-    // setup element levels (initially) in loop based on levId
-    if (!d_location.first_run) {
-        for (let i = 1; i <= max_level; i++) {
-            let loc_levels_div = document.createElement('span');
-            enemy_levels.appendChild(loc_levels_div);
-            d_location.loc_levels = 'loc_' + d_location.id + '_level_' + i;
-            loc_levels_div.id = d_location.loc_levels;
-            loc_levels_div.classList.add('normal');  // Initially, set the class to "normal"
-            loc_levels_div.innerHTML = '[&nbsp;' + i + '&nbsp;]';
-            loc_levels_div.style.display = 'none'; // hide initially
-            if (levId === 1 && i === 1) {
-                loc_levels_div.style.display = 'inline-block';
-                loc_levels_div.classList.add('location_box_style');
-                loc_levels_div.classList.add('selected');
-            }
-            d_location.first_run = true;
-        }
-    }
-
-    let loc_levels_div = document.getElementById('loc_' + locId + '_level_' + levId);
+// add clixk events
+add_click_event('loc_nav');
 
 
 
 
-// FIX NEEDED to only add class to newest locationData.id '02_DARK_HIGHLANDS'
-    if (levId > 1 && levId === d_battle_location.loc_selected) {
-// Reset all levels to class "normal"
-let allLevels = enemy_levels.querySelectorAll('span');
-allLevels.forEach(lvl => {
-    lvl.classList.remove('selected');
-    lvl.classList.remove('location_box_style');
-    lvl.classList.add('normal');
-});
-        //loc_levels_div.classList.remove('location_box_style');
-        // show function called levels only
-        let this_level_id = 'loc_' + locId + '_level_' + levId;
-        if (this_level_id) {
-            loc_levels_div.style.display = 'inline-block';
-        }
-
-    }
-
-test_div.innerHTML = 'init...loc id:&nbsp;' + locId + '&nbsp;loc_num:&nbsp;' + d_location.loc_num + '&nbsp;level:&nbsp;' + levId;
-    // Add event listener
-    loc_levels_div.addEventListener("click", function () {
-        // If the element is already selected, do nothing
-        if (this.classList.contains('selected')) {
-            return;
-        }
-
-        // Reset all levels to class "normal"
-        let allLevels = enemy_levels.querySelectorAll('span');
-        allLevels.forEach(lvl => {
-            lvl.classList.remove('selected');
-            lvl.classList.remove('location_box_style');
-            lvl.classList.add('normal');
-        });
-
-        // Set the clicked level to class "selected"
-        this.classList.remove('normal');
-        this.classList.add('selected');
-
-d_battle_location.loc_selected = locId;
-d_battle_location.loc_num_selected = d_location.loc_num;
-d_battle_location.level_selected = levId;
-
-test_div.innerHTML = 'clicked...loc id:&nbsp;' + d_battle_location.loc_selected + '&nbsp;loc_num:&nbsp;' + d_battle_location.loc_num_selected + '&nbsp;level:&nbsp;' + d_battle_location.level_selected;
 
 
-//console.log('LOC: ' + d_battle_location.loc_selected +'num: ' + d_battle_location.loc_num_selected);
-//console.log('level: ' + d_battle_location.level_selected);
 
 
-        ////
-
-        // needs to be added to data
-        // if x enemy defeated -> total_levels = 2 (unlocks next +1 current_level)
-        //test_div.innerHTML = 'level:&nbsp;' + d_location.current_level;
-
-    });
 
 /*
-    for (let i = 0; i < locationData.length; i++) {
-        const this_location = locationData[i];
+            for (let lvl = 1; lvl <= current_location.max_levels; lvl++) {
+                //console.log('loc_' + i + '_level_' + lvl);
+            }
 
-        for (let level = 1; level <= this_location.total_levels; level++) {
-            d_location.loc_levels = 'loc_' + this_location.id + '_level_' + level;
 
-            let loc_levels_div = document.createElement('span');
-            enemy_levels.appendChild(loc_levels_div);
-            loc_levels_div.id = d_location.loc_levels;
-            loc_levels_div.classList.add('normal');  // Initially, set the class to "normal"
-            loc_levels_div.style.display = 'none'; // hide initially
+            // show PREVOUS location CLICK
+            location_left.addEventListener("click", function () {
+                if (d_prev_location) {
+                    toggleElement('h', 'loc_div_' + d_all_locations.id);
+                    toggleElement('sib', 'loc_div_' + d_prev_location.id);
+                }
+            });
 
-            // initial location is 1
-            if (d_location.loc_num === 1 && loc_levels_div.id === 'loc_' + locId + '_level_' + level) {
-                if (loc_levels_div.id === 'loc_' + locId + '_level_' + levId) {
-                    loc_levels_div.style.display = 'inline-block';
-                    if (!d_location.init) {
-                        loc_levels_div.classList.remove('normal');
-                        loc_levels_div.classList.add('selected');
-                        d_location.init = true;
-                        test_div.innerHTML = 'first...loc id:&nbsp;' + locId + '&nbsp;level:&nbsp;' + level;
+
+    let loc_levels_div = document.getElementById('loc_' + locNum + '_level_' + lvlNum);
+
+    let this_level_id = 'loc_' + locNum + '_level_' + lvlNum;
+    if (this_level_id && loc_levels_div) {
+        loc_levels_div.style.display = 'inline-block';
+    }
+
+test_div.innerHTML = 'init...loc_num:&nbsp;' + d_location.loc_num + '&nbsp;level:&nbsp;' + lvlNum;
+
+    // Add event listener
+    if (loc_levels_div) {
+        loc_levels_div.addEventListener("click", function () {
+            // If the element is already selected, do nothing
+            if (this.classList.contains('selected')) {
+                return;
+            }
+            
+            // Reset all levels to class "normal"
+            let allLevels = enemy_levels.querySelectorAll('span');
+            allLevels.forEach(lvl => {
+                lvl.classList.remove('selected');
+                lvl.classList.remove('location_box_style');
+                lvl.classList.add('normal');
+            });
+    
+            // Set the clicked level to class "selected"
+            this.classList.remove('normal');
+            this.classList.add('selected');
+            enemy_levels_lbl.classList.add('location_box_style');
+    
+            // set to selected values
+            current_location.loc_num_selected = locNum;
+            current_location.level_selected = lvlNum;
+
+test_div.innerHTML = 'clicked...loc_num:&nbsp;' + current_location.loc_num_selected + '&nbsp;level:&nbsp;' + current_location.level_selected;
+
+        });
+    }*/
+}
+
+// for nav click events
+// add_click_event('loc_nav');
+export function add_click_event(clickId) {
+
+    // loc_nav
+    if (clickId === 'loc_nav') {
+
+    let current_location = battleData[0];
+
+
+
+
+
+
+
+
+
+/*
+for (let i = 1; i <= locationData.length; i++) {
+    let d_current_location = locationData.find(loc => loc.loc_num === i);
+    let d_next_location = locationData.find(loc => loc.loc_num === i + 1);
+    let d_prev_location = locationData.find(loc => loc.loc_num === i - 1);
+    if (i === 1) {
+        d_prev_location = 'no';
+    }
+    
+    let location_right = document.getElementById('location_right_' + i);
+    let loc_levels_container = document.getElementById('loc_' + i + '_lvls_container');
+    // show NEXT location CLICK
+    location_right.addEventListener("click", function () {
+        if (d_next_location) {
+            toggleElement('h', 'location_div_' + d_current_location.loc_num);
+            toggleElement('sib', 'location_div_' + d_next_location.loc_num);
+            if (loc_levels_container.id === 'loc_' + d_current_location.loc_num + '_lvls_container') {
+                loc_levels_container.style.display = 'none';
+            }
+            if (loc_levels_container.id === 'loc_' + d_next_location.loc_num + '_lvls_container') {
+                loc_levels_container.style.display = 'inline-block';
+                let current_location = battleData[0];
+                for (let lvl = 1; lvl <= current_location.max_level; lvl++) {
+                    let loc_levels_div = document.getElementById('loc_' + i + '_level_' + lvl);
+                    if (current_location.unlocked === 1.1) {
+                        loc_levels_div.style.display = 'inline-block';
+                    }
+                }
+  
+            }
+            ////
+            // if unlocked: loc_levels_div.classList.add('unlocked');
+
+            //loc_levels_container.id = 'loc_' + i + '_lvls_container';
+            //let loc_levels_container =
+
+        }
+    });
+    
+    let location_left = document.getElementById('location_left_' + i);
+    // show PREVIOUS location CLICK
+    location_left.addEventListener("click", function () {
+        if (d_prev_location) {
+            toggleElement('h', 'location_div_' + d_current_location.loc_num);
+            toggleElement('sib', 'location_div_' + d_prev_location.loc_num);
+            if (loc_levels_container.id === 'loc_' + d_current_location.loc_num + '_lvls_container') {
+                loc_levels_container.style.display = 'none';
+            //}
+
+            //if (loc_levels_container.id === 'loc_' + d_prev_location.loc_num + '_lvls_container') {
+                //loc_levels_container.style.display = 'inline-block';
+                let current_location = battleData[0];
+                for (let lvl = 1; lvl <= current_location.max_levels; lvl++) {
+                    let loc_levels_div = document.getElementById('loc_' + d_prev_location.loc_num + '_level_' + lvl);
+                    if (loc_levels_div.classList.contains('unlocked')) {
+                        loc_levels_div.style.display = 'block';
                     }
                 }
             }
-
-            let loc_levels_num = d_location.loc_levels.replace('loc_' + locId + '_level_', '');
-            loc_levels_div.innerHTML = '&nbsp;[&nbsp;' + loc_levels_num + '&nbsp;]&nbsp;';
-
-            // Add event listener
-            loc_levels_div.addEventListener("click", function () {
-                // If the element is already selected, do nothing
-                if (this.classList.contains('selected')) {
-                    return;
-                }
-
-                // Reset all levels to class "normal"
-                let allLevels = enemy_levels.querySelectorAll('span');
-                allLevels.forEach(lvl => {
-                    lvl.classList.remove('selected');
-                    lvl.classList.add('normal');
-                });
-
-                // Set the clicked level to class "selected"
-                this.classList.remove('normal');
-                this.classList.add('selected');
-
-                test_div.innerHTML = 'clicked...loc id:&nbsp;' + locId + '&nbsp;level:&nbsp;' + loc_levels_num;
-                // Extracted current level
-                ////
-                d_location.curr_loc_levels_num = loc_levels_num;
-                console.log(d_location.curr_loc_levels_num);
-
-                / *
-                let enemy_counter_lvl_1 = document.getElementById('enemy_counter_lvl_1');
-                if (enemy_counter_lvl_1 && d_location.level_num !== 1) {
-                    let d_enemy_health_cnt = elementsData.find(char => char.id === 'enemy_health_cnt');
-                    d_location.enemy_counter_inner = 'Level [ 1 ] Enemies Defeated:&nbsp;' + d_enemy_health_cnt.defeated_count;
-                    d_location.enemy_counter_inner_css = 'location_eme_cnt';
-                    d_location.enemy_counter_inner_css2 = 'center';
-                    enemy_counter_lvl_1.innerHTML = '';
-                } else if (enemy_counter_lvl_1) {
-                    enemy_counter_lvl_1.innerHTML = d_location.enemy_counter_inner;
-                }* /
-
-                // needs to be added to data
-                // if x enemy defeated -> total_levels = 2 (unlocks next +1 current_level)
-                //test_div.innerHTML = 'level:&nbsp;' + d_location.current_level;
-
-            });
+            ////
         }
-    }*/
+    });
+}*/
+
+
+////
+    }
 }
+

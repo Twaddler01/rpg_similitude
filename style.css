@@ -72,38 +72,46 @@ body {
     background-color: red; /* Color of the filled portion */
     width: 100%; /* Initially full width */
 }
+.hide {
+    visibility: hidden;
+}
+.show {
+    visibility: visible;
+}
 .location_box_style {
-    font-size: 24px;
+    font-size: 18px;
     background-color: #333;
     color: #00FFFF;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.location_box_style_20_left {
+    font-size: 24px;
+    width: 20%;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.location_box_style_20_right {
+    font-size: 24px;
+    width: 20%;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.location_box_style_60 {
+    font-size: 24px;
+    width: 60%;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    display: inline-block;
 }
 .location_eme_cnt {
     font-weight: normal;
     font-size: 18px;
     background-color: #333;
     color: lightgreen;
-}
-.location_box_style_20_left {
-    width: 20%;
-    text-align: left;
-    padding-top: 20px;
-    padding-bottom: 20px;
-}
-.location_box_style_20_right {
-    font-size: 24px;
-    width: 20%;
-    text-align: right;
-    padding-top: 20px;
-    padding-bottom: 20px;
-}
-.location_box_style_60 {
-    font-size: 24px;
-    width: 60%;
-    text-align: center;
-    padding-top: 20px;
-    padding-bottom: 20px;
 }
 .enemy_levels_style_30_left {
     width: 30%;

@@ -41,9 +41,9 @@ export function init_elementsData() {
                 fetch_cat: true,
                 type: 'div',
                 parent_el: 'battle_section_container',
-                css_class: 'box',
-                css_class2: 'normal',
+                css_class: 'location_box_style',
                 },
+                    /* // see handle_location()
                     // attach (location_container)
                     { id: 'location_left',
                     section_cat: true,
@@ -73,7 +73,7 @@ export function init_elementsData() {
                     content: '>>&nbsp;&nbsp;',
                     css_class: 'location_box_style_20_right',
                     css_class2: 'location_box_style',
-                    },
+                    }, */
             // attach (battle_section_container)
             { id: 'start_battle_container',
             section_cat: true,
@@ -99,69 +99,15 @@ export function init_elementsData() {
                     content: '<b>LEVEL:</b>&nbsp;',
                     css_class: 'location_box_style',
                     },
+                    
+                    /* // see handle_location()
                     // attach (enemy_levels)
-                    { id: 'enemy_levels_1',
-                    section_cat: true,
-                    fetch_cat: true,
+                    { id: 'loc_' + i + '_lvls_container',
                     type: 'span',
                     parent_el: 'enemy_levels',
                     //content: '[ 1 ]',
                     css_class: 'enemy_levels_style_10',
-                    },
-                    // attach (enemy_levels)
-                    { id: 'enemy_levels_2',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'span',
-                    parent_el: 'enemy_levels',
-                    //content: '[ 2 ]',
-                    css_class: 'enemy_levels_style_10',
-                    },
-                    // attach (enemy_levels)
-                    { id: 'enemy_levels_3',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'span',
-                    parent_el: 'enemy_levels',
-                    //content: '[ 3 ]',
-                    css_class: 'enemy_levels_style_10',
-                    },
-                    // attach (enemy_levels)
-                    { id: 'enemy_levels_4',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'span',
-                    parent_el: 'enemy_levels',
-                    //content: '[ 4 ]',
-                    css_class: 'enemy_levels_style_10',
-                    },
-                    // attach (enemy_levels)
-                    { id: 'enemy_levels_5',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'span',
-                    parent_el: 'enemy_levels',
-                    //content: '[ 5 ]',
-                    css_class: 'enemy_levels_style_10',
-                    },
-                    // attach (enemy_levels)
-                    { id: 'enemy_levels_6',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'span',
-                    parent_el: 'enemy_levels',
-                    //content: '[ 6 ]',
-                    css_class: 'enemy_levels_style_10',
-                    },
-                    // attach (enemy_levels)
-                    { id: 'enemy_levels_7',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'span',
-                    parent_el: 'enemy_levels',
-                    //content: '[ 7 ]',
-                    css_class: 'enemy_levels_style_10',
-                    },
+                    },*/
                 ////
                 // attach (start_battle_container)
                 { id: 'enemy_counter_div',
@@ -179,7 +125,7 @@ export function init_elementsData() {
                 fetch_cat: true,
                 type: 'div',
                 parent_el: 'start_battle_container',
-                content: '<b>[ START BATTLE ]</b>',
+                content: '<b><font style="font-size: 24px;">[ START BATTLE ]</font></b>',
                 css_class: 'location_box_style',
                 css_class2: 'center',
                 on_click: true, // click event
@@ -190,7 +136,7 @@ export function init_elementsData() {
             fetch_cat: true,
             type: 'div',
             parent_el: 'battle_section_container',
-            content: '[ ATTACK ]',
+            content: '<b><font style="font-size: 24px;">[ ATTACK ]</font></b>',
             css_class: 'location_box_style',
             css_class2: 'center',
             hidden: true,
@@ -363,6 +309,15 @@ export function init_elementsData() {
         },
 
         // section
+        { id: 'new_section',
+        section_cat: true,
+        type: 'div',
+        parent_el: 'body',
+        content: 'NEW Section',
+        css_class: 'h1_yellow_font',
+        },
+
+        // section
         { id: 'test_section',
         section_cat: true,
         type: 'div',
@@ -420,14 +375,13 @@ export function init_locationData() {
         kills_to_next_level: 3,
         //total_levels: 8,
         level_data: [
-          { id: 1, mult: 1.0, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 2, mult: 1.2, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 3, mult: 1.4, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 4, mult: 1.6, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 5, mult: 1.8, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 6, mult: 2.0, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 7, mult: 2.2, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 8, mult: 2.4, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 1, mult: 1.0, kills_to_next_level: 3 },
+          { id: 2, mult: 1.2, kills_to_next_level: 3 },
+          { id: 3, mult: 1.4, kills_to_next_level: 3 },
+          { id: 4, mult: 1.6, kills_to_next_level: 3 },
+          { id: 5, mult: 1.8, kills_to_next_level: 3 },
+          { id: 6, mult: 2.0, kills_to_next_level: 3 },
+          { id: 7, mult: 2.2, kills_to_next_level: 3 },
         ],
         level_mult: 1.2,
         enemy: 'enemy_group_1', // characterData.id ('enemy_group_1')
@@ -445,14 +399,15 @@ export function init_locationData() {
         kills_to_next_level: 3,
         //total_levels: 8,
         level_data: [
-          { id: 1, mult: 2.6, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 2, mult: 2.8, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 3, mult: 3.0, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 4, mult: 3.2, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 5, mult: 3.4, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 6, mult: 3.6, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 7, mult: 3.8, kills_to_next_level: 3, defeated_count: 0 },
-          { id: 8, mult: 4.0, kills_to_next_level: 3, defeated_count: 0 },
+          { id: 1, mult: 2.4, kills_to_next_level: 3 },
+          { id: 2, mult: 2.6, kills_to_next_level: 3 },
+          { id: 3, mult: 2.8, kills_to_next_level: 3 },
+          { id: 4, mult: 3.0, kills_to_next_level: 3 },
+          { id: 5, mult: 3.2, kills_to_next_level: 3 },
+          { id: 6, mult: 3.4, kills_to_next_level: 3 },
+          { id: 7, mult: 3.6, kills_to_next_level: 3 },
+          { id: 8, mult: 3.8, kills_to_next_level: 3 },
+          { id: 9, mult: 4.0, kills_to_next_level: 3 },
         ],
         level_mult: 1.2,
         hp_low: 20,
@@ -465,9 +420,18 @@ export function init_locationData() {
         level_num: 0,
         type: 'encounter',
         label: 'Dark Forest',
-        //level_id: 2,
         kills_to_next_level: 3,
-        total_levels: 8,
+        //total_levels: 8,
+        level_data: [
+          { id: 1, mult: 4.2, kills_to_next_level: 3 },
+          { id: 2, mult: 4.4, kills_to_next_level: 3 },
+          { id: 3, mult: 4.6, kills_to_next_level: 3 },
+          { id: 4, mult: 4.8, kills_to_next_level: 3 },
+          { id: 5, mult: 5.0, kills_to_next_level: 3 },
+          { id: 6, mult: 5.2, kills_to_next_level: 3 },
+          { id: 7, mult: 5.4, kills_to_next_level: 3 },
+          { id: 8, mult: 5.6, kills_to_next_level: 3 },
+        ],
         level_mult: 1.2,
         hp_low: 20,
         hp_high: 30,
@@ -502,10 +466,37 @@ export function init_battleData() {
 
     const battleData = [
         { id: 'location',
-        loc_selected: '01_DARK_PLAINS', // default
-        loc_num_selected: 1, // default
-        level_selected: 1, // default
-        max_level: 0, // set by handle_location()
+        // for tracking
+        loc_num_selected: 0, // temp??
+        lvl_num_selected: 0, // temp??
+        max_levels: 0, 
+        loc_unlocked: 1, // location
+        lvl_unlocked: 6, // level
+        /*kill_data: [
+          { id: 1.1, cnt: 0, unlocked: true },
+          { id: 1.2, cnt: 0 },
+          { id: 1.3, cnt: 0 },
+          { id: 1.4, cnt: 0 },
+          { id: 1.5, cnt: 0 },
+          { id: 1.6, cnt: 0 },
+          { id: 1.7, cnt: 0 },
+          { id: 1.8, cnt: 0 },
+          { id: 2.1, cnt: 0 },
+          { id: 2.2, cnt: 0 },
+          { id: 2.3, cnt: 0 },
+          { id: 2.4, cnt: 0 },
+          { id: 2.5, cnt: 0 },
+          { id: 2.6, cnt: 0 },
+          { id: 2.7, cnt: 0 },
+          { id: 2.8, cnt: 0 },
+          { id: 3.1, cnt: 0 },
+          { id: 3.2, cnt: 0 },
+          { id: 3.3, cnt: 0 },
+          { id: 3.4, cnt: 0 },
+          { id: 3.5, cnt: 0 },
+          { id: 3.6, cnt: 0 },
+          { id: 3.7, cnt: 0 },
+          { id: 3.8, cnt: 0 }, ],*/
         },
         // names
         { id: '01_names',
@@ -657,12 +648,65 @@ export function init_lootData() {
     return lootData;
 }
 
+export function init_gameState() {
+
+    const gameState = {
+        // for tracking
+        loc_num_selected: 0, ////
+        lvl_num_selected: 0, // temp??
+        loc_unlocked: 1, // default 1
+        lvl_unlocked: 1, // default 1
+        //max_level: locationData.level_data.length, 
+        /*loc_data: [ // forEach: gsLocData 
+            { loc: 1, lvl: 1, kills: 0 },
+            { loc: 1, lvl: 2, kills: 0 },
+            { loc: 1, lvl: 3, kills: 0 },
+            { loc: 1, lvl: 4, kills: 0 },
+            { loc: 1, lvl: 5, kills: 0 },
+            { loc: 1, lvl: 6, kills: 0 },
+            { loc: 1, lvl: 7, kills: 0 },
+            { loc: 1, lvl: 8, kills: 0 },
+            { loc: 2, lvl: 1, kills: 0 },
+            { loc: 2, lvl: 2, kills: 0 },
+            { loc: 2, lvl: 3, kills: 0 },
+            { loc: 2, lvl: 4, kills: 0 },
+            { loc: 2, lvl: 5, kills: 0 },
+            { loc: 2, lvl: 6, kills: 0 },
+            { loc: 2, lvl: 7, kills: 0 },
+            { loc: 2, lvl: 8, kills: 0 },
+            { loc: 3, lvl: 1, kills: 0 },
+            { loc: 3, lvl: 2, kills: 0 },
+            { loc: 3, lvl: 3, kills: 0 },
+            { loc: 3, lvl: 4, kills: 0 },
+            { loc: 3, lvl: 5, kills: 0 },
+            { loc: 3, lvl: 6, kills: 0 },
+            { loc: 3, lvl: 7, kills: 0 },
+            { loc: 3, lvl: 8, kills: 0 },
+          ],*/
+        };
+
+    return gameState;
+}
+
+/*export function init_gameState() {
+
+const gameState = {
+        currentLocation: 0, // Index of the current location in locationData
+        currentLevel: 0,    // Index of the current level in level_data
+        kills: 0,
+        unlockedLocations: 1,
+        unlockedLevels: [1] // Array to track levels unlocked per location
+    };
+    
+    return gameState;
+}*/
+
 export const elementsData = init_elementsData();
 export const battleData = init_battleData();
 export const characterData = init_characterData();
 export const inventoryData = init_inventoryData();
 export const lootData = init_lootData();
 export const locationData = init_locationData();
-
+export const gameState = init_gameState();
 
 //{ id: 'GATHER_TWIGS', costs: { 'TWIGS': 20, 'PEBBLES': 10 }, cost_type: 'res' },

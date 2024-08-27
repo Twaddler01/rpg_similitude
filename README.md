@@ -2,8 +2,10 @@
 # URL
 https://twaddler01.github.io/rpg_similitude/
 # Updates
+
 08-27-2024
 - New updates to locations. Working on 'previous' and 'next' buttons. Can "one shot" which will be a kill (in one click) and later be the main trigger from enemy deaths.
+
 08-24-2024
 - In midst of integrating game progression to be saved to local storage, which requires a much different design around a tracking array (in this case, 'saveData').
 - Temporarily moved some functions and variables being worked on to main.js for simplicity.

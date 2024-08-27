@@ -130,6 +130,14 @@ export function init_elementsData() {
                 css_class2: 'center',
                 on_click: true, // click event
                 },
+                { id: 'battle_message_div',
+                section_cat: true,
+                fetch_cat: true,
+                type: 'div',
+                parent_el: 'start_battle_container',
+                css_class: 'normal',
+                },
+                
             // attach (battle_section_container)
             { id: 'attack_box_button', // replaced by start_battle_button below
             section_cat: true,

@@ -180,19 +180,20 @@ const saveData = {
     location_maxed: false, // FUTURE: triggers when no more locations are added
     top_loc: 2, // default 1
     top_lvl: 3, // default 1
+    nav_page: 1, ////
     max_level: 0, 
     loc_data: [ 
         // ALL: kill_req_met: false
-        { loc: 1, lvl: 1, kills: 4 },
-        { loc: 1, lvl: 2, kills: 3 },
-        { loc: 1, lvl: 3, kills: 4 },
-        { loc: 1, lvl: 4, kills: 3 },
-        { loc: 1, lvl: 5, kills: 4 },
-        { loc: 1, lvl: 6, kills: 4 },
-        { loc: 1, lvl: 7, kills: 4 },
-        { loc: 1, lvl: 8, kills: 6 },
-        { loc: 2, lvl: 1, kills: 3 },
-        { loc: 2, lvl: 2, kills: 4 },
+        { loc: 1, lvl: 1, kills: 4, kill_req_met: true },
+        { loc: 1, lvl: 2, kills: 3, kill_req_met: true },
+        { loc: 1, lvl: 3, kills: 4, kill_req_met: true },
+        { loc: 1, lvl: 4, kills: 3, kill_req_met: true },
+        { loc: 1, lvl: 5, kills: 4, kill_req_met: true },
+        { loc: 1, lvl: 6, kills: 4, kill_req_met: true },
+        { loc: 1, lvl: 7, kills: 4, kill_req_met: true },
+        { loc: 1, lvl: 8, kills: 6, kill_req_met: true },
+        { loc: 2, lvl: 1, kills: 3, kill_req_met: true },
+        { loc: 2, lvl: 2, kills: 4, kill_req_met: true },
         { loc: 2, lvl: 3, kills: 0 },
         { loc: 2, lvl: 4, kills: 0 },
         { loc: 2, lvl: 5, kills: 0 },
@@ -206,6 +207,31 @@ const saveData = {
         { loc: 3, lvl: 6, kills: 0 },
     ],
 };
+
+var stored_loc_lvl = [];
+
+// returns status of each location requirement (location.completed)
+function locationKillReqMet() {
+
+    let saveData_loc_data = saveData.loc_data;
+    // Create an object to store the results for each location
+    const killReqMetStatus = {};
+    
+    saveData_loc_data.forEach(item => {
+        const loc = item.loc;
+    
+        // Initialize the status for each location if not already initialized
+        if (killReqMetStatus[loc] === undefined) {
+            killReqMetStatus[loc] = true;
+        }
+        // If any kill_req_met is false or not present, set the status to false
+        if (!item.kill_req_met) {
+            killReqMetStatus[loc] = false;
+        }
+    });
+    
+    return killReqMetStatus;
+}
 
 function update_loc_click(loc, lvl) {
 //update_loc_click(location.id, lvl)
@@ -226,7 +252,6 @@ function update_loc_click(loc, lvl) {
     }
 }
 
-
 function update_locations() {
 
     let location_container = document.getElementById('location_container');
@@ -236,21 +261,13 @@ function update_locations() {
 
     locData.forEach(location => {
 
-// check for prev completion
-if (!locData.prev_check)
-for (let lvl = 1; lvl <= location.level_data.length; lvl++) {
-    let this_level = location.level_data.find(l => l.id === lvl);
-    
-    if (saveData.top_loc > location.id) {
-        location.completed = true;
+        // flag all completed locations
+        const loc_done = locationKillReqMet();
         
-    } else {
-        location.completed = false;
-    }
-    locData.prev_check = true;
-    // all levels
-    console.log('1PREV COMPLETION CHECK ... location: ' + location.id + ' lvl: ' + this_level.id + ' / location.completed: ' + location.completed);
-}
+        if (loc_done[location.id]) {
+                console.log('location.completed = ' + location.id);
+                location.completed = true;
+        }
 
         if (location.id === saveData.top_loc && saveData.top_loc <= locData_max) {
 
@@ -269,7 +286,33 @@ for (let lvl = 1; lvl <= location.level_data.length; lvl++) {
             title_container.appendChild(title_left);
             title_left.id = location.title_left;
             title_left.innerHTML = '<<';
-            title_left.style.visibility = 'hidden';
+            // function ????
+            // show button on all except first nav_page
+            let prev_nav = location.id - 1;
+            let d_prev_loc = locData.find(l => l.id === prev_nav);
+            if (d_prev_loc && d_prev_loc.completed && prev_nav !== 0) {
+                title_left.style.visibility = 'visible';
+                title_left.addEventListener('click', () => {
+                    saveData.nav_page = parseInt(title_left.id.replace('title_left_', ''), 10);
+                    saveData.nav_page -= 1;
+                
+if (!location.completed) {
+                    if (stored_loc_lvl.length === 0) {
+                        stored_loc_lvl.push({ loc: saveData.top_loc, lvl: saveData.top_lvl });
+                    } else {
+                        stored_loc_lvl[0] = { loc: saveData.top_loc, lvl: saveData.top_lvl };
+                    }
+                    //console.log('prev_nav: ' + JSON.stringify(stored_loc_lvl[0]));
+}
+
+                    saveData.top_loc = saveData.nav_page;
+                    let d_prev_lvl_max = locData[prev_nav - 1].level_data.length;
+                    saveData.top_lvl = d_prev_lvl_max;
+                    update_locations();
+                });
+            } else {
+                title_left.style.visibility = 'hidden';
+            }
 
             let title_center = document.createElement('span');
             title_container.appendChild(title_center);
@@ -279,15 +322,47 @@ for (let lvl = 1; lvl <= location.level_data.length; lvl++) {
             title_container.appendChild(title_right);
             title_right.id = location.title_right;
             title_right.innerHTML = '>>';
-            if (location.completed && saveData.top_loc !== (locData_max - 1)) {
+            // function ????
+            // show button on all except last nav_page
+            let next_nav = location.id + 1;
+            let d_next_loc = locData.find(l => l.id === next_nav);
+
+            if (d_next_loc && location.completed && saveData.top_loc !== locData_max) {
                 title_right.style.visibility = 'visible';
-                //title_right.addEventListener('click', () => {
-                    //
-                //});
+                title_right.addEventListener('click', () => {
+                    
+                    saveData.nav_page = parseInt(title_left.id.replace('title_left_', ''), 10);
+                    saveData.nav_page += 1;
+                    //console.log('nav_page: ' + saveData.nav_page)
+                    //console.log('next_nav' + JSON.stringify(stored_loc_lvl[0]));
+if (!d_next_loc.completed) {
+                    saveData.top_loc = stored_loc_lvl[0].loc;
+                    saveData.top_lvl = stored_loc_lvl[0].lvl;
+                    update_locations();
+} else {
+    //saveData.top_loc += 1 and set max level
+    saveData.top_loc += 1;
+    saveData.top_lvl = d_next_loc.level_data.length;
+    console.log('top_lvl: ' + d_next_loc.level_data.length);
+    update_locations();
+    // occasionaly wrong if newly unlocked loc not clicked
+}
+
+
+
+
+                });
             } else {
                 title_right.style.visibility = 'hidden';
             }
 
+
+
+
+
+
+
+// WIP ******* 
             // comtainer for levels
             let loc_lvl_div = document.createElement('div');
             loc_container.appendChild(loc_lvl_div);
@@ -328,35 +403,13 @@ for (let lvl = 1; lvl <= location.level_data.length; lvl++) {
                                     location.completed = true;
                                     saveData.top_loc += 1;
                                     saveData.next_loc = true;
-                                    console.log('next location ... ' + saveData.top_loc);
+                                    //console.log('next location ... ' + saveData.top_loc);
                                     update_locations();
                                 }
                             });
                         }
                     }
                 }
-// WIP ****************** move <----
-                /*saveData.prev_loc = false;
-                if (saveData.top_loc > 1) {
-                    title_left.style.visibility = 'visible';
-                    title_left.addEventListener('click', () =>  {
-                        if (!saveData.prev_loc) {
-                            let prev_top_loc = saveData.top_loc - 1;
-                            let d_prev_top_loc = locData.find(l => l.id === prev_top_loc);
-                            let prev_top_lvl = locData[prev_top_loc - 1].level_data.length;
-                            saveData.top_loc = prev_top_loc;
-                            saveData.top_lvl = prev_top_lvl;
-                            update_locations();
-                            if (d_prev_top_loc.completed) {
-                                console.log('d_prev_top_loc.completed');
-                                let title_right = document.getElementById('title_right_' + prev_top_loc);
-                                title_right.style.visibility = 'visible';
-                            }
-                            saveData.prev_loc = true;
-                            
-                        }
-                    });
-                }*/
             }
         }
         
@@ -393,7 +446,7 @@ function addKill(loc, lvl) {
             update_loc_click(loc, lvl);
             //console.log(`Location: ${save_loc.loc}, Level: ${save_loc.lvl}, Kills: ${save_loc.kills}`);
             const locData_level_data_id = locData_level_data.find(l => l.id === save_loc.loc);
-            if (save_loc.kills === locData_level_data_id.kills_req) {
+            if (!save_loc.kill_req_met && save_loc.kills >= locData_level_data_id.kills_req) {
                 save_loc.kill_req_met = true;
                 const last_location = locData[locData.length - 1];
                 if (saveData.top_loc <= last_location.id) {

@@ -78,6 +78,12 @@ body {
 .show {
     visibility: visible;
 }
+.green_border_on {
+    border: 5px solid green;
+}
+.green_border_off {
+    border: 5px solid black;
+}
 .location_box_style {
     font-size: 18px;
     background-color: #333;

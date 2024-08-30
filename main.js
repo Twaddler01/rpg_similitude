@@ -105,417 +105,434 @@ functions.add_allElements();
 // location elements
 //functions.setup_location() (SEE update_locations())
 
-const locData = [
-    //
-    { id: 1, 
-    label: 'Dark Plains', 
-    //completed: false, 
-    level_data: [
-        { id: 1, kills_req: 3 }, // default: 3 for all
-        { id: 2, kills_req: 3 },
-        { id: 3, kills_req: 3 },
-        { id: 4, kills_req: 3 },
-        { id: 5, kills_req: 3 },
-        { id: 6, kills_req: 3 },
-        { id: 7, kills_req: 3 },
-        { id: 8, kills_req: 3 },
-    ],
-    level_mult: 0.2, 
-    enemy: 'enemy_group_1', // characterData.id ('enemy_group_1')
-    }, 
-    //
-    { id: 2, 
-    label: 'Dark Highlands', 
-    //completed: false, 
-    level_data: [
-        { id: 1, kills_req: 2 },
-        { id: 2, kills_req: 2 },
-        { id: 3, kills_req: 2 },
-        { id: 4, kills_req: 2 },
-        { id: 5, kills_req: 2 },
-        { id: 6, kills_req: 2 },
-        { id: 7, kills_req: 2 },
-    ], 
-    level_mult: 0.2, 
-    enemy: null, 
-    }, 
-    //
-    { id: 3, 
-    label: 'Dark Forest', 
-    //completed: false, 
-    level_data: [
-        { id: 1, kills_req: 4 },
-        { id: 2, kills_req: 4 },
-        { id: 3, kills_req: 4 },
-        { id: 4, kills_req: 4 },
-        { id: 5, kills_req: 4 },
-        { id: 6, kills_req: 4 },
-    ], 
-    level_mult: 0.2, 
-    enemy: null, 
-    }, 
+// **** globals ****
+
+const locationsData = [
+    // locationsData[i].kill_req_met: true/false
+
+    { loc: 1, lbl: 'Dark Plains', lvl: 1, kills_req: 3,
+    img: 'media/img_loc_1.jpg', }, // l = 0
+    { loc: 1, lbl: 'Dark Plains', lvl: 2, kills_req: 3 },
+    { loc: 1, lbl: 'Dark Plains', lvl: 3, kills_req: 3 },
+    { loc: 1, lbl: 'Dark Plains', lvl: 4, kills_req: 3 },
+    { loc: 1, lbl: 'Dark Plains', lvl: 5, kills_req: 3 },
+    { loc: 1, lbl: 'Dark Plains', lvl: 6, kills_req: 3 },
+    { loc: 1, lbl: 'Dark Plains', lvl: 7, kills_req: 3 },
+    { loc: 1, lbl: 'Dark Plains', lvl: 8, kills_req: 3 },
+
+    { loc: 2, lbl: 'Dark Highlands', lvl: 1, kills_req: 3,
+    img: 'media/img_loc_2.jpg', },
+    { loc: 2, lbl: 'Dark Highlands', lvl: 2, kills_req: 3 },
+    { loc: 2, lbl: 'Dark Highlands', lvl: 3, kills_req: 3 }, // l = 10
+    { loc: 2, lbl: 'Dark Highlands', lvl: 4, kills_req: 3 },
+
+    { loc: 3, lbl: 'Dark Forest', lvl: 1, kills_req: 3,
+    img: 'media/img_loc_3.jpg', },
+    { loc: 3, lbl: 'Dark Forest', lvl: 2, kills_req: 3 },
+    { loc: 3, lbl: 'Dark Forest', lvl: 3, kills_req: 3 }, // max = 14
+
+    { loc: 4, lbl: 'END', lvl: 3, kills_req: 99 }, // placeholder
 ];
-for (let i = 0; i < locData.length; i++) {
-    const locDataIndex = locData[i];
-    const locDataUpdates = {};
-    // element ids
-    locDataIndex.loc_container = 'loc_container_' + locDataIndex.id;
-    locDataIndex.title_left = 'title_left_' + locDataIndex.id;
-    locDataIndex.title_center = 'title_center_' + locDataIndex.id;
-    locDataIndex.title_right = 'title_right_' + locDataIndex.id;
-    locDataIndex.loc_lvl_div = 'loc_lvl_div_' + locDataIndex.id;
-    locDataIndex.title_container = 'title_container_' + locDataIndex.id;
-    // LEVELS (lvl): loc_lvl_span.id = 'loc_' + locDataIndex.id + '_lvl_' + lvl + '_span';
 
-    // variables
+// **** multiple scenarios ****
 
-    // Assign updates to locData
-    Object.assign(locDataUpdates, locDataIndex);
-}
+// mid setup
+const saveData = [
+    { kills: 4 }, // l = 0
+    { kills: 3 },
+    { kills: 4 },
+    { kills: 3 },
+    { kills: 4 },
+    { kills: 4 },
+    { kills: 4 },
+    { kills: 6 },
+    { kills: 3 },
+    { kills: 4 },
+    { kills: 0 }, // l = 10
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 }, // max = 14
+    { kills: 0 }, // placeholder
+];
 
-const saveData = {
-    // lvl_selected: false
-    active_loc: 0, // reset each run
-    active_lvl: 0, // reset each run
-    location_maxed: false, // FUTURE: triggers when no more locations are added
-    top_loc: 2, // default 1
-    top_lvl: 3, // default 1
-    nav_page: 1, ////
-    max_level: 0, 
-    loc_data: [ 
-        // ALL: kill_req_met: false
-        { loc: 1, lvl: 1, kills: 4, kill_req_met: true },
-        { loc: 1, lvl: 2, kills: 3, kill_req_met: true },
-        { loc: 1, lvl: 3, kills: 4, kill_req_met: true },
-        { loc: 1, lvl: 4, kills: 3, kill_req_met: true },
-        { loc: 1, lvl: 5, kills: 4, kill_req_met: true },
-        { loc: 1, lvl: 6, kills: 4, kill_req_met: true },
-        { loc: 1, lvl: 7, kills: 4, kill_req_met: true },
-        { loc: 1, lvl: 8, kills: 6, kill_req_met: true },
-        { loc: 2, lvl: 1, kills: 3, kill_req_met: true },
-        { loc: 2, lvl: 2, kills: 4, kill_req_met: true },
-        { loc: 2, lvl: 3, kills: 0 },
-        { loc: 2, lvl: 4, kills: 0 },
-        { loc: 2, lvl: 5, kills: 0 },
-        { loc: 2, lvl: 6, kills: 0 },
-        { loc: 2, lvl: 7, kills: 0 },
-        { loc: 3, lvl: 1, kills: 0 },
-        { loc: 3, lvl: 2, kills: 0 },
-        { loc: 3, lvl: 3, kills: 0 },
-        { loc: 3, lvl: 4, kills: 0 },
-        { loc: 3, lvl: 5, kills: 0 },
-        { loc: 3, lvl: 6, kills: 0 },
-    ],
-};
-
-var stored_loc_lvl = [];
-
-// returns status of each location requirement (location.completed)
-function locationKillReqMet() {
-
-    let saveData_loc_data = saveData.loc_data;
-    // Create an object to store the results for each location
-    const killReqMetStatus = {};
-    
-    saveData_loc_data.forEach(item => {
-        const loc = item.loc;
-    
-        // Initialize the status for each location if not already initialized
-        if (killReqMetStatus[loc] === undefined) {
-            killReqMetStatus[loc] = true;
-        }
-        // If any kill_req_met is false or not present, set the status to false
-        if (!item.kill_req_met) {
-            killReqMetStatus[loc] = false;
-        }
-    });
-    
-    return killReqMetStatus;
-}
-
-function update_loc_click(loc, lvl) {
-//update_loc_click(location.id, lvl)
-// function // -->
-    saveData.active_loc = loc;
-    saveData.active_lvl = lvl;
-    saveData.lvl_selected = true;
-    let d_location = locData.find(l => l.id === saveData.active_loc);
-    let d_active_lvl = saveData.loc_data.find(l => l.loc === saveData.active_loc && l.lvl === saveData.active_lvl);
-
-    let battle_message_div = document.getElementById('battle_message_div');
-    if (battle_message_div) {
-        battle_message_div.style.color = 'lightgreen';
-        battle_message_div.innerHTML = 'You selected ' + d_location.label + ' (Level ' + saveData.active_lvl + ')';
-        if (d_active_lvl.kills > 0) {
-            battle_message_div.innerHTML += '<br>Current kills: ' + d_active_lvl.kills;
-        }
-    }
-}
-
-function update_locations() {
-
-    let location_container = document.getElementById('location_container');
-    location_container.innerHTML = '';
-    let saveData_loc_data = saveData.loc_data;
-    let locData_max = locData.length;
-
-    locData.forEach(location => {
-
-        // flag all completed locations
-        const loc_done = locationKillReqMet();
-        
-        if (loc_done[location.id]) {
-                console.log('location.completed = ' + location.id);
-                location.completed = true;
-        }
-
-        if (location.id === saveData.top_loc && saveData.top_loc <= locData_max) {
-
-            // containers
-            let loc_container = document.createElement('div');
-            location_container.appendChild(loc_container);
-            loc_container.id = location.loc_container;
-
-            // other elements
-            let title_container = document.createElement('div');
-            loc_container.appendChild(title_container);
-            title_container.id = location.title_container;
-            title_container.style.textAlign = 'center';
-
-            let title_left = document.createElement('button');
-            title_container.appendChild(title_left);
-            title_left.id = location.title_left;
-            title_left.innerHTML = '<<';
-            // function ????
-            // show button on all except first nav_page
-            let prev_nav = location.id - 1;
-            let d_prev_loc = locData.find(l => l.id === prev_nav);
-            if (d_prev_loc && d_prev_loc.completed && prev_nav !== 0) {
-                title_left.style.visibility = 'visible';
-                title_left.addEventListener('click', () => {
-                    saveData.nav_page = parseInt(title_left.id.replace('title_left_', ''), 10);
-                    saveData.nav_page -= 1;
-                
-if (!location.completed) {
-                    if (stored_loc_lvl.length === 0) {
-                        stored_loc_lvl.push({ loc: saveData.top_loc, lvl: saveData.top_lvl });
-                    } else {
-                        stored_loc_lvl[0] = { loc: saveData.top_loc, lvl: saveData.top_lvl };
-                    }
-                    //console.log('prev_nav: ' + JSON.stringify(stored_loc_lvl[0]));
-}
-
-                    saveData.top_loc = saveData.nav_page;
-                    let d_prev_lvl_max = locData[prev_nav - 1].level_data.length;
-                    saveData.top_lvl = d_prev_lvl_max;
-                    update_locations();
-                });
-            } else {
-                title_left.style.visibility = 'hidden';
-            }
-
-            let title_center = document.createElement('span');
-            title_container.appendChild(title_center);
-            title_center.id = location.center;
-
-            let title_right = document.createElement('button');
-            title_container.appendChild(title_right);
-            title_right.id = location.title_right;
-            title_right.innerHTML = '>>';
-            // function ????
-            // show button on all except last nav_page
-            let next_nav = location.id + 1;
-            let d_next_loc = locData.find(l => l.id === next_nav);
-
-            if (d_next_loc && location.completed && saveData.top_loc !== locData_max) {
-                title_right.style.visibility = 'visible';
-                title_right.addEventListener('click', () => {
-                    
-                    saveData.nav_page = parseInt(title_left.id.replace('title_left_', ''), 10);
-                    saveData.nav_page += 1;
-                    //console.log('nav_page: ' + saveData.nav_page)
-                    //console.log('next_nav' + JSON.stringify(stored_loc_lvl[0]));
-if (!d_next_loc.completed) {
-                    saveData.top_loc = stored_loc_lvl[0].loc;
-                    saveData.top_lvl = stored_loc_lvl[0].lvl;
-                    update_locations();
-} else {
-    //saveData.top_loc += 1 and set max level
-    saveData.top_loc += 1;
-    saveData.top_lvl = d_next_loc.level_data.length;
-    console.log('top_lvl: ' + d_next_loc.level_data.length);
-    update_locations();
-    // occasionaly wrong if newly unlocked loc not clicked
-}
-
-
-
-
-                });
-            } else {
-                title_right.style.visibility = 'hidden';
-            }
-
-
-
-
-
-
-
-// WIP ******* 
-            // comtainer for levels
-            let loc_lvl_div = document.createElement('div');
-            loc_container.appendChild(loc_lvl_div);
-            loc_lvl_div.id = location.loc_lvl_div;
-            loc_lvl_div.style.textAlign = 'center';
-    
-            // levels
-            for (let lvl = 1; lvl <= location.level_data.length; lvl++) {
-                // location and level is unlocked
-                if (location.id === saveData.top_loc) {
-                    if (lvl <= saveData.top_lvl) {
-                        title_center.innerHTML = '&nbsp;&nbsp;' + location.label + location.id + '&nbsp;&nbsp;';
-                        let loc_lvl_span = document.createElement('span');
-                        loc_lvl_div.appendChild(loc_lvl_span);
-                        loc_lvl_span.id = 'loc_' + location.id + '_lvl_' + lvl + '_span';
-                        loc_lvl_span.innerHTML = '[ ' + lvl + ' ] ' + loc_lvl_span.id;
-                        // append label to first lvl of each location
-                        if (loc_lvl_span.id === 'loc_' + location.id + '_lvl_1_span') {
-                            loc_lvl_span.innerHTML = '<b>LEVEL:</b>&nbsp;' + '[ 1 ] ' + loc_lvl_span.id;
-                        }
-                        //// add click events
-                        loc_lvl_span.addEventListener('click', () => {
-                            update_loc_click(location.id, lvl);
-                            update_locations();
-                        });
-                    } 
-                    if (saveData.top_lvl > location.level_data.length) {
-
-                        let loc_lvl_span_id = document.getElementById('loc_' + location.id + '_lvl_' + lvl + '_span');
-                        saveData.next_loc = false;
-                        
-                        if (loc_lvl_span_id && saveData.top_loc <= (locData_max - 1)) {
-                            title_right.style.visibility = 'visible';
-
-                            title_right.addEventListener('click', () => {
-                                if (!saveData.next_loc) {
-                                    saveData.top_lvl = 1;
-                                    location.completed = true;
-                                    saveData.top_loc += 1;
-                                    saveData.next_loc = true;
-                                    //console.log('next location ... ' + saveData.top_loc);
-                                    update_locations();
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        }
-        
-        // if top_loc greater than max
-        if (saveData.top_loc > locData_max) {
-            saveData.top_loc = locData_max;
-            saveData.top_lvl = location.level_data.length;
-            saveData.location_maxed = true;
-            update_locations();
-        }
-    });
-
-/* // ELEMENT TREE
-#location_container -- clear
-  #loc_container
-    #title_container -- clear
-      #title_left
-      #title_center
-      #title_right
-    #loc_lvl_div -- clear
-      #loc_lvl_span
+/*
+// new game
+const saveData = [
+    { kills: 0 }, 
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 },
+    { kills: 0 }, 
+];
 */
 
-}
+// always trackingData[0]
+const trackingData = [
+    { loc: 0 },
+    { lvl: 0 },
+];
 
-function addKill(loc, lvl) {
+const max_location = Math.max(...locationsData.map(loc => loc.loc));
 
-    const locData_level_data = locData[loc - 1].level_data;
-    let saveData_loc_data = saveData.loc_data;
-
-    saveData_loc_data.forEach(save_loc => {
-        if (save_loc.loc === loc && save_loc.lvl === lvl) {
-            save_loc.kills += 1;
-            update_loc_click(loc, lvl);
-            //console.log(`Location: ${save_loc.loc}, Level: ${save_loc.lvl}, Kills: ${save_loc.kills}`);
-            const locData_level_data_id = locData_level_data.find(l => l.id === save_loc.loc);
-            if (!save_loc.kill_req_met && save_loc.kills >= locData_level_data_id.kills_req) {
-                save_loc.kill_req_met = true;
-                const last_location = locData[locData.length - 1];
-                if (saveData.top_loc <= last_location.id) {
-                    saveData.top_lvl += 1;
-                    update_locations();
-                }
-            }
-        }
-    });
-    //update_locations();
-}
-
+// **** functions ****
 function first_run() {
 
     let test_section = document.getElementById('test_section');
 
-// add direct lvl increases
-    let add_lvl = document.createElement('button');
-    test_section.appendChild(add_lvl);
-    add_lvl.innerHTML = 'ADD +1 level';
-    add_lvl.addEventListener('click', () => {
-        
-        const last_location = locData[locData.length - 1];
+// main container
+    let location_container2 = document.createElement('div');
+    document.body.appendChild(location_container2);
+    location_container2.id = 'location_container2';
 
-        if (saveData.top_loc <= last_location.id) {
-            saveData.top_lvl += 1;
-            update_locations();
-        }
-        //console.log(`Location: ${saveData.top_loc}, Level: ${saveData.top_lvl}`);
-        
+// reset saveData
+    let reset = document.createElement('button');
+    test_section.appendChild(reset);
+    reset.innerHTML = 'RESET GAME';
+    reset.addEventListener('click', () => {
+        reset_game('test_section');
     });
 
+// add 1 kill instantly
+/*
+    // Create inputs for loc and lvl
+    let locInput = document.createElement('input');
+    locInput.type = 'number';
+    locInput.placeholder = 'Location (loc)';
+    test_section.appendChild(locInput);
+    
+    let lvlInput = document.createElement('input');
+    lvlInput.type = 'number';
+    lvlInput.placeholder = 'Level (lvl)';
+    test_section.appendChild(lvlInput);
+    
+    // Create the "Add +1 Kill" button
+    let add_kill = document.createElement('button');
+    add_kill.innerHTML = 'Add +1 Kill';
+    test_section.appendChild(add_kill);
 
-// add kill buttons
-    for (let loc = 1; loc <= locData.length; loc++) {
-        let location = locData.id;
-        let level_data = locData[loc - 1].level_data;
+    // Attach event listener to button
+    add_kill.addEventListener('click', () => {
+        const loc = parseInt(locInput.value, 10);
+        const lvl = parseInt(lvlInput.value, 10);
     
-        for (let lvl = 1; lvl <= level_data.length; lvl++) {
+        if (isNaN(loc) || isNaN(lvl)) {
+            alert('Please enter valid numbers for both location and level.');
+            return;
+        }
     
-            let addKillButton = document.createElement('button');
-            test_section.appendChild(addKillButton);
-            addKillButton.id = 'addKillButton_' + loc + '_' + lvl;
-            addKillButton.innerText = 'Add LOC' + loc + '_' + lvl + ' kill +1';
-            addKillButton.addEventListener('click', () => addKill(loc, lvl));
+        // Call addKill function with user inputs
+        addKill(loc, lvl);
+        update_locations();
+    });
+*/
+// add 1 kill instantly to selected level
+
+    let selected_kill = document.createElement('button');
+    test_section.appendChild(selected_kill);
+    selected_kill.innerHTML = '+1 Kill to Current Level';
+    
+    selected_kill.addEventListener('click', () => {
+        let message = document.getElementById('message');
+        
+        if (message) {
+            message.innerHTML = '';
+        }
+        if (trackingData[0].loc !== 0 && trackingData[0].lvl !== 0) {
+                locationsData.forEach((item, index) => {
+                    //console.log('trackingData[0].loc: ' + trackingData[0].loc);
+                    //console.log('locationsData.loc: ' + locationsData[index].loc);
+                    if (locationsData[index].loc === trackingData[0].loc && locationsData[index].lvl === trackingData[0].lvl) {
+                        //trackingData[0].loc
+                        saveData[index].kills += 1;
+                        // Update both arrays
+                        message.innerHTML = 'Added +1 kill to ' + locationsData[index].lbl + ' (Level ' + locationsData[index].lvl + ')';
+                        update_locations();
+                        selectLocation(locationsData[index].loc);
+                    }
+                });
+                
+        } else {
+            message.innerHTML = 'Please select an enemy level.';
+        }
+        //update_locations();
+    });
+}
+
+function update_locations() {
+
+    // Main containers
+    const location_container2 = document.getElementById('location_container2');
+
+    // Clear any existing elements
+    if (location_container2) {
+        location_container2.innerHTML = '';
+    }
+    
+    // Update array data
+    for (let i = 0; i < locationsData.length; i++) {
+        // Insert the kills data from saveData into the corresponding location in locationsData
+        locationsData[i].kills = saveData[i].kills;
+        
+        // Always set first level true
+        if (!locationsData[0].kill_req_met) {
+            locationsData[0].kill_req_met = true;
+        }
+        
+        // Update kill_req_met based on the kills of previous,level
+        // Ensure next index is set to true (if not at end of array) if previous index kills >= kills_req
+        if (i + 1 < locationsData.length) {
+            locationsData[i + 1].kill_req_met = locationsData[i].kills >= locationsData[i].kills_req;
+
+        }
+    }
+    //console.log(locationsData[0]);
+    //console.log(locationsData[1]);
+    //console.log(locationsData[2]);
+
+
+    // Create locations container
+    let locations = document.createElement('div');
+    location_container2.appendChild(locations);
+    locations.id = 'locations';
+    locations.style.display = 'flex';
+    
+    // Create levels container
+    let levels = document.createElement('div');
+    location_container2.appendChild(levels);
+    levels.id = 'levels';
+    
+    // Create location status container
+    let locations_status = document.createElement('div');
+    location_container2.appendChild(locations_status);
+    locations_status.id = 'locations_status';
+
+    const message = document.createElement('div');
+    test_section.appendChild(message);
+    message.id = 'message';
+    message.className = 'normal';
+
+    // Create and append location buttons
+    for (let i = 1; i <= max_location; i++) {
+        let loc_lvl1 = locationsData.find(l => l.loc === i && l.lvl === 1);
+        let loc = document.createElement('div');
+        loc.id = 'location_div_' + i;
+        // Auto select current location/level from trackingData if present
+        if (trackingData[0].loc !== 0) {
+            let fetched_loc = document.getElementById('location_div_' + trackingData[0].loc);
+            if (fetched_loc) {
+                fetched_loc.classList.remove('green_border_off');
+                fetched_loc.classList.add('green_border_on');
+            }
+        }
+        loc.classList.add('green_border_off');
+        let unlocked = isAnyLocationUnlocked(i);
+        //console.log(unlocked);
+        if (loc_lvl1 && unlocked) {
+            locations.appendChild(loc);
+            loc.innerHTML = loc_lvl1.lbl;
+            let loc_img = document.createElement('img');
+            loc.appendChild(loc_img);
+            loc_img.style.width = '100px';
+            loc_img.style.height = 'auto';
+            loc_img.src = loc_lvl1.img;
+            let loc_levels = document.createElement('div');
+            levels.appendChild(loc_levels);
+            loc_levels.id = 'loc_levels';
+            loc.addEventListener('click', () => {
+                // Clear all green borders
+                for (let all = 1; all <= max_location; all++) {
+                    let DOM_all_loc_div = document.getElementById('location_div_' + all);
+                    if (DOM_all_loc_div) {
+                        DOM_all_loc_div.classList.remove('green_border_on');
+                        DOM_all_loc_div.classList.add('green_border_off');
+                    }
+                }
+                // Add green border to clicked element
+                loc.classList.remove('green_border_off');
+                loc.classList.add('green_border_on');
+                // WIP need a var for adding a kill without selecting a location
+                selectLocation(i);
+          
+            });
         }
     }
 }
 
-// add one shot kill button to active location
-    let one_shot = document.createElement('button');
-    test_section.appendChild(one_shot);
-    one_shot.innerHTML = 'One Shot Kill';
-    one_shot.addEventListener('click', () => {
-        if (saveData.active_loc > 0 && saveData.active_lvl > 0) {
-            addKill(saveData.active_loc, saveData.active_lvl);
-            update_locations();
-        } else if (!saveData.lvl_selected) {
-            battle_message_div.style.color = 'red';
-            battle_message_div.innerHTML = 'Please select a location & level for battle.';
+function isAnyLocationUnlocked(loc) {
+    return locationsData
+        .filter(location => location.loc === loc)
+        .some(location => location.kill_req_met);
+}
+
+function isLocationFullyUnlocked(loc) {
+    return locationsData
+        .filter(location => location.loc === loc)
+        .every(location => location.kill_req_met);
+}
+// USAGE
+// for (let i = 1; i <= max_location; i++) {
+//    const fullyUnlocked = isLocationFullyUnlocked(i);
+//    console.log(`Location ${i} fully unlocked: ${fullyUnlocked}`);
+// }
+
+function selectLocation(location) {
+    const levelsContainer = document.getElementById('loc_levels');
+
+    // Clear previous levels if a new location is selected
+    levelsContainer.innerHTML = '';
+
+    trackingData[0].currentLocation = location;
+
+    if (trackingData[0].loc !== 0) {
+        trackingData[0].currentLocation = trackingData[0].loc;
+    }
+
+    // Filter levels based on the selected location and met kill requirements
+    const filteredLevels = locationsData.filter(loc => loc.loc === location && loc.kill_req_met);
+
+    // Display levels for the selected location
+    filteredLevels.forEach(level => {
+
+        const levelButton = document.createElement('button');
+        levelButton.innerHTML = `Level ${level.lvl}`;
+        
+        if (trackingData[0].loc === level.loc && trackingData[0].lvl === level.lvl) {
+            selectLevel(level.loc, level.lbl, level.lvl, level.kills);
+        } else {
+            levelButton.onclick = () => selectLevel(level.loc, level.lbl, level.lvl, level.kills);
+        }
+        levelsContainer.appendChild(levelButton);
+    });
+}
+
+function selectLevel(loc, location, lvl, kills) {
+    const locations_status = document.getElementById('locations_status');
+    const message = document.getElementById('message');
+    
+    message.innerHTML = '';
+    locations_status.innerHTML = `You selected ${location} Level ${lvl}`;
+    locations_status.innerHTML += `<br>Kills: ${kills}`;
+    // add to array
+    trackingData[0].loc = loc;
+    trackingData[0].location = location;
+    trackingData[0].lvl = lvl;
+    trackingData[0].kills = kills;
+    //console.log('SAVE: ');
+    //console.log(trackingData[0]);
+}
+
+function getMaxLevelsByLocation(locationsData) {
+    // Object to store the highest level for each location
+    const maxLevels = {};
+
+    // Loop over locationsData to find the highest level per location
+    locationsData.forEach(location => {
+        const { loc, lvl } = location;
+
+        // If the location doesn't exist in maxLevels, or if the current lvl is higher, update it
+        if (!maxLevels[loc] || lvl > maxLevels[loc]) {
+            maxLevels[loc] = lvl;
         }
     });
 
+    // Convert the result object into an array of max levels in the order of loc
+    return Object.values(maxLevels);
+}
+// Usage
+// const highestLevels = getMaxLevelsByLocation(locationsData);
+// console.log(highestLevels); // [8, 4, 3] - This will be the highest level for each location in order
+
+
+
+/* TEMP
+// First, make sure you have the highest level for each location
+const max_levels = getMaxLevelsByLocation(locationsData);
+
+// Assume you want to increment kills for a specific loc and lvl
+const targetLoc = 1; // Example loc (replace with your desired loc)
+const targetLvl = 3; // Example lvl (replace with your desired lvl)
+
+// Iterate through locationsData and increment kills in saveData where loc and lvl match
+locationsData.forEach((location, index) => {
+    if (location.loc === targetLoc && location.lvl === targetLvl) {
+        // Increment kills at the corresponding index in saveData
+        saveData[index].kills += 1;
+        console.log(`Updated kills for loc ${location.loc}, lvl ${location.lvl}:`, saveData[index].kills);
+    }
+});
+*/
+
+function addKill(loc, lvl) {
+    
+    const max_levels = getMaxLevelsByLocation(locationsData);
+
+    // Iterate through locationsData and increment kills in saveData where loc and lvl match
+    locationsData.forEach((location, index) => {
+        if (location.loc === loc && location.lvl === lvl) {
+            // Increment kills at the corresponding index in saveData
+            saveData[index].kills += 1;
+            //console.log(`Updated kills for loc ${location.loc}, lvl ${location.lvl}: ` + saveData[index].kills);
+        }
+    });
+}
+
+// reset gameData
+function reset_game(elid) {
+    let parent = document.getElementById(elid);
+    if (parent) {
+        let confirm = document.createElement('span');
+        parent.appendChild(confirm);
+        confirm.className = 'normal';
+        confirm.innerHTML = 'RESET: Are you sure?&nbsp;&nbsp;';
+        
+        let yes = document.createElement('button');
+        test_section.appendChild(yes);
+        yes.innerHTML = 'YES';
+        yes.addEventListener('click', () => {
+            saveData.forEach(item => {
+                item.kills = 0;
+            });
+            parent.removeChild(confirm);
+            parent.removeChild(yes);
+            parent.removeChild(no);
+            update_locations();
+        });
+        
+        let no = document.createElement('button');
+        test_section.appendChild(no);
+        no.innerHTML = 'NO';
+        no.addEventListener('click', () => {
+            parent.removeChild(confirm);
+            parent.removeChild(yes);
+            parent.removeChild(no);
+            update_locations();
+        });
+    
+        
+
+    } else {
+        console.error('elid "' + elid + '" is invalid for reset_game() function call.');
+    }
+
+}
 
 // after DOM initialized
 document.addEventListener('DOMContentLoaded', () => {
     first_run();
     update_locations();
-    //loaded_DOM(); // 'loc_' + location.id + '_lvl_' + lvl + '_span';
     //
 });
 

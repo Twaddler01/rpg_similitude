@@ -3,6 +3,9 @@
 https://twaddler01.github.io/rpg_similitude/
 # Updates
 
+08-30-2024
+- Completely revamped locations using a more direct approach. Other method required way too much code than necessary, including array data. New simplified approach will just require tracking locations and player 'kills', which it will keep memory of in future editions. This keeps data better maintained for progression, saving data, and for any future updates to new locations, etc. Next WIP is integrating new locations data with each battle, which should be fairly easy, and then can work on stats for fighting/battles.
+
 08-27-2024
 - New updates to locations. Working on 'previous' and 'next' buttons. Can "one shot" which will be a kill (in one click) and later be the main trigger from enemy deaths.
 

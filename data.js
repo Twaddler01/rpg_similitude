@@ -43,37 +43,14 @@ export function init_elementsData() {
                 parent_el: 'battle_section_container',
                 css_class: 'location_box_style',
                 },
-                    /* // see handle_location()
-                    // attach (location_container)
-                    { id: 'location_left',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'div',
-                    parent_el: 'location_container',
-                    content: '&nbsp;&nbsp;<<',
-                    css_class: 'location_box_style_20_left',
-                    css_class2: 'location_box_style',
-                    },
-                    // attach (location_container)
-                    { id: 'location_center',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'div',
-                    parent_el: 'location_container',
-                    content: 'location_center',
-                    css_class: 'location_box_style_60',
-                    css_class2: 'location_box_style',
-                    },
-                    // attach (location_container)
-                    { id: 'location_right',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'div',
-                    parent_el: 'location_container',
-                    content: '>>&nbsp;&nbsp;',
-                    css_class: 'location_box_style_20_right',
-                    css_class2: 'location_box_style',
-                    }, */
+                // attach (battle_section_container)
+                { id: 'location_title',
+                section_cat: true,
+                fetch_cat: true,
+                type: 'div',
+                parent_el: 'location_container',
+                css_class: 'location_box_style',
+                },
             // attach (battle_section_container)
             { id: 'start_battle_container',
             section_cat: true,
@@ -81,34 +58,6 @@ export function init_elementsData() {
             type: 'div',
             parent_el: 'battle_section_container',
             },
-                // attach (start_battle_container)
-                { id: 'enemy_levels',
-                section_cat: true,
-                fetch_cat: true,
-                type: 'div',
-                parent_el: 'start_battle_container',
-                css_class: 'center',
-                css_class2: 'location_box_style',
-                },
-                    // attach (enemy_levels)
-                    { id: 'enemy_levels_lbl',
-                    section_cat: true,
-                    fetch_cat: true,
-                    type: 'span',
-                    parent_el: 'enemy_levels',
-                    content: '<b>LEVEL:</b>&nbsp;',
-                    css_class: 'location_box_style',
-                    },
-                    
-                    /* // see handle_location()
-                    // attach (enemy_levels)
-                    { id: 'loc_' + i + '_lvls_container',
-                    type: 'span',
-                    parent_el: 'enemy_levels',
-                    //content: '[ 1 ]',
-                    css_class: 'enemy_levels_style_10',
-                    },*/
-                ////
                 // attach (start_battle_container)
                 { id: 'enemy_counter_div',
                 section_cat: true,
@@ -128,6 +77,7 @@ export function init_elementsData() {
                 content: '<b><font style="font-size: 24px;">[ START BATTLE ]</font></b>',
                 css_class: 'location_box_style',
                 css_class2: 'center',
+                hidden: 'true',
                 on_click: true, // click event
                 },
                 { id: 'battle_message_div',

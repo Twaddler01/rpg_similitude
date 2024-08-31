@@ -82,7 +82,7 @@ body {
     border: 5px solid green;
 }
 .green_border_off {
-    border: 5px solid black;
+    border: 5px solid #333;
 }
 .location_box_style {
     font-size: 18px;
@@ -90,7 +90,9 @@ body {
     color: #00FFFF;
     padding-top: 5px;
     padding-bottom: 5px;
-}
+    width: 100%;
+    overflow: auto;
+}/*
 .location_box_style_20_left {
     font-size: 24px;
     width: 20%;
@@ -104,10 +106,12 @@ body {
     text-align: center;
     padding-top: 5px;
     padding-bottom: 5px;
-}
+}*/
+
+/* parent: location_box_style */
 .location_box_style_60 {
     font-size: 24px;
-    width: 60%;
+    width: 100%;
     text-align: center;
     padding-top: 5px;
     padding-bottom: 5px;

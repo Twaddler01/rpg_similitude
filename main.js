@@ -137,6 +137,7 @@ const locationsData = [
 // **** multiple scenarios ****
 
 // mid setup
+/*
 const saveData = [
     { kills: 4 }, // l = 0
     { kills: 3 },
@@ -155,6 +156,40 @@ const saveData = [
     { kills: 0 }, // max = 14
     { kills: 0 }, // placeholder
 ];
+*/
+// WIP add categpry for kill data
+const saveData = [
+// saveData[0]
+{ killsData: [ // placed in locationsData array
+    { kills: 3 }, // l = 0
+    { kills: 3 },
+    { kills: 3 },
+    { kills: 3 },
+    { kills: 4 },
+    { kills: 5 },
+    { kills: 6 },
+    { kills: 7 },
+    { kills: 8 },
+    { kills: 9 },
+    { kills: 10 }, // l = 10
+    { kills: 11 },
+    { kills: 12 },
+    { kills: 13 },
+    { kills: 14 }, // max = 14
+    { kills: 15 }, // placeholder
+    ] },
+// saveData[1]
+{ inventoryData: [ // to be placed in inventoryData array
+    { slot_1: 0 }, // l = 0
+    { slot_2: 1 },
+    { slot_3: 2 },
+    ] },
+];
+//console.log(saveData[0]); // with 'killsData'
+//console.log(saveData[1]); // with 'inventoryData'
+//console.log(saveData[0].killsData); // like a standalone array
+//console.log(saveData[1].inventoryData); // like a standalone array
+//console.log(saveData[0].killsData[0]); // for array lengths
 
 /*
 // new game
@@ -181,8 +216,11 @@ const saveData = [
 
 // always trackingData[0]
 const trackingData = [
-    { loc: 0 },
-    { lvl: 0 },
+    { loc: 0 }, // (int)
+    { lvl: 0 }, // (int)
+    // trackingData[0].currentLocation (int)
+    // trackingData[0].location (string)
+    // trackingData[0].kills (trackingData[0]trackingData[0]trackingData[0]int)
 ];
 
 const max_location = Math.max(...locationsData.map(loc => loc.loc));
@@ -192,11 +230,6 @@ function first_run() {
 
     let test_section = document.getElementById('test_section');
 
-// main container
-    let location_container2 = document.createElement('div');
-    document.body.appendChild(location_container2);
-    location_container2.id = 'location_container2';
-
 // reset saveData
     let reset = document.createElement('button');
     test_section.appendChild(reset);
@@ -205,39 +238,6 @@ function first_run() {
         reset_game('test_section');
     });
 
-// add 1 kill instantly
-/*
-    // Create inputs for loc and lvl
-    let locInput = document.createElement('input');
-    locInput.type = 'number';
-    locInput.placeholder = 'Location (loc)';
-    test_section.appendChild(locInput);
-    
-    let lvlInput = document.createElement('input');
-    lvlInput.type = 'number';
-    lvlInput.placeholder = 'Level (lvl)';
-    test_section.appendChild(lvlInput);
-    
-    // Create the "Add +1 Kill" button
-    let add_kill = document.createElement('button');
-    add_kill.innerHTML = 'Add +1 Kill';
-    test_section.appendChild(add_kill);
-
-    // Attach event listener to button
-    add_kill.addEventListener('click', () => {
-        const loc = parseInt(locInput.value, 10);
-        const lvl = parseInt(lvlInput.value, 10);
-    
-        if (isNaN(loc) || isNaN(lvl)) {
-            alert('Please enter valid numbers for both location and level.');
-            return;
-        }
-    
-        // Call addKill function with user inputs
-        addKill(loc, lvl);
-        update_locations();
-    });
-*/
 // add 1 kill instantly to selected level
 
     let selected_kill = document.createElement('button');
@@ -251,19 +251,22 @@ function first_run() {
             message.innerHTML = '';
         }
         if (trackingData[0].loc !== 0 && trackingData[0].lvl !== 0) {
-                locationsData.forEach((item, index) => {
-                    //console.log('trackingData[0].loc: ' + trackingData[0].loc);
-                    //console.log('locationsData.loc: ' + locationsData[index].loc);
-                    if (locationsData[index].loc === trackingData[0].loc && locationsData[index].lvl === trackingData[0].lvl) {
-                        //trackingData[0].loc
-                        saveData[index].kills += 1;
-                        // Update both arrays
-                        message.innerHTML = 'Added +1 kill to ' + locationsData[index].lbl + ' (Level ' + locationsData[index].lvl + ')';
-                        update_locations();
-                        selectLocation(locationsData[index].loc);
-                    }
-                });
-                
+            locationsData.forEach((item, index) => {
+                //console.log('trackingData[0].loc: ' + trackingData[0].loc);
+                //console.log('locationsData.loc: ' + locationsData[index].loc);
+                if (locationsData[index].loc === trackingData[0].loc && locationsData[index].lvl === trackingData[0].lvl) {
+                    //trackingData[0].loc
+                    saveData[0].killsData[index].kills += 1;
+                    //saveData[index].kills += 1;
+                    // Update both arrays
+                    message.innerHTML = 'Added +1 kill to ' + locationsData[index].lbl + ' (Level ' + locationsData[index].lvl + ')';
+                    update_locations();
+                    selectLocation(locationsData[index].loc);
+                    // Highlight selected level
+                    let DOM_levelButton = document.getElementById('levelButton_' + trackingData[0].lvl);
+                    DOM_levelButton.style.backgroundColor = 'yellow';
+                }
+            });
         } else {
             message.innerHTML = 'Please select an enemy level.';
         }
@@ -274,18 +277,20 @@ function first_run() {
 function update_locations() {
 
     // Main containers
-    const location_container2 = document.getElementById('location_container2');
+    const location_container = document.getElementById('location_container');
 
     // Clear any existing elements
-    if (location_container2) {
-        location_container2.innerHTML = '';
+    // Add title
+    if (location_container) {
+        location_container.innerHTML = '&nbsp;<b>CHOOSE BATTLE LOCATION:<p></p></b>';
     }
     
     // Update array data
     for (let i = 0; i < locationsData.length; i++) {
         // Insert the kills data from saveData into the corresponding location in locationsData
-        locationsData[i].kills = saveData[i].kills;
-        
+        // locationsData[i].kills = saveData[i].kills
+        locationsData[i].kills = saveData[0].killsData[i].kills;
+
         // Always set first level true
         if (!locationsData[0].kill_req_met) {
             locationsData[0].kill_req_met = true;
@@ -305,18 +310,20 @@ function update_locations() {
 
     // Create locations container
     let locations = document.createElement('div');
-    location_container2.appendChild(locations);
+    location_container.appendChild(locations);
     locations.id = 'locations';
     locations.style.display = 'flex';
-    
+    locations.style.overflow = 'auto';
+
     // Create levels container
     let levels = document.createElement('div');
-    location_container2.appendChild(levels);
+    location_container.appendChild(levels);
     levels.id = 'levels';
-    
+    levels.style.overflow = 'auto';
+
     // Create location status container
     let locations_status = document.createElement('div');
-    location_container2.appendChild(locations_status);
+    location_container.appendChild(locations_status);
     locations_status.id = 'locations_status';
 
     const message = document.createElement('div');
@@ -345,12 +352,13 @@ function update_locations() {
             loc.innerHTML = loc_lvl1.lbl;
             let loc_img = document.createElement('img');
             loc.appendChild(loc_img);
-            loc_img.style.width = '100px';
+            loc_img.style.width = '150px';
             loc_img.style.height = 'auto';
             loc_img.src = loc_lvl1.img;
             let loc_levels = document.createElement('div');
             levels.appendChild(loc_levels);
             loc_levels.id = 'loc_levels';
+            loc_levels.style.overflow = 'auto';
             loc.addEventListener('click', () => {
                 // Clear all green borders
                 for (let all = 1; all <= max_location; all++) {
@@ -363,9 +371,12 @@ function update_locations() {
                 // Add green border to clicked element
                 loc.classList.remove('green_border_off');
                 loc.classList.add('green_border_on');
-                // WIP need a var for adding a kill without selecting a location
                 selectLocation(i);
-          
+                // To always keep highlightted level selected after clicking another location and back
+                let level_btn = document.getElementById('levelButton_' + trackingData[0].lvl);
+                if (level_btn && trackingData[0].loc === i) {
+                    level_btn.style.backgroundColor = 'yellow';
+                }
             });
         }
     }
@@ -406,13 +417,30 @@ function selectLocation(location) {
     // Display levels for the selected location
     filteredLevels.forEach(level => {
 
+        let level_title = document.createElement('span');
+        levelsContainer.appendChild(level_title);
+        if (level.lvl === 1) {
+            level_title.innerHTML = `&nbsp;<b>CHOOSE LEVEL:</b><br>&nbsp;`;
+        }
+
         const levelButton = document.createElement('button');
-        levelButton.innerHTML = `Level ${level.lvl}`;
-        
+        levelButton.innerHTML = ` ${level.lvl} `;
+        levelButton.style.backgroundColor = 'white';
+        levelButton.id = 'levelButton_' + level.lvl;
+
         if (trackingData[0].loc === level.loc && trackingData[0].lvl === level.lvl) {
             selectLevel(level.loc, level.lbl, level.lvl, level.kills);
         } else {
-            levelButton.onclick = () => selectLevel(level.loc, level.lbl, level.lvl, level.kills);
+            levelButton.addEventListener('click', () => {
+                // Set all colors to white initialy
+                for (let i = 1; i <= filteredLevels.length; i++) {
+                    let DOM_levelButton = document.getElementById('levelButton_' + i);
+                    DOM_levelButton.style.backgroundColor = 'white';
+                }
+                // Set selected level yellow
+                levelButton.style.backgroundColor = 'yellow';
+                selectLevel(level.loc, level.lbl, level.lvl, level.kills);
+            });
         }
         levelsContainer.appendChild(levelButton);
     });
@@ -421,17 +449,19 @@ function selectLocation(location) {
 function selectLevel(loc, location, lvl, kills) {
     const locations_status = document.getElementById('locations_status');
     const message = document.getElementById('message');
-    
+
     message.innerHTML = '';
-    locations_status.innerHTML = `You selected ${location} Level ${lvl}`;
-    locations_status.innerHTML += `<br>Kills: ${kills}`;
-    // add to array
+    locations_status.innerHTML = `&nbsp;You selected <b>${location}</b> Level <b>${lvl}</b>`;
+    locations_status.innerHTML += `<br>&nbsp;<b>Enemies Killed:</b> ${kills}`;
+    let start_battle_button = document.getElementById('start_battle_button');
+    if (start_battle_button) {
+        start_battle_button.style.display = 'block';
+    }
+    // add to tracking array
     trackingData[0].loc = loc;
     trackingData[0].location = location;
     trackingData[0].lvl = lvl;
     trackingData[0].kills = kills;
-    //console.log('SAVE: ');
-    //console.log(trackingData[0]);
 }
 
 function getMaxLevelsByLocation(locationsData) {
@@ -483,7 +513,8 @@ function addKill(loc, lvl) {
     locationsData.forEach((location, index) => {
         if (location.loc === loc && location.lvl === lvl) {
             // Increment kills at the corresponding index in saveData
-            saveData[index].kills += 1;
+            saveData[0].killsData[index].kills += 1;
+            //saveData[index].kills += 1;
             //console.log(`Updated kills for loc ${location.loc}, lvl ${location.lvl}: ` + saveData[index].kills);
         }
     });
@@ -502,7 +533,8 @@ function reset_game(elid) {
         test_section.appendChild(yes);
         yes.innerHTML = 'YES';
         yes.addEventListener('click', () => {
-            saveData.forEach(item => {
+            saveData[0].killsData.forEach(item => {
+            //saveData.forEach(item => {
                 item.kills = 0;
             });
             parent.removeChild(confirm);

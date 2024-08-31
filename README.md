@@ -4,7 +4,8 @@ https://twaddler01.github.io/rpg_similitude/
 # Updates
 
 08-30-2024
-- Completely revamped locations using a more direct approach. Other method required way too much code than necessary, including array data. New simplified approach will just require tracking locations and player 'kills', which it will keep memory of in future editions. This keeps data better maintained for progression, saving data, and for any future updates to new locations, etc. Next WIP is integrating new locations data with each battle, which should be fairly easy, and then can work on stats for fighting/battles.
+- Completely revamped locations using a more direct approach. Other method required way too much code than necessary, including array data. New simplified approach will just require tracking locations and player 'kills', which it will keep memory of in future editions. This keeps data better maintained for progression, saving data, and for any future updates to new locations, etc. Next WIP is working fighting/battles and more character data, like leveling, skills, professions, etc.
+- Locations has a great start now, but need to reintegrate battles with new design.
 - Various scenarios are possible by manually changing saved array data. Added RESET to clear saved data easily, which will be needed for testing and the final product.
 
 08-27-2024

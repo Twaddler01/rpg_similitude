@@ -20,14 +20,41 @@ export function init_elementsData() {
         css_class: 'h1',
         },
 
+// **** section *****
+
+        /* ELEMENT STRUCTURE:
+            #character_section
+                #character_container
+                    #character_entry
+                        #name
+                        #race
+                        #class
+        */
+
         // section
+        { id: 'character_section',
+        section_cat: true,
+        type: 'div',
+        parent_el: 'body',
+        content: 'Character Section',
+        css_class: 'h1_yellow_font',
+        },
+        { id: 'character_container',
+        section_cat: true,
+        fetch_cat: true,
+        type: 'div',
+        parent_el: 'character_section',
+        css_class: 'location_box_style',
+        },
+
+// **** section *****
         { id: 'battle_section',
         section_cat: true,
         type: 'div',
         parent_el: 'body',
         content: 'Battle Section',
         css_class: 'h1_yellow_font',
-        },
+        }, 
             // attach (battle_section)
             { id: 'battle_section_container',
             section_cat: true,
@@ -58,16 +85,6 @@ export function init_elementsData() {
             type: 'div',
             parent_el: 'battle_section_container',
             },
-                // attach (start_battle_container)
-                { id: 'enemy_counter_div',
-                section_cat: true,
-                fetch_cat: true,
-                type: 'div',
-                parent_el: 'start_battle_container',
-                //content: 'Level [ 1 ] Enemies Defeated:&nbsp;0',
-                css_class: 'location_eme_cnt',
-                css_class2: 'center',
-                }, // CHILDREN IN CODE -> (elementsData: enemy_health_cnt.defeated_count)
                 // attach (start_battle_container)
                 { id: 'start_battle_button',
                 section_cat: true,
@@ -258,15 +275,6 @@ export function init_elementsData() {
         },
 
         // section
-        { id: 'character_section',
-        section_cat: true,
-        type: 'div',
-        parent_el: 'body',
-        content: 'Character Section',
-        css_class: 'h1_yellow_font',
-        },
-
-        // section
         { id: 'new_section',
         section_cat: true,
         type: 'div',
@@ -322,6 +330,8 @@ export function init_elementsData() {
     return elementsData;
 }
 
+// **** OLD DATA ****
+/*
 export function init_locationData() {
 
     const locationData = [
@@ -454,7 +464,7 @@ export function init_battleData() {
           { id: 3.5, cnt: 0 },
           { id: 3.6, cnt: 0 },
           { id: 3.7, cnt: 0 },
-          { id: 3.8, cnt: 0 }, ],*/
+          { id: 3.8, cnt: 0 }, ],*/ /*
         },
         // names
         { id: '01_names',
@@ -547,7 +557,7 @@ export function init_characterData() {
     // Iterate over the array and set other variables dynamically
 
     return characterData;
-}
+}*/ // ****** OLD DATA
 
 export function init_inventoryData() {
 
@@ -575,9 +585,17 @@ export function init_inventoryData() {
     return inventoryData;
 }
 
-export function init_lootData() {
+export function init_itemData() {
 
-    const lootData = [
+    const itemData = [
+        // rarity: 0 = junk (lightgray)
+        // rarity: 1 = common (white)
+        // rarity: 2 = uncommon (green)
+        // rarity: 3 = rare (lightblue)
+        // rarity: 4 = epic (pink)
+        // rarity: 5 = legendary (orange)
+        // rarity: 6 = ancient (lightred)
+    
         { id: 'GOLD',
         type: 'currency',
         name: 'Gold',
@@ -586,85 +604,232 @@ export function init_lootData() {
         { id: 'CLOTH_LINEN',
         type: 'material',
         name: 'Linen Cloth',
+        rarity: 1,
         cnt: 0,
         value: 2,
         },
         { id: 'BASIC_HELMET',
-        type: 'arnor',
+        type: 'armor',
         name: 'Basic Helm',
+        slot: 'head',
+        // will have at beginning
+        start_equipped: true,
+        rarity: 1,
+        desc: 'Basic head protection, nothing extraordinary.',
+        gains: [ {stat: 'Armor', amt: 10 }, { stat: 'Power', amt: 1 } ],
         cnt: 0,
-        value: 6,
+        value: 1,
+        iSlot: 'eH',
+        img: 'media/icons/head_01.jpg',
         },
         { id: 'TOOTH',
         type: 'junk',
         name: 'Tooth',
+        rarity: 0,
         cnt: 0,
         value: 1,
         },
     ];
 
-    return lootData;
+    return itemData;
 }
 
-export function init_gameState() {
+export function init_locationsData() {
 
-    const gameState = {
-        // for tracking
-        loc_num_selected: 0, ////
-        lvl_num_selected: 0, // temp??
-        loc_unlocked: 1, // default 1
-        lvl_unlocked: 1, // default 1
-        //max_level: locationData.level_data.length, 
-        /*loc_data: [ // forEach: gsLocData 
-            { loc: 1, lvl: 1, kills: 0 },
-            { loc: 1, lvl: 2, kills: 0 },
-            { loc: 1, lvl: 3, kills: 0 },
-            { loc: 1, lvl: 4, kills: 0 },
-            { loc: 1, lvl: 5, kills: 0 },
-            { loc: 1, lvl: 6, kills: 0 },
-            { loc: 1, lvl: 7, kills: 0 },
-            { loc: 1, lvl: 8, kills: 0 },
-            { loc: 2, lvl: 1, kills: 0 },
-            { loc: 2, lvl: 2, kills: 0 },
-            { loc: 2, lvl: 3, kills: 0 },
-            { loc: 2, lvl: 4, kills: 0 },
-            { loc: 2, lvl: 5, kills: 0 },
-            { loc: 2, lvl: 6, kills: 0 },
-            { loc: 2, lvl: 7, kills: 0 },
-            { loc: 2, lvl: 8, kills: 0 },
-            { loc: 3, lvl: 1, kills: 0 },
-            { loc: 3, lvl: 2, kills: 0 },
-            { loc: 3, lvl: 3, kills: 0 },
-            { loc: 3, lvl: 4, kills: 0 },
-            { loc: 3, lvl: 5, kills: 0 },
-            { loc: 3, lvl: 6, kills: 0 },
-            { loc: 3, lvl: 7, kills: 0 },
-            { loc: 3, lvl: 8, kills: 0 },
-          ],*/
-        };
-
-    return gameState;
-}
-
-/*export function init_gameState() {
-
-const gameState = {
-        currentLocation: 0, // Index of the current location in locationData
-        currentLevel: 0,    // Index of the current level in level_data
-        kills: 0,
-        unlockedLocations: 1,
-        unlockedLevels: [1] // Array to track levels unlocked per location
-    };
+    const locationsData = [
+        // locationsData[i].kill_req_met: true/false
     
-    return gameState;
-}*/
+        { loc: 1, lbl: 'Dark Plains', lvl: 1, kills_req: 3,
+        img: 'media/img_loc_1.jpg', }, // l = 0
+        { loc: 1, lbl: 'Dark Plains', lvl: 2, kills_req: 3 },
+        { loc: 1, lbl: 'Dark Plains', lvl: 3, kills_req: 3 },
+        { loc: 1, lbl: 'Dark Plains', lvl: 4, kills_req: 3 },
+        { loc: 1, lbl: 'Dark Plains', lvl: 5, kills_req: 3 },
+        { loc: 1, lbl: 'Dark Plains', lvl: 6, kills_req: 3 },
+        { loc: 1, lbl: 'Dark Plains', lvl: 7, kills_req: 3 },
+        { loc: 1, lbl: 'Dark Plains', lvl: 8, kills_req: 3 },
+    
+        { loc: 2, lbl: 'Dark Highlands', lvl: 1, kills_req: 3,
+        img: 'media/img_loc_2.jpg', },
+        { loc: 2, lbl: 'Dark Highlands', lvl: 2, kills_req: 3 },
+        { loc: 2, lbl: 'Dark Highlands', lvl: 3, kills_req: 3 }, // l = 10
+        { loc: 2, lbl: 'Dark Highlands', lvl: 4, kills_req: 3 },
+    
+        { loc: 3, lbl: 'Dark Forest', lvl: 1, kills_req: 3,
+        img: 'media/img_loc_3.jpg', },
+        { loc: 3, lbl: 'Dark Forest', lvl: 2, kills_req: 3 },
+        { loc: 3, lbl: 'Dark Forest', lvl: 3, kills_req: 3 }, // max = 14
+    
+        { loc: 4, lbl: 'END', lvl: 3, kills_req: 99 }, // placeholder
+    ];
+    
+    return locationsData;
+}
+
+export function init_characterData() {
+
+    const characterData = [
+        { stats: [ 
+            { stat_base_armor: 100, label: 'Armor: ' },
+            { stat_base_str: 10, label: 'Strength: ' },
+            { stat_base_int: 10, label: 'Intelligence: ' },
+            { stat_base_dex: 10, label: 'Dexterity: ' },
+            { stat_base_con: 10, label: 'Constitution: ' },
+            { stat_base_agi: 10, label: 'Agility: ' },
+            { stat_base_wis: 10, label: 'Wisdom: ' },
+            { stat_base_attack: 1.0, label: 'Attack: ' },
+            { stat_attack_min: 5.0, label: 'Attack Minimum: ' },
+            { stat_attack_max: 10.0, label: 'Attack Maximum: ' }, // stat_attack_min * 2
+            { stat_power: 1.0, label: 'Power: ' },
+            { stat_hit_chance: 0.9, label: 'Hit Chance: ' }, // bsse stats: [0] - [11]
+        ] }, 
+        { stats_desc: [
+            { stat_armor_desc: 'Reduces damage taken by 0.1% per point above base amount.' },
+            { stat_str_desc: 'Increases both melee damage dealt by 0.1% and total energy by 10 per point above base amount.' },
+            { stat_int_desc: 'Increases both magic damage dealt by 0.1% and total mana by 10 per point above base amount.' },
+            { stat_dex_desc: 'Increses hit chance by 0.1% per point above base amount. Default hit chance is 90%, or 100% at 100+ dex' },
+            { stat_con_desc: 'Increases health by 0.1% per point above base amount.' },
+            { stat_agi_desc: 'Increases melee critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
+            { stat_wis_desc: 'Increases magic critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
+        ] },
+    ];
+    
+    return characterData;
+}
+
+export function init_saveData() {
+
+// **** multiple scenarios ****
+
+// mid setup
+/*
+    const saveData = [
+        { kills: 4 }, // l = 0
+        { kills: 3 },
+        { kills: 4 },
+        { kills: 3 },
+        { kills: 4 },
+        { kills: 4 },
+        { kills: 4 },
+        { kills: 6 },
+        { kills: 3 },
+        { kills: 4 },
+        { kills: 0 }, // l = 10
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 }, // max = 14
+        { kills: 0 }, // placeholder
+    ];
+    */
+    // WIP add categpry for kill data
+    const saveData = [
+    // saveData[0]
+    { killsData: [ // added to locationsData array
+        { kills: 3 }, // l = 0
+        { kills: 3 },
+        { kills: 3 },
+        { kills: 3 },
+        { kills: 4 },
+        { kills: 5 },
+        { kills: 6 },
+        { kills: 7 },
+        { kills: 8 },
+        { kills: 9 },
+        { kills: 10 }, // l = 10
+        { kills: 11 },
+        { kills: 12 },
+        { kills: 13 },
+        { kills: 14 }, // max = 14
+        { kills: 15 }, // placeholder
+        ] },
+    // saveData[1]
+    { savedCharacterData: [ // to be added to static characterData array
+        // savedCharacterData[0]
+        { char_name: 'Legolas',
+        char_race: 'Human',
+        char_class: 'Fighter',
+        char_level: 1,
+        },
+        ] },
+    // saveData[2]
+    { inventoryData: [ // to be added to static inventoryData array
+        { slot_1: 0 }, // l = 0
+        { slot_2: 1 },
+        { slot_3: 2 },
+        ] },
+    // saveData[3]
+    { equippedData: [ // to be added to static array?
+        { head: null }, // l = 0
+        { shoulders: null },
+        { hands: null },
+        { neck: null },
+        { waist: null },
+        { chest: null },
+        { legs: null },
+        { wrist: null },
+        { feet: null },
+        { ring1: null },
+        { ring2: null },
+        { mh: null },
+        { oh: null },
+        ] },
+    ];
+    //console.log(saveData[0]); // with 'killsData'
+    //console.log(saveData[1]); // with 'characterData'
+    //console.log(saveData[2]); // with 'inventoryData'
+    //console.log(saveData[0].killsData); // like a standalone array
+    //console.log(saveData[1].savedCharacterData); // like a standalone array
+    //console.log(saveData[2].inventoryData); // like a standalone array
+    //console.log(saveData[0].killsData[0]); // for array lengths
+    
+    /*
+    // new game
+    const saveData = [
+        { kills: 0 }, 
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 },
+        { kills: 0 }, 
+    ];
+    */
+    
+    return saveData;
+}
+
+export function init_trackingData() {
+
+    // always trackingData[0]
+    const trackingData = [
+        { loc: 0 }, // (int)
+        { lvl: 0 }, // (int)
+        // trackingData[0].currentLocation (int)
+        // trackingData[0].location (string)
+        // trackingData[0].kills (trackingData[0]trackingData[0]trackingData[0]int)
+    ];
+
+    return trackingData;
+}
 
 export const elementsData = init_elementsData();
-export const battleData = init_battleData();
-export const characterData = init_characterData();
+//export const battleData = init_battleData();
+//export const characterData = init_characterData();
 export const inventoryData = init_inventoryData();
-export const lootData = init_lootData();
-export const locationData = init_locationData();
-export const gameState = init_gameState();
-
-//{ id: 'GATHER_TWIGS', costs: { 'TWIGS': 20, 'PEBBLES': 10 }, cost_type: 'res' },
+export const itemData = init_itemData();
+//export const locationData = init_locationData();
+export const locationsData = init_locationsData();
+export const characterData = init_characterData();
+export const saveData = init_saveData();
+export const trackingData = init_trackingData();

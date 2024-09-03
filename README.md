@@ -3,6 +3,11 @@
 https://twaddler01.github.io/rpg_similitude/
 # Updates
 
+09-02-2024
+- Character section added for user to specify player info (name, race, class) if not yet created or saved.
+- Added popup item tooltip and added equipment data. Ready for default equipment and adding extrss for stats display from itemData array
+- Items are ready to be worked, ensuring they are always saved in the main saveData array.
+
 08-30-2024
 - Completely revamped locations using a more direct approach. Other method required way too much code than necessary, including array data. New simplified approach will just require tracking locations and player 'kills', which it will keep memory of in future editions. This keeps data better maintained for progression, saving data, and for any future updates to new locations, etc. Next WIP is working fighting/battles and more character data, like leveling, skills, professions, etc.
 - Locations has a great start now, but need to reintegrate battles with new design.

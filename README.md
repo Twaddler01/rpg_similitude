@@ -5,7 +5,7 @@ https://twaddler01.github.io/rpg_similitude/
 
 09-02-2024
 - Character section added for user to specify player info (name, race, class) if not yet created or saved.
-- Added popup item tooltip and added equipment data. Ready for default equipment and adding extrss for stats display from itemData array
+- Added popup item tooltip and added equipment data. Ready for default equipment and adding extras for stats display from itemData array
 - Items are ready to be worked, ensuring they are always saved in the main saveData array.
 
 08-30-2024

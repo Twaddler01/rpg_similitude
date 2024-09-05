@@ -608,26 +608,89 @@ export function init_itemData() {
         cnt: 0,
         value: 2,
         },
-        { id: 'BASIC_HELMET',
-        type: 'armor',
-        name: 'Basic Helm',
-        slot: 'head',
-        // will have at beginning
-        start_equipped: true,
-        rarity: 1,
-        desc: 'Basic head protection, nothing extraordinary.',
-        gains: [ {stat: 'Armor', amt: 10 }, { stat: 'Power', amt: 1 } ],
-        cnt: 0,
-        value: 1,
-        iSlot: 'eH',
-        img: 'media/icons/head_01.jpg',
-        },
         { id: 'TOOTH',
         type: 'junk',
         name: 'Tooth',
         rarity: 0,
+        desc: 'It&apos;s a tooth.',
         cnt: 0,
         value: 1,
+        },
+// *** STARTING EQUIPMENT
+        { id: 'BASIC_HELMET',
+        type: 'armor',
+        name: 'Basic Helm',
+        slot: 'head',
+        slot_name: 'Head',
+        start_equipped: true,
+        rarity: 0,
+        desc: 'Basic head protection, nothing extraordinary.',
+        gains: [ {stat: 'Armor', amt: 10 }, ],
+        //gains: [ {stat: 'Armor', amt: 10 }, { stat: 'Constitution', amt: 1 } ],
+        cnt: 1,
+        value: 0,
+        iSlot: 'eH',
+        img: 'media/icons/head_01.jpg',
+        },
+        //
+        { id: 'BASIC_CHESTPIECE',
+        type: 'armor',
+        name: 'Basic Chestpiece',
+        slot: 'chest',
+        slot_name: 'Chest',
+        start_equipped: true,
+        rarity: 0,
+        desc: 'Basic chest protection. Not very stylish.',
+        gains: [ {stat: 'Armor', amt: 20 }, ],
+        cnt: 1,
+        value: 0,
+        iSlot: 'eCh',
+        img: 'media/icons/chest_01.jpg',
+        },
+        //
+        { id: 'BASIC_GLOVES',
+        type: 'armor',
+        name: 'Basic Gloves',
+        slot: 'hands',
+        slot_name: 'Hands',
+        start_equipped: true,
+        rarity: 0,
+        desc: 'Basic hand protection. Almost as good as junk...almost.',
+        gains: [ {stat: 'Armor', amt: 10 }, ],
+        cnt: 1,
+        value: 0,
+        iSlot: 'eGl',
+        img: 'media/icons/gloves_01.jpg',
+        },
+        //
+        { id: 'BASIC_BOOTS',
+        type: 'armor',
+        name: 'Basic Boots',
+        slot: 'feet',
+        slot_name: 'Feet',
+        start_equipped: true,
+        rarity: 0,
+        desc: 'Basic feet protection. Not very comfortable.',
+        gains: [ {stat: 'Armor', amt: 10 }, ],
+        cnt: 1,
+        value: 0,
+        iSlot: 'eF',
+        img: 'media/icons/boots_01.jpg',
+        },
+        //
+        { id: 'MH_BASIC_DAGGER',
+        type: 'weapon',
+        name: 'Basic Dagger',
+        slot: 'mh',
+        slot_name: 'Mainhand',
+        start_equipped: true,
+        rarity: 0,
+        desc: 'A cheap dagger. Dull. You&apos;ll stab your eye out, kid.',
+        gains: [ { stat: 'dmg_min', amt: 1.2 }, { stat: 'dmg_max', amt: 1.6 } ],
+        cnt: 1,
+        value: 0,
+        iSlot: 'eMH',
+        img: 'media/icons/mh_01.jpg',
         },
     ];
 
@@ -669,29 +732,31 @@ export function init_locationsData() {
 export function init_characterData() {
 
     const characterData = [
-        { stats: [ 
-            { stat_base_armor: 100, label: 'Armor: ' },
-            { stat_base_str: 10, label: 'Strength: ' },
-            { stat_base_int: 10, label: 'Intelligence: ' },
-            { stat_base_dex: 10, label: 'Dexterity: ' },
-            { stat_base_con: 10, label: 'Constitution: ' },
-            { stat_base_agi: 10, label: 'Agility: ' },
-            { stat_base_wis: 10, label: 'Wisdom: ' },
-            { stat_base_attack: 1.0, label: 'Attack: ' },
-            { stat_attack_min: 5.0, label: 'Attack Minimum: ' },
-            { stat_attack_max: 10.0, label: 'Attack Maximum: ' }, // stat_attack_min * 2
-            { stat_power: 1.0, label: 'Power: ' },
-            { stat_hit_chance: 0.9, label: 'Hit Chance: ' }, // bsse stats: [0] - [11]
-        ] }, 
-        { stats_desc: [
-            { stat_armor_desc: 'Reduces damage taken by 0.1% per point above base amount.' },
-            { stat_str_desc: 'Increases both melee damage dealt by 0.1% and total energy by 10 per point above base amount.' },
-            { stat_int_desc: 'Increases both magic damage dealt by 0.1% and total mana by 10 per point above base amount.' },
-            { stat_dex_desc: 'Increses hit chance by 0.1% per point above base amount. Default hit chance is 90%, or 100% at 100+ dex' },
-            { stat_con_desc: 'Increases health by 0.1% per point above base amount.' },
-            { stat_agi_desc: 'Increases melee critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
-            { stat_wis_desc: 'Increases magic critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
-        ] },
+        { id: 'armor', type: 'stat', amt: 100, label: 'Armor: ' },
+        { id: 'strength', type: 'stat', amt: 10, label: 'Strength: ' },
+        { id: 'intelligence', type: 'stat', amt: 10, label: 'Intelligence: ' },
+        { id: 'dexterity', type: 'stat', amt: 10, label: 'Dexterity: ' },
+        { id: 'constitution', type: 'stat', amt: 10, label: 'Constitution: ' },
+        { id: 'agility', type: 'stat', amt: 10, label: 'Agility: ' },
+        { id: 'wisdom', type: 'stat', amt: 10, label: 'Wisdom: ' },
+        { id: 'power', type: 'stat', amt: 0.0, label: 'Power: ' },
+        { id: 'attackMinimum', type: 'stat', amt: 1.2, label: 'Attack Minimum: ' },
+        { id: 'attackMaximum', type: 'stat', amt: 1.6, label: 'Attack Maximum: ' }, // stat_attack_min * 1.5
+        { id: 'hitChance', type: 'stat', amt: 0.9, label: 'Hit Chance: ' },
+        { id: 'criticalStrikeChance', type: 'stat', amt: 0.05, label: 'Critical Strike Chance: ' }, // bsse stats: [0] - [12]
+        // desc
+        { id: 'armor', label: 'Armor', type: 'desc', def: 'Reduces damage taken by 0.1% per point above base amount.' },
+        { id: 'strength', label: 'Strength', type: 'desc', def: 'Increases both melee damage dealt by 0.1% and total energy by 10 per point above base amount.' },
+        { id: 'intelligence', label: 'Intelligence', type: 'desc', def: 'Increases both magic damage dealt by 0.1% and total mana by 10 per point above base amount.' },
+        { id: 'dexterity', label: 'Dexterity', type: 'desc', def: 'Increses hit chance by 0.1% per point above base amount. Default hit chance is 90%, or 100% at 100+ dex' },
+        { id: 'constitution', label: 'Constitution', type: 'desc', def: 'Increases health by 0.1% per point above base amount.' },
+        { id: 'agility', label: 'Agility', type: 'desc', def: 'Increases melee critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
+        { id: 'wisdom', label: 'Wisdom', type: 'desc', def: 'Increases magic critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
+        { id: 'power', label: 'Power', type: 'desc', def: 'Increases both attack minimum and maximum.' },
+        { id: 'attackMinimum', label: 'Attack Minimum', type: 'desc', def: 'Minimum damage caused for each hit per turn.' },
+        { id: 'attackMaximum', label: 'Attack Maximum', type: 'desc', def: 'Maximim damage caused for each hit per turn.' },
+        { id: 'hitChance', label: 'Hit Chance', type: 'desc', def: 'The probability an attack will cause damage or miss. 100% hit chance guarantees a hit if enemy level is less than or equal to player&apos;s current level. Hit chance decreases for each enemy level above the player&apos;s level.' },
+        { id: 'criticalStrikeChance', label: 'Critical Strike Chance', type: 'desc', def: 'The probability a successful attack is critical. Critical strikes cause double the regular damage.' },
     ];
     
     return characterData;
@@ -760,19 +825,19 @@ export function init_saveData() {
         ] },
     // saveData[3]
     { equippedData: [ // to be added to static array?
-        { head: null }, // l = 0
-        { shoulders: null },
-        { hands: null },
-        { neck: null },
-        { waist: null },
-        { chest: null },
-        { legs: null },
-        { wrist: null },
-        { feet: null },
-        { ring1: null },
-        { ring2: null },
-        { mh: null },
-        { oh: null },
+        { id: 'head' , equipped: null }, // l = 0
+        { id: 'shoulders', equipped: null },
+        { id: 'hands', equipped: null },
+        { id: 'neck', equipped: null },
+        { id: 'waist', equipped: null },
+        { id: 'chest', equipped: null },
+        { id: 'legs', equipped: null },
+        { id: 'wrist', equipped: null },
+        { id: 'feet', equipped: null },
+        { id: 'ring1', equipped: null },
+        { id: 'ring2', equipped: null },
+        { id: 'mh', equipped: null },
+        { id: 'oh', equipped: null },
         ] },
     ];
     //console.log(saveData[0]); // with 'killsData'
@@ -817,7 +882,9 @@ export function init_trackingData() {
         { lvl: 0 }, // (int)
         // trackingData[0].currentLocation (int)
         // trackingData[0].location (string)
-        // trackingData[0].kills (trackingData[0]trackingData[0]trackingData[0]int)
+        // trackingData[0].kills (int)
+        // trackingData[0].character_created (bool: false)
+        // trackingData[0].starting_equip_added (bool: false)
     ];
 
     return trackingData;
@@ -825,7 +892,6 @@ export function init_trackingData() {
 
 export const elementsData = init_elementsData();
 //export const battleData = init_battleData();
-//export const characterData = init_characterData();
 export const inventoryData = init_inventoryData();
 export const itemData = init_itemData();
 //export const locationData = init_locationData();

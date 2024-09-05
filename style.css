@@ -1,4 +1,4 @@
-/* style.css 08-09-2024 */
+/* style.css 09-05-2024 */
 body {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Safari */
@@ -29,6 +29,12 @@ body {
 }
 .box {
     display: flex;
+}
+.currency_gold {
+    width: 10px;
+    height: 10px;
+    vertical-align = middle;
+    padding-bottom = 2px;
 }
 
 .box_15 {

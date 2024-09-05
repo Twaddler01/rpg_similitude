@@ -111,6 +111,41 @@ document.addEventListener('DOMContentLoaded', () => {
     
 });
 
+
+/*
+// ilvl 1 = (1.2 - 1.6)
+let stat_power = 0;
+for (let ilvl = 1; ilvl <= 20; ilvl ++) {
+    let [damage_min, damage_max] = calculate_damage(ilvl, stat_power);
+    console.log('ilvl: ' + ilvl + ' / Min: ' + damage_min + ' / Max: ' + damage_max);
+
+}*/
+
+function calculate_damage(itemLevel, statPower) {
+
+    let ilvl = itemLevel;
+
+    // weapon damage ramge multiplier
+    let min = 1;
+    let max = 1.5;
+    // calc min/max damage of weapons for player display
+    let damage_min = Math.round((1.2*ilvl*min)*10)/10;
+    let damage_max = Math.round((1.08*ilvl*max)*10)/10;
+        
+    // *** multipliers
+    
+    // Power
+    let power = statPower; // 0: 24 - 32.4 / 1: 24.2 - 34.7
+    damage_min *= (1 + (0.02 * power));
+    damage_max *= (1 + (0.02 * power));
+    
+    // final calculation
+    damage_min = Math.round(damage_min*10)/10;
+    damage_max = Math.round(damage_max*10)/10;
+
+    return [damage_min, damage_max];
+}
+
 function loaded_DOM() {
     locData.forEach(location => {
         for (let lvl = 1; lvl <= location.level_data.length; lvl++) {

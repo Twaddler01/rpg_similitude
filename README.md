@@ -6,6 +6,7 @@ https://twaddler01.github.io/rpg_similitude/
 09-05-2024
 - Updated equipment section some more. Added default equipment and stat information. Armor is now totaled up based on what is equipped starting out, will add other stats dynamically soon.
 - Likely need a few functions to update equipment slots as equipment is swapped, etc.
+- Need current icon images uploaded to Github for full functionality.
 
 09-02-2024
 - Character section added for user to specify player info (name, race, class) if not yet created or saved.

@@ -746,10 +746,8 @@ export function reset_game(elid) {
     } else {
         console.error('elid "' + elid + '" is invalid for reset_game() function call.');
     }
-
 }
 
-//// WIP
 export function create_el(newId, type, parentId, content) {
     let parent_el = document.getElementById(parentId);
     let new_el = document.createElement(type);
@@ -764,30 +762,29 @@ export function create_el(newId, type, parentId, content) {
     }
 }
 
-export function item_tooltip(elid, itemId) {
+let currentTooltip = null; // Store the currently open tooltip container
+let currentTooltipElement = null; // Store the element that triggered the current tooltip
+
+export function item_tooltip(targetElement, itemId) {
 
     // item = array from itemData
     let item = itemData.find(i => i.id === itemId);
 
     // tooltip toggle for equipped items
-    let item_box_DOM = document.getElementById('item_box');
-    
+    let item_box_DOM = document.getElementById('item_box_' + item.id);
+    let elid = document.getElementById(targetElement.id);
+
+    // Append item to string
+    let item_tooltip_container_item = 'item_tooltip_container_' + item.id;
+
     if (!trackingData[0].tooltip_open) {
         if (!item_box_DOM) {
             item_box_DOM = document.createElement('div');
-            item_box_DOM.id = 'item_box';
+            item_box_DOM.id = 'item_box_' + item.id;
             item_box_DOM.classList.add('item_box');
             elid.appendChild(item_box_DOM);
-            //let haze_div = document.createElement('div');
-            //item_box_DOM.appendChild(haze_div);
-            // test: green color
-            //haze_div.classList.add('haze_div'); 
         }
     
-        // For text, replace with new div with higher z-index
-        // item_box_DOM.innerHTML = item.iSlot;
-
-        // Ensures zIndex is factored properly by parent elements
         elid.style.position = 'relative';
         item_box_DOM.style.position = 'relative';
 
@@ -795,44 +792,38 @@ export function item_tooltip(elid, itemId) {
         item_box_DOM.style.backgroundSize = '50px 50px';
 
         item_box_DOM.onclick = (event) => {
+ 
+        // Check and close any currently open tooltip
+        if (currentTooltip && currentTooltipElement !== elid) {
+            removeTooltip();
+        }
+
             event.stopPropagation(); // Prevent the click from propagating
 
             if (!trackingData[0].tooltip_open) {
                 trackingData[0].tooltip_open = true;
 
-                // parent
-                create_el('item_tooltip_container', 'div', elid);
-                // overlay stylea
-                item_tooltip_container.style.zIndex = '9999';
+                // Create tooltip container
+                let item_tooltip_container = document.createElement('div');
+                item_tooltip_container.id = 'item_tooltip_container_' + item.id;
+                elid.appendChild(item_tooltip_container);
+
+                // Overlay styles
+                elid.style.zIndex = '9999';
                 item_tooltip_container.style.width = '200px';
-                //item_tooltip_container.style.position = 'absolute'; // Absolute to keep it fixed relative to the container
                 item_tooltip_container.style.pointerEvents = 'auto'; // Allow interactions with the tooltip
 
-// Calculate the position relative to the container
+                // Calculate the position relative to the container
                 const elidRect = elid.getBoundingClientRect();
-                const clickX = event.clientX; // Use clientX and clientY for the click position
+                const clickX = event.clientX;
                 const clickY = event.clientY;
 
                 // Position the tooltip 20px away from the mouse click
                 item_tooltip_container.style.left = `${clickX - elidRect.left + 20}px`;
                 item_tooltip_container.style.top = `${clickY - elidRect.top + 20}px`;
 
-/*
-// Calculate the position relative to the document
-const clickX = event.pageX;
-const clickY = event.pageY;
-
-// Position the tooltip 20px away from the mouse click
-item_tooltip_container.style.left = `${clickX + 20}px`;
-item_tooltip_container.style.top = `${clickY + 20}px`;
-*/
-
-                // Position the tooltip 20px away from the mouse click
-                //item_tooltip_container.style.left = `20px`;
-                //item_tooltip_container.style.top = `60px`;
-
-                // begin tooltip box
-                create_el('item_tooltip_div', 'div', 'item_tooltip_container');
+                // Begin tooltip box
+                create_el('item_tooltip_div', 'div', item_tooltip_container_item);
                 item_tooltip_div.classList.add('item_tooltip');
                 
                 create_el('item_name', 'div', 'item_tooltip_div');
@@ -840,9 +831,9 @@ item_tooltip_container.style.top = `${clickY + 20}px`;
                 item_name.innerHTML = '[ ' + item.name + ' ]';
                 create_el('item_slot', 'div', 'item_tooltip_div');
                 item_slot.classList.add('i_slot_type');
-                item_slot.innerHTML = 'Head';
-            
-                // set rarity color and item color
+                item_slot.innerHTML = item.slot_name;
+
+                // Set rarity color and item color
                 create_el('item_rarity', 'div', 'item_tooltip_div');
                 switch (item.rarity) {
                     case 0: item_rarity.classList.add('r_junk');
@@ -873,41 +864,75 @@ item_tooltip_container.style.top = `${clickY + 20}px`;
                             item_rarity.innerHTML = 'Ancient';
                             item_name.classList.add('r_ancient');
                             break;
-                    }
+                }
                 create_el('hr1', 'hr', 'item_tooltip_div');
                 create_el('item_desc', 'div', 'item_tooltip_div');
                 item_desc.classList.add('light_small');
                 item_desc.innerHTML = item.desc;
                 create_el('item_stats', 'div', 'item_tooltip_div');
                 
-                // set stat gain attributes
-                
+                // Set stat gain attributes
                 let item_gains = item.gains;
-            
                 item_gains.forEach(gain => {
                     let statLine = gain.amt + '&nbsp;' + gain.stat;
-                    
                     if (gain.stat === 'Armor') {
                         item_stats.innerHTML += '<div class="item_tooltip_armor">' + statLine + '</span>';
-                    } else {
+                    } else if (gain.stat !== 'dmg_min' && gain.stat !== 'dmg_max') {
                         item_stats.innerHTML += '<div class="r_uncommon">+' + statLine + '</span>';
                     }
+                    if (item.slot === 'mh') {
+                        create_el('damage_lbl', 'div', 'item_tooltip_div');
+                        damage_lbl.classList.add('item_tooltip_armor');
+                        // Damage per item
+                        let d_dmg_min = item_gains.find(i => i.stat === 'dmg_min');
+                        let d_dmg_max = item_gains.find(i => i.stat === 'dmg_max');
+                        damage_lbl.innerHTML = 'Damage per turn: ';
+                        create_el('min_span', 'span', 'damage_lbl');
+                        min_span.innerHTML = d_dmg_min.amt;
+                        create_el('sep', 'span', 'damage_lbl');
+                        sep.innerHTML = '&nbsp;-&nbsp;';
+                        create_el('max_span', 'span', 'damage_lbl');
+                        max_span.innerHTML = d_dmg_max.amt;
+                    }
                 });
+                
+                // Sell price
+                create_el('sell_price_lbl', 'div', 'item_tooltip_div');
+                sell_price_lbl.classList.add('light_small');
+                sell_price_lbl.innerHTML = 'Sell Price: ';
+                create_el('gold_div', 'div', 'sell_price_lbl');
+                gold_div.style.display = 'inline-block';
+                create_el('gold', 'img', 'gold_div');
+                gold.src = 'media/currency_gold.png';
+                gold.classList.add('currency_gold');
+                create_el('sell_price_amt', 'span', 'sell_price_lbl');
+                sell_price_amt.classList.add('light_small');
+
+                if (item.value > 0) {
+                    sell_price_amt.innerHTML = '&nbsp;' + item.value;
+                } else {
+                    gold_div.style.display = 'none';
+                    sell_price_amt.innerHTML = '[ None ]';
+                }
+
+                // Store the current tooltip and element references
+                currentTooltip = item_tooltip_container;
+                currentTooltipElement = elid;
 
                 // Add event listeners to hide the tooltip
                 setTimeout(() => {
                     document.addEventListener('click', handleOutsideClick);
                 }, 20);
-
-
             } else {
-                elid.removeChild(document.getElementById('item_tooltip_container'));
-                trackingData[0].tooltip_open = false;
+                removeTooltip();
+                elid.style.zIndex = '0';
+                item_box_DOM.style.zIndex = '0';
+
             }
         };
     
     } else {
-        let tooltipElement = document.getElementById('item_tooltip_container');
+        let tooltipElement = document.getElementById(item_tooltip_container_item);
         if (tooltipElement) {
             elid.removeChild(tooltipElement);
         }
@@ -915,24 +940,25 @@ item_tooltip_container.style.top = `${clickY + 20}px`;
     }
 
     function handleOutsideClick(event) {
-        const tooltipContainer = document.getElementById('item_tooltip_container');
+        const tooltipContainer = document.getElementById(item_tooltip_container_item);
         if (tooltipContainer && !elid.contains(event.target) && !tooltipContainer.contains(event.target)) {
             removeTooltip();
         }
     }
 
     function removeTooltip() {
-        const tooltipContainer = document.getElementById('item_tooltip_container');
-        if (tooltipContainer) {
-            elid.removeChild(document.getElementById('item_tooltip_container'));
+        if (currentTooltip) {
+            // reset layer z-index
+            currentTooltipElement.style.zIndex = 'auto'; // Reset z-index
+            currentTooltipElement.removeChild(currentTooltip);
+            currentTooltip = null;
+            currentTooltipElement = null;
             trackingData[0].tooltip_open = false;
             document.removeEventListener('click', handleOutsideClick);
         }
     }
 }
 
-//// WIP
-// SECTION needs complete revamp for new array design
 export function character_setup() {
 
     let character_container = document.getElementById('character_container');
@@ -1026,8 +1052,6 @@ export function character_setup() {
         let char_equipment = document.createElement('div');
         character_container.appendChild(char_equipment);
         char_equipment.innerHTML = '<p><b>EQUIPMENT:</b></p>';
-        char_equipment.style.position = 'relative';
-        //character_container.classList.add('char_equipment');
 
 // equipment image with slots around image
 
@@ -1040,7 +1064,7 @@ create_el('char_equipment_container', 'div', char_equipment);
         shoulders.classList.add('item-box');
         create_el('neck', 'div', 'div_side_boxes_left', 'Neck');
         neck.classList.add('item-box');
-        create_el('chest', 'div', 'div_side_boxes_left', 'Chest');
+        create_el('chest', 'div', 'div_side_boxes_left');
         chest.classList.add('item-box');
         create_el('wrist', 'div', 'div_side_boxes_left', 'Wrist');
         wrist.classList.add('item-box');
@@ -1052,187 +1076,91 @@ create_el('char_equipment_container', 'div', char_equipment);
     char_equipment_image.style.width = '80px';
     create_el('div_side_boxes_right', 'div', 'char_equipment_container');
     div_side_boxes_right.classList.add('side-boxes', 'right');
-        create_el('hands', 'div', 'div_side_boxes_right', 'Hands');
+        create_el('hands', 'div', 'div_side_boxes_right');
         hands.classList.add('item-box');
         create_el('waist', 'div', 'div_side_boxes_right', 'Waist');
         waist.classList.add('item-box');
         create_el('legs', 'div', 'div_side_boxes_right', 'Legs');
         legs.classList.add('item-box');
-        create_el('feet', 'div', 'div_side_boxes_right', 'Feet');
+        create_el('feet', 'div', 'div_side_boxes_right');
         feet.classList.add('item-box');
         create_el('ring2', 'div', 'div_side_boxes_right', 'Ring2');
         ring2.classList.add('item-box');
     create_el('div_bottom_boxes', 'div', 'char_equipment_container');
     div_bottom_boxes.classList.add('bottom-boxes');
-        create_el('mh', 'div', 'div_bottom_boxes', 'MH');
+        create_el('mh', 'div', 'div_bottom_boxes');
         mh.classList.add('item-box');
         create_el('oh', 'div', 'div_bottom_boxes', 'OH');
         oh.classList.add('item-box');
 
-
-/*
-<div id="char_equipment_container">
-    <div class="top-box"></div>
-    <div class="side-boxes">
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
-    </div>
-    <img id="char_equipment_image" src="media/char_equip.png" alt="Character Equipment">
-    <div class="side-boxes">
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
-        <div class="box"></div>
-    </div>
-    <div class="bottom-boxes">
-        <div class="box"></div>
-        <div class="box"></div>
-    </div>
-</div>
-*/
-
-
-/*
-// OLD
-// equpment image as background 
-        create_el('row1', 'div', char_equipment);
-        row1.style.paddingLeft = '125px';
+        // First run setup
+        if (!trackingData[0].starting_equip_added) {
+            // Add starting items
+            const starting_items = itemData.filter(i => i.start_equipped === true);
+            starting_items.forEach(item => {
+                let slot_element = document.getElementById(item.slot);
+                if (slot_element) {
+                    item_tooltip(slot_element, item.id);
+                }
+            });
+            
+    //// WIP
+            // Save starting equipment to saveData array
+            let saveDataEquip = saveData[3].equippedData;
+            saveDataEquip.forEach(saveItem => {
+                const d_itemData = itemData.find(i => i.slot === saveItem.id && i.start_equipped === true);
+                if (d_itemData) {
+                    saveItem.equipped = d_itemData.id;
+                }
+            });
+            trackingData[0].starting_equip_added = true;
+        }
         
-        create_el('head', 'div', 'row1');
-        head.classList.add('item_box');
-        //head.innerHTML = 'Head';
-        
-        create_el('row2', 'div', char_equipment);
-        row2.style.paddingLeft = '50px';
-        
-        create_el('shoulders', 'span', 'row2');
-        shoulders.classList.add('item_box');
-        shoulders.innerHTML = 'Shoulders';
-        
-        create_el('spacer_shoulders', 'span', 'row2');
-        spacer_shoulders.style.paddingLeft = '100px';
-        
-        create_el('hands', 'span', 'row2');
-        hands.classList.add('item_box');
-        hands.innerHTML = 'Hands';
-        
-        create_el('row3', 'div', char_equipment);
-        row3.style.paddingLeft = '50px';
-        
-        create_el('neck', 'span', 'row3');
-        neck.classList.add('item_box');
-        neck.innerHTML = 'Neck';
-        
-        create_el('spacer_neck', 'span', 'row3');
-        spacer_neck.style.paddingLeft = '100px';
-        
-        create_el('waist', 'span', 'row3');
-        waist.classList.add('item_box');
-        waist.innerHTML = 'Waist';
-        
-        create_el('row4', 'div', char_equipment);
-        row4.style.paddingLeft = '50px';
-        
-        create_el('chest', 'span', 'row4');
-        chest.classList.add('item_box');
-        chest.innerHTML = 'Chest';
-        
-        create_el('spacer_chest', 'span', 'row4');
-        spacer_chest.style.paddingLeft = '100px';
-        
-        create_el('legs', 'span', 'row4');
-        legs.classList.add('item_box');
-        legs.innerHTML = 'Legs';
-        
-        create_el('row5', 'div', char_equipment);
-        row5.style.paddingLeft = '50px';
-        
-        create_el('wrist', 'span', 'row5');
-        wrist.classList.add('item_box');
-        wrist.innerHTML = 'Wrist';
-        
-        create_el('spacer_wrist', 'span', 'row5');
-        spacer_wrist.style.paddingLeft = '100px';
-        
-        create_el('feet', 'span', 'row5');
-        feet.classList.add('item_box');
-        feet.innerHTML = 'Feet';
-        
-        create_el('row6', 'div', char_equipment);
-        row6.style.paddingLeft = '50px';
-        
-        create_el('ring1', 'span', 'row6');
-        ring1.classList.add('item_box');
-        ring1.innerHTML = 'Ring';
-        
-        create_el('spacer_ring', 'span', 'row6');
-        spacer_ring.style.paddingLeft = '100px';
-        
-        create_el('ring2', 'span', 'row6');
-        ring2.classList.add('item_box');
-        ring2.innerHTML = 'Ring';
-        
-        // weapon, offhand
-        
-        create_el('row7', 'div', char_equipment);
-        row7.style.paddingLeft = '100px';
-        
-        create_el('main_hand', 'span', 'row7');
-        main_hand.classList.add('item_box');
-        main_hand.innerHTML = 'MH';
-        
-        create_el('off_hand', 'span', 'row7');
-        off_hand.classList.add('item_box');
-        off_hand.innerHTML = 'OH';
-*/
-
-
-
-
-
-
-
-        let stats_info = document.createElement('div');
-        character_container.appendChild(stats_info);
-        stats_info.innerHTML += '<p><b>STATS:</b></p>';
-
-        // Loop through each characterData object
-        characterData.forEach(character => {
-            if (Array.isArray(character.stats)) {
-                // If stats exist, loop through each stat object
-                character.stats.forEach(stat => {
-                    Object.keys(stat).forEach(key => {
-                        if (key !== 'label') {
-                            stats_info.innerHTML += stat.label + stat[key] + '<br>';
-                            //console.log(stat.label + stat[key]);
-                        }
-                    });
+        // Match saveData with items
+        let d_equippedData = saveData[3].equippedData;
+        d_equippedData.forEach(item => {
+            // Calculate total armor equipped
+            let d_itemData = itemData.find(i => i.id === item.equipped && i.type === 'armor');
+            if (d_itemData) {
+                const stat_data = characterData.filter(d => d.type === 'stat');
+                const stat_gains = d_itemData.gains;
+                const d_this_stat = stat_gains.find(d => d.stat === 'Armor');
+                stat_data.forEach(stat => {
+                    if (stat.id === 'armor') {
+                        stat.amt += d_this_stat.amt;
+                    }
                 });
-            } else if (Array.isArray(character.stats_desc)) {
-                // If stats_desc exist, loop through each stats_desc object
-                character.stats_desc.forEach(desc => {
-                    Object.values(desc).forEach(value => {
-                        //console.log(value);
-                    });
-                });
-            } else {
-                console.log("Error: 'stats' or 'stats_desc' is not defined or not an array.");
             }
         });
-    }
-/*
-// *** NEEDS FUNCTION
-*/
-    // add equipped item tooltips
-    item_tooltip(head, 'BASIC_HELMET');
 
+        create_el('stats_info', 'div', character_container);
+        stats_info.innerHTML += '<p><b>STATS:</b></p>';
+
+        // Character stat information
+        const stat_data = characterData.filter(d => d.type === 'stat');
+        stat_data.forEach(stat => {
+            if (stat.id === 'hitChance' || stat.id === 'criticalStrikeChance') {
+                stat.amt = (stat.amt * 100) + '%';
+            }
+            let line_item = stat.label + stat.amt + '<br>';
+            stats_info.innerHTML += line_item;
+
+            
+        });
+        
+        // Stat descriptions
+        create_el('stats_desc_lbl', 'div', character_container);
+        stats_desc_lbl.innerHTML = '<br><b>STAT DEFINITIONS:</b<br>';
+        create_el('stats_desc', 'div', character_container);
+        stats_desc.innerHTML = '<p>';
+        let stat_data_desc = characterData.filter(d => d.type === 'desc');
+        stat_data_desc.forEach(stat => {
+            let line_item = '<b>' + stat.label + ':</b> ' + stat.def + '<br>';
+            stats_desc.innerHTML += line_item;
+        });
+    }
 }
 
-//// WIP
 export function start_battle_button(elementId) {
 
     let combat_log = document.getElementById('combat_log');

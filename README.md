@@ -4,6 +4,11 @@ https://twaddler01.github.io/rpg_similitude/
 # Updates
 
 09-05-2024
+- Uploaded media files.
+- Worked on stats. Adding each stat description/calculation to array in order to update to saveData eventually. Still working on details.
+- Next long-term goal is adding more equipment and integrating with inventory to equip/unequip items with stats automatically updating.
+
+09-04-2024
 - Updated equipment section some more. Added default equipment and stat information. Armor is now totaled up based on what is equipped starting out, will add other stats dynamically soon.
 - Likely need a few functions to update equipment slots as equipment is swapped, etc.
 - Need current icon images uploaded to Github for full functionality.

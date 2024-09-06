@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
 });
 
-
 /*
 // ilvl 1 = (1.2 - 1.6)
 let stat_power = 0;
@@ -119,9 +118,9 @@ for (let ilvl = 1; ilvl <= 20; ilvl ++) {
     let [damage_min, damage_max] = calculate_damage(ilvl, stat_power);
     console.log('ilvl: ' + ilvl + ' / Min: ' + damage_min + ' / Max: ' + damage_max);
 
-}*/
+}
 
-function calculate_damage(itemLevel, statPower) {
+function calculate_weapon_damage(itemLevel, statPower) {
 
     let ilvl = itemLevel;
 
@@ -144,7 +143,7 @@ function calculate_damage(itemLevel, statPower) {
     damage_max = Math.round(damage_max*10)/10;
 
     return [damage_min, damage_max];
-}
+}*/
 
 function loaded_DOM() {
     locData.forEach(location => {

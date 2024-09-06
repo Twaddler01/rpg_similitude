@@ -874,8 +874,8 @@ export function item_tooltip(targetElement, itemId) {
                 // Set stat gain attributes
                 let item_gains = item.gains;
                 item_gains.forEach(gain => {
-                    let statLine = gain.amt + '&nbsp;' + gain.stat;
-                    if (gain.stat === 'Armor') {
+                    let statLine = gain.amt + '&nbsp;' + gain.lbl;
+                    if (gain.stat === 'armor') {
                         item_stats.innerHTML += '<div class="item_tooltip_armor">' + statLine + '</span>';
                     } else if (gain.stat !== 'dmg_min' && gain.stat !== 'dmg_max') {
                         item_stats.innerHTML += '<div class="r_uncommon">+' + statLine + '</span>';
@@ -884,15 +884,32 @@ export function item_tooltip(targetElement, itemId) {
                         create_el('damage_lbl', 'div', 'item_tooltip_div');
                         damage_lbl.classList.add('item_tooltip_armor');
                         // Damage per item
+                        // WIP replace with calculate function
                         let d_dmg_min = item_gains.find(i => i.stat === 'dmg_min');
                         let d_dmg_max = item_gains.find(i => i.stat === 'dmg_max');
-                        damage_lbl.innerHTML = 'Damage per turn: ';
+                        //let [base_weapon_min, base_weapon_max]  = calculate_weapon_damage(1, 0);
+                        //console.log(base_weapon_min + ' : ' + base_weapon_max);
+
+                        // Weapon base damage
+                        damage_lbl.innerHTML = 'Base damage: ';
                         create_el('min_span', 'span', 'damage_lbl');
                         min_span.innerHTML = d_dmg_min.amt;
                         create_el('sep', 'span', 'damage_lbl');
                         sep.innerHTML = '&nbsp;-&nbsp;';
                         create_el('max_span', 'span', 'damage_lbl');
                         max_span.innerHTML = d_dmg_max.amt;
+
+                        // 'Damage per turn (with power)'' only printed after update_equipment()
+                        create_el('damage_pwr_lbl', 'div', 'item_tooltip_div');
+                        damage_pwr_lbl.classList.add('item_tooltip_armor');
+                        damage_pwr_lbl.innerHTML = 'Damage Per Turn: ';
+                        create_el('min_span_pwr', 'span', 'damage_pwr_lbl');
+                        min_span_pwr.innerHTML = trackingData[0].pwr_weapon_min;
+                        create_el('sep2', 'span', 'damage_pwr_lbl');
+                        sep2.innerHTML = '&nbsp;-&nbsp;';
+                        create_el('max_span_pwr', 'span', 'damage_pwr_lbl');
+                        max_span_pwr.innerHTML = trackingData[0].pwr_weapon_max;
+                        
                     }
                 });
                 
@@ -1104,7 +1121,6 @@ create_el('char_equipment_container', 'div', char_equipment);
                 }
             });
             
-    //// WIP
             // Save starting equipment to saveData array
             let saveDataEquip = saveData[3].equippedData;
             saveDataEquip.forEach(saveItem => {
@@ -1116,38 +1132,102 @@ create_el('char_equipment_container', 'div', char_equipment);
             trackingData[0].starting_equip_added = true;
         }
         
-        // Match saveData with items
-        let d_equippedData = saveData[3].equippedData;
-        d_equippedData.forEach(item => {
-            // Calculate total armor equipped
-            let d_itemData = itemData.find(i => i.id === item.equipped && i.type === 'armor');
-            if (d_itemData) {
-                const stat_data = characterData.filter(d => d.type === 'stat');
-                const stat_gains = d_itemData.gains;
-                const d_this_stat = stat_gains.find(d => d.stat === 'Armor');
-                stat_data.forEach(stat => {
-                    if (stat.id === 'armor') {
-                        stat.amt += d_this_stat.amt;
-                    }
-                });
-            }
-        });
+    //// WIP
+    
+        // Add equipmemt from equipped items
+        update_equipment();
 
         create_el('stats_info', 'div', character_container);
         stats_info.innerHTML += '<p><b>STATS:</b></p>';
 
         // Character stat information
+        // Calculates ALL stat effects
         const stat_data = characterData.filter(d => d.type === 'stat');
         stat_data.forEach(stat => {
+
+            let stats_effect = `<br><span style="color:lightgreen">(Default)</span>`;
+
+            switch (stat.id) {
+                case 'armor': 
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-100}, reduces damage received by <b>${(stat.amt-100)*0.1}%</b></span>`;
+                    break;
+                case 'strength':
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases both melee damage dealt by <b>${(stat.amt-10)*0.1}%</b> and total energy by <b>${(stat.amt-10)*10}</b></span>`;
+                    break;
+                case 'intelligence':
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases both magic damage dealt by <b>${(stat.amt-10)*0.1}%</b> and total mana by <b>${(stat.amt-10)*10}</b></span>`;
+                    break;
+                case 'dexterity':
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases hit chance by <b>${(stat.amt-10)*0.1}%</b>. Current same-level enemy hit chance: <b>${((stat.amt-10)*0.1)+90}%</b></span>`;
+                    break;
+                case 'constitution':
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases maximum health by <b>${(stat.amt-10)*0.1}%</b></span>`;
+                    break;
+                case 'agility':
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases melee critical strike chance by <b>${(stat.amt-10)*0.1}%</b></span>`;
+                    trackingData[0].stat_agility = stat.amt - 10;
+                    break;
+                case 'wisdom':
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases magic critical strike chance by <b>${(stat.amt-10)*0.1}%</b></span>`;
+                    trackingData[0].stat_wisdom = stat.amt - 10;
+                    break;
+                case 'power':
+                    let min_dmg = characterData.find(d => d.id === 'attackMinimum');
+                    let max_dmg = characterData.find(d => d.id === 'attackMaximum');
+                    let equipped_items = saveData[3].equippedData;
+                    let current_weapon = equipped_items.find(i => i.id === 'mh');
+                    let item_info = itemData.find(i => i.id === current_weapon.equipped);
+                    let current_weapon_item_info = item_info.gains;
+                    let current_weapon_dmg_min = current_weapon_item_info.find(w => w.stat === 'dmg_min');
+                    let current_weapon_dmg_max = current_weapon_item_info.find(w => w.stat === 'dmg_max');
+                    trackingData[0].current_weapon_dmg_min = current_weapon_dmg_min.amt;
+                    trackingData[0].current_weapon_dmg_max = current_weapon_dmg_max.amt;
+                    //console.log(current_weapon_dmg_min.amt + ' : ' + current_weapon_dmg_max.amt);
+                    let [pwr_weapon_min, pwr_weapon_max]  = calculate_weapon_damage(1, stat.amt);
+                    //console.log(pwr_weapon_min + ' : ' + pwr_weapon_max)
+                    let incr_dmg_min = Math.round((((pwr_weapon_min / current_weapon_dmg_min.amt) - 1) * 100) * 10) / 10;
+                    let incr_dmg_max = Math.round((((pwr_weapon_max / current_weapon_dmg_max.amt) - 1) * 100) * 10) / 10;
+                    //console.log(incr_dmg_min + ' : ' + incr_dmg_max)
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases attack damage per turn minimum by <b>${incr_dmg_min}%</b> and attack damage per turn maximum by <b>${incr_dmg_max}%</b></span>`;
+                    // Store calculations for tooltip display
+                    trackingData[0].pwr_weapon_min = pwr_weapon_min;
+                    trackingData[0].pwr_weapon_max = pwr_weapon_max;
+                    break;
+                case 'attackMinimum':
+                    let differ_dmg_min = Math.round((trackingData[0].pwr_weapon_min - trackingData[0].current_weapon_dmg_min) * 10) / 10;
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_min}, minimum damage is increased by power from ${stat.amt} to <b>${trackingData[0].pwr_weapon_min}</b></span>`;
+                    break;
+                case 'attackMaximum':
+                    let differ_dmg_max = Math.round((trackingData[0].pwr_weapon_max - trackingData[0].current_weapon_dmg_max) * 10) / 10;
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_max}, minimum damage is increased by power from ${stat.amt} to <b>${trackingData[0].pwr_weapon_max}</b></span>`;
+                    break;
+                case 'hitChance':
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt}%, current probability an attack will cause damage to same-level enemies: ${90+stat.amt}%</span>`;
+                    stats_effect += `<br><span style="color:lightgreen">- Current probability an attack will cause damage to <u>level +1</u> enemies: ${87+stat.amt}%</span>`;
+                    stats_effect += `<br><span style="color:lightgreen">- Current probability an attack will cause damage to <u>level +2</u> enemies: ${85+stat.amt}%</span>`;
+                    stats_effect += `<br><span style="color:lightgreen">- Current probability an attack will cause damage to <u>level +3 or higher</u> enemies: ${50+stat.amt}%</span>`;
+                    break;
+                case 'criticalStrikeChance':
+                    stats_effect = `<br><span style="color:lightgreen">Combined equipment and base bonus: +${stat.amt*100}%, increases the probability any successful attack is critical by <b>${stat.amt*100}%</b></span>`;
+                    stats_effect += `<br><span style="color:lightgreen">- Melee equipment bonus: +${trackingData[0].stat_agility} Agility, increases the probability a successful melee attack is critical by <b>${trackingData[0].stat_agility*0.1+5}%</b></span>`;
+                    stats_effect += `<br><span style="color:lightgreen">- Magic equipment bonus: +${trackingData[0].stat_wisdom} Wisdom, increases the probability a successful magic attack is critical by <b>${trackingData[0].stat_wisdom*0.1+5}%</b></span>`;
+                    break;
+            }
+            
             if (stat.id === 'hitChance' || stat.id === 'criticalStrikeChance') {
                 stat.amt = (stat.amt * 100) + '%';
             }
-            let line_item = stat.label + stat.amt + '<br>';
-            stats_info.innerHTML += line_item;
+            if (stat.id === 'attackMinimum') {
+                stat.amt = trackingData[0].pwr_weapon_min;
+            }
+            if (stat.id === 'attackMaximum') {
+                stat.amt = trackingData[0].pwr_weapon_max;
+            }
 
-            
+            let line_item = stat.label + stat.amt + stats_effect + '<br>';
+            stats_info.innerHTML += line_item;
         });
-        
+
         // Stat descriptions
         create_el('stats_desc_lbl', 'div', character_container);
         stats_desc_lbl.innerHTML = '<br><b>STAT DEFINITIONS:</b<br>';
@@ -1159,6 +1239,52 @@ create_el('char_equipment_container', 'div', char_equipment);
             stats_desc.innerHTML += line_item;
         });
     }
+}
+
+export function calculate_weapon_damage(itemLevel, statPower) {
+
+    let ilvl = itemLevel;
+
+    // weapon damage ramge multiplier
+    let min = 1;
+    let max = 1.5;
+    // calc min/max damage of weapons for player display
+    let damage_min = Math.round((1.2*ilvl*min)*10)/10;
+    let damage_max = Math.round((1.08*ilvl*max)*10)/10;
+        
+    // *** multipliers
+    
+    // Power
+    let power = statPower; // 0: 24 - 32.4 / 1: 24.2 - 34.7
+    damage_min *= (1 + (0.02 * power));
+    damage_max *= (1 + (0.02 * power));
+    
+    // final calculation
+    damage_min = Math.round(damage_min*10)/10;
+    damage_max = Math.round(damage_max*10)/10;
+
+    return [damage_min, damage_max];
+}
+
+export function update_equipment() {
+    // Match saveData with items
+    let d_equippedData = saveData[3].equippedData;
+    d_equippedData.forEach(item => {
+        // Calculate total armor equipped
+        let d_itemData = itemData.find(i => i.id === item.equipped);
+        if (d_itemData) {
+            const stat_data = characterData.filter(d => d.type === 'stat');
+            const stat_gains = d_itemData.gains;
+            stat_data.forEach(stat => {
+                //stat_gains.id = stat_gains.id.toLowerCase();
+                stat_gains.forEach(char_stat => {
+                    if (char_stat.stat === stat.id) {
+                        stat.amt += char_stat.amt;
+                    }
+                });
+            });
+        }
+    });
 }
 
 export function start_battle_button(elementId) {

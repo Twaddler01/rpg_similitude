@@ -625,7 +625,10 @@ export function init_itemData() {
         start_equipped: true,
         rarity: 0,
         desc: 'Basic head protection, nothing extraordinary.',
-        gains: [ {stat: 'Armor', amt: 10 }, ],
+        gains: [ 
+            { stat: 'armor', lbl: 'Armor', amt: 10 },
+            { stat: 'strength', lbl: 'Strength', amt: 1 },
+        ],
         //gains: [ {stat: 'Armor', amt: 10 }, { stat: 'Constitution', amt: 1 } ],
         cnt: 1,
         value: 0,
@@ -641,7 +644,10 @@ export function init_itemData() {
         start_equipped: true,
         rarity: 0,
         desc: 'Basic chest protection. Not very stylish.',
-        gains: [ {stat: 'Armor', amt: 20 }, ],
+        gains: [ 
+            { stat: 'armor', lbl: 'Armor', amt: 20 },
+            { stat: 'wisdom', lbl: 'Wisdom', amt: 2 },
+        ],
         cnt: 1,
         value: 0,
         iSlot: 'eCh',
@@ -656,7 +662,10 @@ export function init_itemData() {
         start_equipped: true,
         rarity: 0,
         desc: 'Basic hand protection. Almost as good as junk...almost.',
-        gains: [ {stat: 'Armor', amt: 10 }, ],
+        gains: [ 
+            { stat: 'armor', lbl: 'Armor', amt: 10 },
+            { stat: 'power', lbl: 'Power', amt: 5 },
+        ],
         cnt: 1,
         value: 0,
         iSlot: 'eGl',
@@ -671,7 +680,10 @@ export function init_itemData() {
         start_equipped: true,
         rarity: 0,
         desc: 'Basic feet protection. Not very comfortable.',
-        gains: [ {stat: 'Armor', amt: 10 }, ],
+        gains: [ 
+            { stat: 'armor', lbl: 'Armor', amt: 10 },
+            { stat: 'dexterity', lbl: 'Dexterity', amt: 5 },
+        ],
         cnt: 1,
         value: 0,
         iSlot: 'eF',
@@ -686,7 +698,11 @@ export function init_itemData() {
         start_equipped: true,
         rarity: 0,
         desc: 'A cheap dagger. Dull. You&apos;ll stab your eye out, kid.',
-        gains: [ { stat: 'dmg_min', amt: 1.2 }, { stat: 'dmg_max', amt: 1.6 } ],
+        gains: [ 
+            { stat: 'dmg_min', amt: 1.2 }, 
+            { stat: 'dmg_max', amt: 1.6 }, 
+            { stat: 'constitution', lbl: 'Constitution', amt: 10 }, 
+        ],
         cnt: 1,
         value: 0,
         iSlot: 'eMH',
@@ -745,14 +761,14 @@ export function init_characterData() {
         { id: 'hitChance', type: 'stat', amt: 0.9, label: 'Hit Chance: ' },
         { id: 'criticalStrikeChance', type: 'stat', amt: 0.05, label: 'Critical Strike Chance: ' }, // bsse stats: [0] - [12]
         // desc
-        { id: 'armor', label: 'Armor', type: 'desc', def: 'Reduces damage taken by 0.1% per point above base amount.' },
+        { id: 'armor', label: 'Armor', type: 'desc', def: 'Reduces damage received by 0.1% per point above base amount.' },
         { id: 'strength', label: 'Strength', type: 'desc', def: 'Increases both melee damage dealt by 0.1% and total energy by 10 per point above base amount.' },
         { id: 'intelligence', label: 'Intelligence', type: 'desc', def: 'Increases both magic damage dealt by 0.1% and total mana by 10 per point above base amount.' },
-        { id: 'dexterity', label: 'Dexterity', type: 'desc', def: 'Increses hit chance by 0.1% per point above base amount. Default hit chance is 90%, or 100% at 100+ dex' },
-        { id: 'constitution', label: 'Constitution', type: 'desc', def: 'Increases health by 0.1% per point above base amount.' },
+        { id: 'dexterity', label: 'Dexterity', type: 'desc', def: 'Increases hit chance by 0.1% per point above base amount. Default hit chance is 90%, or 100% at 100+ dex' },
+        { id: 'constitution', label: 'Constitution', type: 'desc', def: 'Increases maximum health by 0.1% per point above base amount.' },
         { id: 'agility', label: 'Agility', type: 'desc', def: 'Increases melee critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
         { id: 'wisdom', label: 'Wisdom', type: 'desc', def: 'Increases magic critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
-        { id: 'power', label: 'Power', type: 'desc', def: 'Increases both attack minimum and maximum.' },
+        { id: 'power', label: 'Power', type: 'desc', def: 'Increases both attack damage minimum and maximum per turn.' },
         { id: 'attackMinimum', label: 'Attack Minimum', type: 'desc', def: 'Minimum damage caused for each hit per turn.' },
         { id: 'attackMaximum', label: 'Attack Maximum', type: 'desc', def: 'Maximim damage caused for each hit per turn.' },
         { id: 'hitChance', label: 'Hit Chance', type: 'desc', def: 'The probability an attack will cause damage or miss. 100% hit chance guarantees a hit if enemy level is less than or equal to player&apos;s current level. Hit chance decreases for each enemy level above the player&apos;s level.' },
@@ -764,30 +780,6 @@ export function init_characterData() {
 
 export function init_saveData() {
 
-// **** multiple scenarios ****
-
-// mid setup
-/*
-    const saveData = [
-        { kills: 4 }, // l = 0
-        { kills: 3 },
-        { kills: 4 },
-        { kills: 3 },
-        { kills: 4 },
-        { kills: 4 },
-        { kills: 4 },
-        { kills: 6 },
-        { kills: 3 },
-        { kills: 4 },
-        { kills: 0 }, // l = 10
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 }, // max = 14
-        { kills: 0 }, // placeholder
-    ];
-    */
-    // WIP add categpry for kill data
     const saveData = [
     // saveData[0]
     { killsData: [ // added to locationsData array
@@ -847,37 +839,14 @@ export function init_saveData() {
     //console.log(saveData[1].savedCharacterData); // like a standalone array
     //console.log(saveData[2].inventoryData); // like a standalone array
     //console.log(saveData[0].killsData[0]); // for array lengths
-    
-    /*
-    // new game
-    const saveData = [
-        { kills: 0 }, 
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 },
-        { kills: 0 }, 
-    ];
-    */
-    
+
     return saveData;
 }
 
 export function init_trackingData() {
 
-    // always trackingData[0]
     const trackingData = [
+        // trackingData[0]
         { loc: 0 }, // (int)
         { lvl: 0 }, // (int)
         // trackingData[0].currentLocation (int)
@@ -885,6 +854,19 @@ export function init_trackingData() {
         // trackingData[0].kills (int)
         // trackingData[0].character_created (bool: false)
         // trackingData[0].starting_equip_added (bool: false)
+        // trackingData[0].current_weapon_dmg_min (float)
+        // trackingData[0].current_weapon_dmg_max (float)
+        // trackingData[0].pwr_weapon_min (float)
+        // trackingData[0].pwr_weapon_max (float)
+        // *** stats WIP
+        // trackingData[0].stat_armor (int)
+        // trackingData[0].stat_strength (int)
+        // trackingData[0].stat_intelligence (int)
+        // trackingData[0].stat_dexterity (int)
+        // trackingData[0].stat_constitution (int)
+        // trackingData[0].stat_agility (int) done
+        // trackingData[0].stat_wisdom (int) done
+        // trackingData[0].stat_power (int)
     ];
 
     return trackingData;

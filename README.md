@@ -3,6 +3,9 @@
 https://twaddler01.github.io/rpg_similitude/
 # Updates
 
+09-06-2024
+- Updated inventory to include items and image icons. Needs tooltip work and needs to save inventory data to saveData array.
+
 09-05-2024
 - Uploaded media files.
 - Worked on stats. Adding each stat description/calculation to array in order to update to saveData eventually. Still working on details.

@@ -525,10 +525,6 @@ export function update_locations() {
 
         }
     }
-    //console.log(locationsData[0]);
-    //console.log(locationsData[1]);
-    //console.log(locationsData[2]);
-
 
     // Create locations container
     let locations = document.createElement('div');
@@ -931,6 +927,19 @@ export function item_tooltip(targetElement, itemId) {
                     gold_div.style.display = 'none';
                     sell_price_amt.innerHTML = '[ None ]';
                 }
+//// WIP
+                // Equip / Remove (back to inventory)
+                create_el('equip', 'div', 'item_tooltip_div');
+                create_el('equip_btn', 'button', 'equip');
+                equip_btn.classList.add('item_tooltip_armor');
+                equip_btn.style.background = 'black';
+                equip_btn.innerHTML = 'REMOVE';
+                
+                // If start_equipped item
+                //equip_btn.disabled = 'true';
+                if (equip_btn.disabled) {
+                    equip_btn.style.display = 'none';
+                }
 
                 // Store the current tooltip and element references
                 currentTooltip = item_tooltip_container;
@@ -1132,8 +1141,6 @@ create_el('char_equipment_container', 'div', char_equipment);
             trackingData[0].starting_equip_added = true;
         }
         
-    //// WIP
-    
         // Add equipmemt from equipped items
         update_equipment();
 
@@ -1172,8 +1179,6 @@ create_el('char_equipment_container', 'div', char_equipment);
                     trackingData[0].stat_wisdom = stat.amt - 10;
                     break;
                 case 'power':
-                    let min_dmg = characterData.find(d => d.id === 'attackMinimum');
-                    let max_dmg = characterData.find(d => d.id === 'attackMaximum');
                     let equipped_items = saveData[3].equippedData;
                     let current_weapon = equipped_items.find(i => i.id === 'mh');
                     let item_info = itemData.find(i => i.id === current_weapon.equipped);
@@ -1438,18 +1443,33 @@ export function process_loot() {
             let new_slot = document.createElement('div');
             slot_container.appendChild(new_slot);
             new_slot.id = 'inventory_slot_' + i;
-            new_slot.classList.add('normal', 'center', 'inv_slot');
+            new_slot.classList.add('normal-small', 'center', 'inv_slot');
             new_slot.innerHTML = '[ EMPTY ]';
-
+            new_slot.style.display = 'none';
+            
+            // append with zIndex: 2
+            let new_slot_img = document.createElement('img');
+            slot_container.appendChild(new_slot_img);
+            new_slot_img.id = 'inventory_slot_img_' + i;
+            new_slot_img.style.zIndex = 2;
+            new_slot_img.style.height = '50px';
+            new_slot_img.style.width = '50px';
+            new_slot_img.style.position = 'absolute';
+            new_slot_img.style.top = '0';
+            new_slot_img.style.paddingTop = '5px';
+            new_slot_img.style.right = '0';
+            new_slot_img.style.paddingRight = '5px';
+            new_slot_img.style.display = 'none';
+            
+            // append inv_slot_counter ÷> z-index: 3
             let new_slot_counter = document.createElement('div');
             slot_container.appendChild(new_slot_counter);
             new_slot_counter.id = 'inventory_slot_counter_' + i;
             new_slot_counter.classList.add('normal', 'inv_slot_counter');
-            new_slot_counter.innerHTML = 0;
 
             // Add event listener to slot_container
             slot_container.addEventListener('click', () => {
-                handleSlotClick(slot_container, new_slot, new_slot_counter);
+                handleSlotClick(slot_container, new_slot, new_slot_img, new_slot_counter);
             });
 
         }
@@ -1474,13 +1494,20 @@ export function process_loot() {
             });
         }
     });
+    
+    // WIP insert test items
+    //console.log('add_items');
+    updateLootCount('TOOTH', 1);
+    updateLootCount('TOOTH', 1);
+    updateLootCount('BASIC_HELMET', 1);
+    updateLootCount('BASIC_HELMET', 1);
 
     // reset empty slots
     //applyTransparencyToEmptySlots();
 }
 
 // Function to handle slot click
-function handleSlotClick(slot_container, slot, slotCounter) {
+function handleSlotClick(slot_container, slot, slotImg, slotCounter) {
     //applyTransparencyToEmptySlots();
 
     if (selectedSlot === null) {
@@ -1489,35 +1516,36 @@ function handleSlotClick(slot_container, slot, slotCounter) {
             selectedSlot = {
                 slot_container,
                 slot,
+                slotImg, 
+                itemImg: slotImg.src,
                 slotCounter,
                 itemId: slot.innerHTML,
                 quantity: slotCounter.innerHTML
             };
-            slot.style.backgroundColor = 'green';
-            slotCounter.style.backgroundColor = 'green';
+            slot_container.style.backgroundColor = 'green';
         }
     } else {
         if (selectedSlot.slot_container === slot_container) {
             // If the selected slot is clicked again, deselect it
-            slot.style.backgroundColor = 'gray';
-            slotCounter.style.backgroundColor = 'gray';
-            //selectedSlot.slotCounter.style.backgroundColor = 'gray';
+            slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
             selectedSlot = null;
         } else if (slot.innerHTML === '[ EMPTY ]') {
             // Second click: selecting the destination slot
             // Move the item to the new slot
             slot.innerHTML = selectedSlot.itemId;
+            slotImg.style.display = 'block';
+            slotImg.src = selectedSlot.itemImg;
             slotCounter.innerHTML = selectedSlot.quantity;
 
             // Clear the original slot
             selectedSlot.slot.innerHTML = '[ EMPTY ]';
-            selectedSlot.slotCounter.innerHTML = 0;
+            selectedSlot.slot.style.backgroundColor = 'gray';
+            selectedSlot.itemImg = '';
+            selectedSlot.slotCounter.innerHTML = '';
 
             // Reset the background colors
-            //selectedSlot.slot_container.style.backgroundColor = 'gray';
+            selectedSlot.slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
             slot.style.backgroundColor = 'gray';
-            slotCounter.style.backgroundColor = 'gray';
-            //selectedSlot.slotCounter.style.backgroundColor = 'gray';
 
             // Reset the selectedSlot
             selectedSlot = null;
@@ -1525,19 +1553,23 @@ function handleSlotClick(slot_container, slot, slotCounter) {
         } else if (slot.innerHTML !== '[ EMPTY ]') {
             // Swap the items between the two slots
             let tempItemId = slot.innerHTML;
+            let tempImgId = slotImg.src;
             let tempQuantity = slotCounter.innerHTML;
 
             // Move the selected slot's item to the clicked slot
             slot.innerHTML = selectedSlot.itemId;
+            slotImg.src = selectedSlot.itemImg;
             slotCounter.innerHTML = selectedSlot.quantity;
 
             // Move the clicked slot's item to the previously selected slot
             selectedSlot.slot.innerHTML = tempItemId;
+            selectedSlot.slotImg.src = tempImgId;
             selectedSlot.slotCounter.innerHTML = tempQuantity;
 
             // Reset the background colors
-            selectedSlot.slot.style.backgroundColor = 'gray';
-            selectedSlot.slotCounter.style.backgroundColor = 'gray';
+            selectedSlot.slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            slot.style.backgroundColor = 'gray';
+            
 
             // Reset the selectedSlot
             selectedSlot = null;
@@ -1556,7 +1588,8 @@ export function updateLootCount(itemId, quantity) {
         if (!d_inventory.current_loot) {
             d_inventory.current_loot = [];
         }
-            d_inventory.current_loot.push({ id: lootItem.name, cnt: quantity });
+        // needs to go in saveData
+        d_inventory.current_loot.push({ id: lootItem.name, cnt: quantity });
     }
 
     let itemAdded = false;
@@ -1566,11 +1599,13 @@ export function updateLootCount(itemId, quantity) {
         let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
 
         if (slot && slot.innerHTML === lootItem.name) {
-            // If the item already exists in this slot, add the quantity
-            slotCounter.innerHTML = parseInt(slotCounter.innerHTML) + quantity;
-            lootItem.inv_added = true;
-            itemAdded = true;
-            break; // Exit the loop once the item quantity is updated
+            if (lootItem.stackable) {
+                // If the item already exists in this slot, add the quantity
+                slotCounter.innerHTML = lootItem.cnt; //parseInt(slotCounter.innerHTML) + quantity;
+                lootItem.inv_added = true;
+                itemAdded = true;
+                break; // Exit the loop once the item quantity is updated
+            }
         }
     }
 
@@ -1579,13 +1614,17 @@ export function updateLootCount(itemId, quantity) {
         for (let i = 1; i <= 10; i++) {
             let slot = document.getElementById(`inventory_slot_${i}`);
             let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
+            let slotImage = document.getElementById(`inventory_slot_img_${i}`);
 
             if (slot && slot.innerHTML === '[ EMPTY ]') {
                 if (itemId !== 'GOLD') {
                     slot.style.backgroundColor = 'gray';
                     slot.innerHTML = lootItem.name;
-                    slotCounter.style.backgroundColor = 'gray';
-                    slotCounter.innerHTML = quantity;
+                    slotImage.style.display = 'block';
+                    slotImage.src = lootItem.img;
+                    if (quantity > 1) {
+                        slotCounter.innerHTML = quantity;
+                    }
                     lootItem.inv_added = true;
                 } else {
                     let gold_span = document.getElementById('gold_span');
@@ -1605,13 +1644,13 @@ function applyTransparencyToEmptySlots() {
 
     for (let i = 1; i <= d_inventory.size; i++) {
         let slot = document.getElementById(`inventory_slot_${i}`);
-        let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
+        let slotImg = document.getElementById(`inventory_slot_img_${i}`);
         let slotContainer = document.getElementById(`slot_container_${i}`);
 
         if (slot.innerHTML === '[ EMPTY ]') {
             slot.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
             slotContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-            slotCounter.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            slotImg.style.display = 'none';
         }
     }
 }

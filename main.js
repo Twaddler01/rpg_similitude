@@ -107,6 +107,7 @@ f.character_setup()
 document.addEventListener('DOMContentLoaded', () => {
     f.first_run();
     f.update_locations();
+    f.process_loot();
     //
     
 });

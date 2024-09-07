@@ -1,4 +1,4 @@
-/* style.css 09-05-2024 */
+/* style.css 08-09-2024 */
 body {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Safari */
@@ -17,6 +17,10 @@ body {
 }
 .normal {
     font-size: 16px;
+    color: white;
+}
+.normal-small {
+    font-size: 10px;
     color: white;
 }
 .normal-bold {
@@ -175,7 +179,7 @@ body {
 
 .inv_parent {
     border: 1px solid #ccc;
-    width: 490px;
+    width: 368px;
 }
 
 .inv_slot_container {
@@ -185,22 +189,29 @@ body {
     margin: 5px;
     border: 1px solid #ccc;
     display: inline-block;
-    width: 100px;
-
+    width: 50px;
+    height: 50px;
+    position: relative;
 }
 
 .inv_slot {
     background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
-    padding: 10px;
+    /*padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 2px;*/
     text-align: center;
+    height: 50px;
+    position: relative;
+    font-size: 6px;
 }
 
 .inv_slot_counter {
-    background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
-    padding: 5px;
-    text-align: right;
-    padding-right: 5px;
-    padding-bottom: 5px;
+    z-index: 3;
+    position: absolute;
+    padding-bottom: 4px;
+    bottom: 0;
+    padding-right: 7px;
+    right: 0;
 }
 
 /*

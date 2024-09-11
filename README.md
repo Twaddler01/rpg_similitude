@@ -1,7 +1,13 @@
 # RPG Similitude
 # URL
 https://twaddler01.github.io/rpg_similitude/
+# Issues
+- May be issues loading code from URL. For best results, download .zip and use localhost server. (Fpr Android, I use Simple HTTP server: (https://play.google.com/store/apps/details?id=com.phlox.simpleserver)
+
 # Updates
+
+09-10-2024
+- Inventory is working but messy. Will be revamping system for easy save.
 
 09-06-2024
 - Updated inventory to include items and image icons. Needs tooltip work and needs to save inventory data to saveData array.

@@ -2,7 +2,8 @@
 # URL
 https://twaddler01.github.io/rpg_similitude/
 # Issues
-- May be issues loading code from URL. For best results, download .zip and use localhost server. (Fpr Android, I use Simple HTTP server: (https://play.google.com/store/apps/details?id=com.phlox.simpleserver)
+- May be issues loading code from URL. For best results, download .zip and use localhost server. (For Android, I use Simple HTTP server):
+https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 

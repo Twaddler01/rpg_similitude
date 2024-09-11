@@ -353,12 +353,6 @@ body {
     background-repeat: no-repeat;
     position: relative;  /* Ensure positioned elements inside can be laid out */
 }
-/* Parent div */
-.item_box {
-    position: relative; /* Ensures the haze div is positioned relative to this */
-    width: 100%; /* Or your desired width */
-    height: 100%; /* Or your desired height */
-}
 /* Haze div */
 .haze_div {
     position: absolute;
@@ -369,7 +363,7 @@ body {
     background-color: rgba(0, 128, 0, 0.2); /* Green color with 200% transparency */
     z-index: 1; /* Ensures the haze div is on top */
 }
-.item_box {
+.item_box_equip {
     font-size: 10px;
     text-align: center;
     background-color: black;
@@ -378,8 +372,29 @@ body {
     border: 1px solid white;
     min-height: 50px;
     display: inline-block;
-    
     position: relative;
+}
+.new_slot_img {
+    z-index: 2;
+    height: 50px;
+    width: 50px;
+    position: absolute;
+    top: 0;
+    padding-top: 5px;
+    right: 0;
+    padding-right: 5px;
+    display: none;
+}
+.item_box_inv {
+    font-size: 6px;
+    text-align: center;
+    background-color: black;
+    height: 50px;
+    width: 50px;
+    /*border: 1px solid white;*/
+    /*min-height: 50px;*/
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
 }
 .item_tooltip {
     font-size: 18px;

@@ -576,6 +576,17 @@ export function init_inventoryData() {
         slot_9: '[ EMPTY ]', 
         slot_10: '[ EMPTY ]', 
         },
+        // NEW
+        { type: 'slot', slot_id: 1, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 2, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 3, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 4, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 5, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 6, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 7, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 8, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 9, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 10, contents: '[ EMPTY ]', cnt: 0 },
         { id: 'GOLD',
         cnt: 0,
         name: 'Gold',
@@ -595,20 +606,23 @@ export function init_itemData() {
         // rarity: 4 = epic (pink)
         // rarity: 5 = legendary (orange)
         // rarity: 6 = ancient (lightred)
-    
+
+        /* inInventory = true -> item was processed in
+         * inventory array (inventoryData[0].current_loot) */
         { id: 'GOLD',
         type: 'currency',
         name: 'Gold',
         cnt: 0,
         },
-        { id: 'CLOTH_LINEN',
+        { id: 'CLOTH_BASIC',
         type: 'material',
-        name: 'Linen Cloth',
+        name: 'Basic Cloth',
+        slot: 'Crafting Material',
         rarity: 1,
         cnt: 0,
         stackable: true, // only if item cam stsck
         value: 5,
-        img: 'media/icons/000.jpg',
+        img: 'media/icons/cloth_basic_01.jpg',
         },
         { id: 'TOOTH',
         type: 'junk',
@@ -858,6 +872,9 @@ export function init_trackingData() {
         // trackingData[0].kills (int)
         // trackingData[0].character_created (bool: false)
         // trackingData[0].starting_equip_added (bool: false)
+        // trackingData[0].currentTooltip (element); // Store the currently open tooltip container
+        // trackingData[0].currentTooltipElement (bool); // Store the element that triggered the current tooltip
+        // trackingData[0].tooltipTargetElementId (element)
         // trackingData[0].current_weapon_dmg_min (float)
         // trackingData[0].current_weapon_dmg_max (float)
         // trackingData[0].pwr_weapon_min (float)

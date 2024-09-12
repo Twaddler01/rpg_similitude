@@ -1194,51 +1194,59 @@ export function attack_box_button(elementId) {
     }
 }
 
+//// WIP revamp inventory system
 let selectedSlot = null;
 export function inventory_setup() {
 
-    let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
+    let savedInventory = saveData[2].inventoryData;
+    let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
+    let inventoryElements = inventoryData.filter(i => i.type === 'slot');
 
     // setup inventory
-    if (!d_inventory.setup) {
+    if (!savedInventory[0].setup) {
         let inventory_section = document.getElementById('inventory_section');
 
         let inv_parent = document.createElement('div');
         inv_parent.classList.add('inv_parent');
         inventory_section.appendChild(inv_parent);
 
-        for (let i = 1; i <= d_inventory.size; i++) {
+        savedInventorySlots.forEach((slot_data, index)  => {
+
             let slot_container = document.createElement('div');
             inv_parent.appendChild(slot_container);
-            slot_container.id = 'slot_container_' + i;
+            slot_container.id = 'inventory_slot_container_' + slot_data.slot_id;
             slot_container.classList.add('inv_slot_container');
+            inventoryElements[index].e_slot_container = slot_container.id;
 
-            let new_slot = document.createElement('div');
-            slot_container.appendChild(new_slot);
-            new_slot.id = 'inventory_slot_' + i;
-            new_slot.classList.add('normal-small', 'center', 'inv_slot');
-            new_slot.innerHTML = '[ EMPTY ]';
-            new_slot.style.display = 'none';
-
+            /*let slot = document.createElement('div');
+            slot_container.appendChild(slot);
+            slot.id = 'inventory_slot_' + slot_data.slot_id;
+            inventoryElements[index].e_slot = slot.id;*/
+            
             // append with zIndex: 2
-            let new_slot_img = document.createElement('img');
-            slot_container.appendChild(new_slot_img);
-            new_slot_img.id = 'inventory_slot_img_' + i;
-            new_slot_img.classList.add('new_slot_img');
+            let slot_img = document.createElement('img');
+            slot_container.appendChild(slot_img);
+            slot_img.id = 'inventory_slot_img_' + slot_data.slot_id;
+            slot_img.classList.add('new_slot_img');
+            inventoryElements[index].e_slot_img = slot_img.id;
 
             // append inv_slot_counter ÷> z-index: 3
-            let new_slot_counter = document.createElement('div');
-            slot_container.appendChild(new_slot_counter);
-            new_slot_counter.id = 'inventory_slot_counter_' + i;
-            new_slot_counter.classList.add('normal', 'inv_slot_counter');
+            let slot_counter = document.createElement('div');
+            slot_container.appendChild(slot_counter);
+            slot_counter.id = 'inventory_slot_counter_' + slot_data.slot_id;
+            slot_counter.classList.add('normal', 'inv_slot_counter');
+            inventoryElements[index].e_slot_counter = slot_counter.id;
 
             // Add event listener to slot_container
             slot_container.addEventListener('click', () => {
-                handleSlotClick(slot_container, new_slot, new_slot.id, new_slot_img, new_slot_counter);
+                handleSlotClick(slot_container, slot_img, slot_counter, slot_data, inventoryElements);
             });
-        }
-        d_inventory.setup = true;
+            
+            // All empty slots
+            //console.log(slot_data);
 
+        });
+        savedInventory[0].setup = true;
     }
 
     // setup drop rates
@@ -1265,156 +1273,191 @@ export function inventory_setup() {
     updateLootCount('TOOTH', 1);
     updateLootCount('BASIC_HELMET', 1);
     updateLootCount('BASIC_HELMET', 1);
-    updateLootCount('CLOTH_BASIC', 1);
+    updateLootCount('CLOTH_BASIC', 2);
     updateLootCount('CLOTH_BASIC', 1);
 
     // reset empty slots
     //applyTransparencyToEmptySlots();
 }
 
-// Function to handle slot click
-function handleSlotClick(slot_container, slot, slotId, slotImg, slotCounter) {
+export function updateLootCount(itemId, quantity) {
+    let savedInventory = saveData[2].inventoryData;
+    let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
+    let inventoryElements = inventoryData.filter(i => i.type === 'slot'); // For updating element ids
+    let lootItem = itemData.find(i => i.id === itemId);
+
+    // If the loot item exists
+    if (lootItem) {
+        for (let i = 0; i < savedInventorySlots.length; i++) {
+            let slot_data = savedInventorySlots[i];
+
+            // Check if the slot is empty
+            if (slot_data.contents === '[ EMPTY ]') {
+                // Assign itemId and quantity to the empty slot
+                slot_data.contents = lootItem.id;
+                slot_data.cnt = quantity;
+                // Update the corresponding inventory element using the index
+                let e_slot_img = document.getElementById(inventoryElements[i].e_slot_img);
+                e_slot_img.style.display = 'block';
+                e_slot_img.src = lootItem.img;
+                // (e_slot_counter is hidden for single items)
+                break;
+            } 
+            // If the item is stackable and already exists in the slot, increment its count
+            else if (lootItem.stackable && slot_data.contents === lootItem.id) {
+                slot_data.cnt += quantity;
+                // Update the corresponding inventory element using the index
+                let e_slot_counter = document.getElementById(inventoryElements[i].e_slot_counter);
+                e_slot_counter.innerHTML = slot_data.cnt;
+                break;
+            }
+        }
+    }
+}
+
+// Function to handle various slot click situations
+function handleSlotClick(slot_container, slotImg, slotCounter, slot_data, inventoryElements) {
 
     // Clear all tooltips found in inventory
-    removeItemTooltip(slot_container, 'inventory');
+    removeItemTooltip('inventory');
 
     if (selectedSlot === null) {
         // First click: selecting the filled slot
-        if (slot.innerHTML !== '[ EMPTY ]') {
+        if (slot_data.contents !== '[ EMPTY ]') {
             selectedSlot = {
-                slot_container,
-                slot,
+                slot_container, //
+                slot_data, //
+                slot_contents: slot_data.contents,
                 slotImg, 
                 itemImg: slotImg.src,
                 slotCounter,
-                itemId: slot.innerHTML,
-                quantity: slotCounter.innerHTML
+                itemId: slot_data.id,
+                quantity: slot_data.cnt
             };
             slot_container.style.backgroundColor = 'green';
         }
     } else {
         if (selectedSlot.slot_container === slot_container) {
             // If the selected slot is clicked again, show tooltip, reset
-            
-            // Update location of inventory items
-            const inventorySlots = inventoryData.filter(i => i.type === 'slot');
-            let item = itemData.find(i => i.name === slot.innerHTML);
-            inventorySlots.forEach(slot => {
-                if (slot.contents !== item.id) {
-                    slot.contents = item.id;
-                    slot.cnt = item.cnt;
-                }
-            });
-
-            // Add tooltip
-            createItemTooltip(slot_container, slot.innerHTML, 'inventory');
-            
-            slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            // Show tooltip
+            createItemTooltip(slot_container, slot_data, inventoryElements, 'inventory');
+            // Reset
             selectedSlot = null;
+            slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
             
-        } else if (slot.innerHTML === '[ EMPTY ]') {
+        } else if (slot_data.contents === '[ EMPTY ]') {
             // Second click: selecting the destination slot
+            
             // Move the item to the new slot
-
-            slot.innerHTML = selectedSlot.itemId;
+            slot_data.contents = selectedSlot.slot_contents;
+            slot_data.id = selectedSlot.itemId;
+            slot_data.cnt = selectedSlot.quantity;
             slotImg.style.display = 'block';
             slotImg.src = selectedSlot.itemImg;
             slotCounter.innerHTML = selectedSlot.quantity;
-            //createItemTooltip(slot_container, slot.innerHTML, 'inventory');
+            slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
 
             // Clear the original slot
-            selectedSlot.slot.innerHTML = '[ EMPTY ]';
-            selectedSlot.slot.style.backgroundColor = 'gray';
+            selectedSlot.slot_contents = '';
+            selectedSlot.slotImg.src = '';
+            selectedSlot.slotImg.style.display = 'none';
             selectedSlot.itemImg = '';
             selectedSlot.slotCounter.innerHTML = '';
-
-            // Reset the background colors
+            // Reset element
             selectedSlot.slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-            slot.style.backgroundColor = 'gray';
+            // Reset selectedSlot array data
+            selectedSlot.slot_data.contents = '[ EMPTY ]';
+            selectedSlot.itemId = slot_data.id;
+            selectedSlot.quantity = slot_data.cnt;
 
             // Reset the selectedSlot
             selectedSlot = null;
 
-        } else if (slot.innerHTML !== '[ EMPTY ]') {
+        } else if (slot_data.contents !== '[ EMPTY ]') {
             // Swap the items between the two slots
-            let tempItemId = slot.innerHTML;
-            let tempImgId = slotImg.src;
-            let tempQuantity = slotCounter.innerHTML;
-
-            // Move the selected slot's item to the clicked slot
-            slot.innerHTML = selectedSlot.itemId;
-            slotImg.src = selectedSlot.itemImg;
-            slotCounter.innerHTML = selectedSlot.quantity;
-            //createItemTooltip(selectedSlot.slot_container, selectedSlot.slot.innerHTML, 'inventory');
-
-            // Move the clicked slot's item to the previously selected slot
-            selectedSlot.slot.innerHTML = tempItemId;
-            selectedSlot.slotImg.src = tempImgId;
-            selectedSlot.slotCounter.innerHTML = tempQuantity;
-            //createItemTooltip(slot_container, slot.innerHTML, 'inventory');
-
-            // Reset the background colors
-            selectedSlot.slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-            slot.style.backgroundColor = 'gray';
             
+            let tempItemId = slot_data.id;
+            let tempImgId = slotImg.src;
+            let tempQuantity = slot_data.cnt;
+            let tempContents = slot_data.contents;
+            
+            // Move the selected slot's item to the clicked slot
+            slot_data.contents = selectedSlot.slot_contents;
+            slot_data.id = selectedSlot.itemId;
+            slot_data.cnt = selectedSlot.quantity;
+            slotImg.src = selectedSlot.itemImg;
+            slotImg.style.display = 'block';  // Ensure the item is visible
+            slotCounter.innerHTML = selectedSlot.quantity;
+            
+            // Now move the previously clicked slot's item to the originally selected slot
+            selectedSlot.slot_data.id = tempItemId;
+            selectedSlot.slotImg.src = tempImgId;
+            selectedSlot.slotImg.style.display = (tempContents !== '[ EMPTY ]') ? 'block' : 'none';  // Hide if empty
+            selectedSlot.slotCounter.innerHTML = (tempQuantity > 1) ? tempQuantity : '';
+            selectedSlot.slot_data.contents = tempContents;
+        
+            // Reset the selected slot's display if the item was swapped to an empty slot
+            if (tempContents === '[ EMPTY ]') {
+                selectedSlot.slotImg.style.display = 'none';
+                selectedSlot.slotCounter.innerHTML = '';
+            }
+        
+            // Reset slot container styles for both slots
+            slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            selectedSlot.slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        
+            // Reset selectedSlot array data
+            selectedSlot.itemId = tempItemId;
+            selectedSlot.quantity = tempQuantity;
+            selectedSlot.slot_data.cnt = tempQuantity;
+        
             // Reset the selectedSlot
             selectedSlot = null;
         }
     }
     applyTransparencyToEmptySlots();
+    // Hide count on single cnt items
+    let slotCounter_DOM = document.getElementById(slotCounter.id);
+    if (slotCounter_DOM && slot_data.cnt === 1) {
+        slotCounter_DOM.innerHTML = '';
+    }
 }
 
-function createItemTooltip(clickedId, itemName_content, type) {
-
-// WIP Does not create new tooltip once moved
+function createItemTooltip(slot_container, slot_data, inventoryElements, type) {
 
     if (type === 'inventory') {
-        const inventorySlots = inventoryData.filter(i => i.type === 'slot');
-        const d_itemName = itemData.find(i => i.name === itemName_content);
-        let d_current_loot = inventoryData[0].current_loot;
 
-        inventorySlots.forEach(slot => {
-            if (slot.contents === '[ EMPTY ]' && d_current_loot.length > 0) {
-                let loot = d_current_loot[0]; // Check first entry
-                
-                // Assign each loot to flag as inInventory
-                let flagged_item = itemData.find(i => i.id === loot.id);
-                flagged_item.inInventory = true;
-                slot.contents = loot.id;
-                slot.cnt = loot.cnt;
-                
-                //console.log('Filled slot: ' + slot.slot_id + ' / content: ' + slot.contents + ' / cnt: ' + slot.cnt);
-                d_current_loot.shift(); // Remove the first item from the array
-            }
-            let matched_slot = 'slot_container_' + slot.slot_id;
-            //if (clickedId.id === matched_slot && slot.contents === d_itemName.id) {
-            if (slot.contents === d_itemName.id && matched_slot === clickedId.id) {
-                // Parent container
-                let container_parent = document.getElementById(clickedId.id);
-                container_parent.style.zIndex = '9999';
-                container_parent.style.position = 'relative';
+        // Get index match for element ida
+        let index = slot_data.slot_id - 1;
+        // To get slot_container.id that matches e_slot_container
+        let matched_slot = inventoryElements[index].e_slot_container;
 
-                // Create tooltip containers for each item
-                let tooltip_container_div = document.createElement('div');
-                container_parent.appendChild(tooltip_container_div);
-                tooltip_container_div.id = 'inventory_tooltip_container_' + d_itemName.id + '_' + slot.slot_id;
-                
-                tooltip_container_div.style.position = 'absolute';
-                tooltip_container_div.style.top = '65px';
-                tooltip_container_div.style.width = '200px';
-                tooltip_container_div.style.pointerEvents = 'auto'; // Allow interactions with the tooltip
-                
-                setup_tooltip_div(tooltip_container_div.id, d_itemName);
-            }
-        });
-        // After this loop, d_current_loot will only contain loot that still has a count > 0
+        if (slot_data.contents !== '[ EMPTY ]' && matched_slot === slot_container.id) {
+            // Parent container
+            let container_parent = document.getElementById(slot_container.id);
+            container_parent.style.zIndex = '9999';
+            container_parent.style.position = 'relative';
+
+            // Create tooltip containers for each item, including unique ids for separate unstackable duplicates
+            let tooltip_container_div = document.createElement('div');
+            container_parent.appendChild(tooltip_container_div);
+            tooltip_container_div.id = 'inventory_tooltip_container_' + slot_data.contents + '_' + slot_data.slot_id;
+            
+            tooltip_container_div.style.position = 'absolute';
+            tooltip_container_div.style.top = '65px';
+            tooltip_container_div.style.width = '200px';
+            tooltip_container_div.style.pointerEvents = 'auto'; // Allow interactions with the tooltip
+            
+            let item = itemData.find(i => i.id === slot_data.contents);
+            setup_tooltip_div(tooltip_container_div.id, item, slot_data);
+        }
     }
 }
 
 // Setup each tooltip box
-function setup_tooltip_div(item_tooltip_container_item, item) {
+function setup_tooltip_div(tooltip_container_div, item, slot_data) {
 
-    create_el('item_tooltip_div', 'div', item_tooltip_container_item);
+    create_el('item_tooltip_div', 'div', tooltip_container_div);
     item_tooltip_div.classList.add('item_tooltip');
     
     create_el('item_name', 'div', 'item_tooltip_div');
@@ -1530,6 +1573,9 @@ function setup_tooltip_div(item_tooltip_container_item, item) {
     
     if (item.value > 0) {
         sell_price_amt.innerHTML = '&nbsp;' + item.value;
+        if (slot_data.cnt > 1) {
+            sell_price_amt.innerHTML += '<br>Sell Price x' + slot_data.cnt + ': ' + '<img src="media/currency_gold.png" class="currency_gold">&nbsp;' + (item.value * slot_data.cnt);
+        }
     } else {
         gold_div.style.display = 'none';
         sell_price_amt.innerHTML = '[ None ]';
@@ -1537,7 +1583,7 @@ function setup_tooltip_div(item_tooltip_container_item, item) {
 }
 
 // Remove ALL tooltips
-function removeItemTooltip(clickedId, type) {
+function removeItemTooltip(type) {
     if (type === 'inventory') {
         // Get all elements with id starting with 'inventory_tooltip_container_'
         let tooltip_container_divs = document.querySelectorAll("[id^='inventory_tooltip_container_']");
@@ -1553,76 +1599,6 @@ function removeItemTooltip(clickedId, type) {
                 tooltip.parentNode.removeChild(tooltip);
             }
         });
-    }
-}
-
-// Function to find the corresponding loot item and increment its count
-export function updateLootCount(itemId, quantity, inv_move) {
-
-    let itemAdded = false;
-    let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
-    let lootItem = itemData.find(loot => loot.id === itemId);
-
-    if (lootItem) {
-        lootItem.cnt += quantity;
-        if (!d_inventory.current_loot) {
-            d_inventory.current_loot = [];
-        }
-        // needs to go in saveData
-        // Build inventoryData[0].current_loot array
-        if (lootItem.stackable) {
-            let d_current_loot = d_inventory.current_loot;
-            let d_current_loot_id = d_current_loot.find(i => i.id === lootItem.id);
-            if (d_current_loot_id) {
-                d_current_loot_id.cnt = lootItem.cnt;
-            } else {
-                d_inventory.current_loot.push({ id: lootItem.id, cnt: lootItem.cnt, stackable: lootItem.stackable });
-            }
-        } else {
-            d_inventory.current_loot.push({ id: lootItem.id, cnt: quantity });
-        }
-    }
-
-    // First, check for a matching item in the inventory slots
-    for (let i = 1; i <= 10; i++) {
-        let slot = document.getElementById(`inventory_slot_${i}`);
-        let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
-
-        if (slot && slot.innerHTML === lootItem.name) {
-            if (lootItem.stackable) {
-                // If the item already exists in this slot, add the quantity
-                slotCounter.innerHTML = lootItem.cnt; //parseInt(slotCounter.innerHTML) + quantity;
-                itemAdded = true;
-                break; // Exit the loop once the item quantity is updated
-            }
-        }
-    }
-
-    // If the item was not found, add it to the first empty slot
-    if (!itemAdded) {
-        for (let i = 1; i <= 10; i++) {
-            let slot = document.getElementById(`inventory_slot_${i}`);
-            let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
-            let slotImage = document.getElementById(`inventory_slot_img_${i}`);
-
-            if (slot && slot.innerHTML === '[ EMPTY ]') {
-                if (itemId !== 'GOLD') {
-                    slot.style.backgroundColor = 'gray';
-                    slot.innerHTML = lootItem.name;
-                    slotImage.style.display = 'block';
-                    slotImage.src = lootItem.img;
-                    if (quantity > 1) {
-                        slotCounter.innerHTML = quantity;
-                    }
-                } else {
-                    let gold_span = document.getElementById('gold_span');
-                    if (gold_span && lootItem.cnt > 0) {
-                        gold_span.innerHTML = '<b>GOLD:</b>&nbsp;' + lootItem.cnt;
-                    }
-                }
-                break; // Exit the loop once the item is added
-            }
-        }
     }
 }
 
@@ -1768,17 +1744,19 @@ export function item_tooltip(targetElement, itemId, type) {
 
 // Ensure empty slots have the transparent background
 function applyTransparencyToEmptySlots() {
-    let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
+    let savedInventory = saveData[2].inventoryData;
+    let slot = savedInventory.filter(i => i.type === 'slot');
 
-    for (let i = 1; i <= d_inventory.size; i++) {
-        let slot = document.getElementById(`inventory_slot_${i}`);
+    for (let i = 1; i <= slot.size; i++) {
         let slotImg = document.getElementById(`inventory_slot_img_${i}`);
-        let slotContainer = document.getElementById(`slot_container_${i}`);
+        let slotContainer = document.getElementById(`inventory_slot_container_${i}`);
+        let slotCounter = document.getElementById(`inventory_slot_counter_${i}`);
 
-        if (slot.innerHTML === '[ EMPTY ]') {
-            slot.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        if (slot[i].contents === '[ EMPTY ]') {
             slotContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            slotImg.src = '';
             slotImg.style.display = 'none';
+            slotCounter.innerHTML = '';
         }
     }
 }

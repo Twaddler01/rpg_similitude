@@ -4,8 +4,12 @@ https://twaddler01.github.io/rpg_similitude/
 # Issues
 - May be issues loading code from URL. For best results, download .zip and use localhost server. (For Android, I use Simple HTTP server):
 https://play.google.com/store/apps/details?id=com.phlox.simpleserver
+- Added proper image files, but occasionally may receive a Github error. Pull request will be made next update to see if it resolves and to clean up unnecessary code/files.
 
 # Updates
+
+09-11-2024
+- Inventory "mess" resolved and data is properly placed in saveData array. Need a bit more debugging for testing purposes. Thinking of adding a "bank" for extra storage space. Need to setup working Gold currency, which is essentially ready to go already.
 
 09-10-2024
 - Inventory is working but messy. Will be revamping system for easy save.

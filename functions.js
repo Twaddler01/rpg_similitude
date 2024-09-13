@@ -494,6 +494,71 @@ export function first_run() {
         }
         //update_locations();
     });
+
+// Add loot button
+
+    let filtered_itemData = itemData.filter(i => i.id !== 'GOLD');
+    filtered_itemData.forEach(item => {
+        
+        let add_loot = document.createElement('button');
+        test_section.appendChild(add_loot);
+        add_loot.innerHTML = 'Add Loot:' + item.id;
+        
+        add_loot.addEventListener('click', () => {
+            updateLootCount(item.id, 1);
+        });
+    });
+
+// FOR BATTLE TESTING
+    let e_start_battle_button = document.getElementById('start_battle_button');
+    start_battle_button(e_start_battle_button.id);
+
+////
+// Add expwrience x200
+    //let e_char_exp = document.getElementById('e_char_exp');
+    let add_xp = document.createElement('button');
+    test_section.appendChild(add_xp);
+    add_xp.innerHTML = 'Add Experience';
+    
+    add_xp.addEventListener('click', () => {
+        let d_player_character = saveData[1].savedCharacterData[0];
+        d_player_character.char_exp += 200;
+
+update_xp();
+
+
+
+/*
+    // Update xp progress
+    let e_experience_bar_fill = document.getElementById('experience_bar_fill');
+    let e_experience_percent = document.getElementById('experience_percent');
+    let e_player_level = document.getElementById('player_level');
+    let e_experience_to_level = document.getElementById('experience_to_level');
+    let fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
+    // Experience values
+    let d_exp_filter = characterData.filter(c => c.type === 'exp');
+    let d_exp = d_exp_filter[0];
+
+    fill_amt = Math.round(fill_amt * 10) / 10 + '%';
+    e_experience_bar_fill.style.width = fill_amt;
+    e_experience_percent.innerHTML = fill_amt;
+    if (d_player_character.char_exp >= d_player_character.char_exp_to_level) {
+        d_player_character.char_level += 1;
+        e_player_level.innerHTML = d_player_character.char_level;
+        let char_exp_level = d_exp.experienceValues.find(l => l.level === d_player_character.char_level);
+        let NEW_xp = char_exp_level.exp_to_level;
+        let leftover_xp = d_player_character.char_exp - d_player_character.char_exp_to_level;
+        d_player_character.char_exp = leftover_xp;
+        d_player_character.char_exp_to_level = NEW_xp;
+        fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
+        fill_amt = Math.round(fill_amt * 10) / 10 + '%';
+        e_char_exp.innerHTML = d_player_character.char_exp;
+        e_experience_bar_fill.style.width = fill_amt;
+        e_experience_percent.innerHTML = fill_amt;
+        e_experience_to_level.innerHTML = d_player_character.char_exp_to_level;
+    }*/
+
+    });
 }
 
 export function update_locations() {
@@ -1065,13 +1130,113 @@ export function update_equipment() {
     });
 }
 
+//// WIP
 export function start_battle_button(elementId) {
+
+    // Data
+    let d_player_character = saveData[1].savedCharacterData[0];
+
+    // Main battle container
+    let battle_section_container = document.getElementById('battle_section_container');
+    
+    // Parent for ui
+    create_el('battle_ui_container', 'div', battle_section_container);
+    battle_ui_container.classList.add('location_box_style');
+
+    create_el('player_name_level', 'div', 'battle_ui_container');
+    player_name_level.style.width = '100%';
+
+    create_el('player_name', 'span', 'player_name_level');
+    player_name.innerHTML = d_player_character.char_name;
+    player_name.style.display = 'inline-block';
+    player_name.style.width = '50%';
+
+    create_el('player_level', 'span', 'player_name_level');
+    player_level.innerHTML = 'Level: ' + d_player_character.char_level;
+    player_level.style.display = 'inline-block';
+    player_level.style.width = '50%';
+    player_level.style.textAlign = 'right';
+
+    // Create the experience container
+    create_el('experience_container', 'div', 'battle_ui_container');
+    experience_container.style.position = 'relative';  // Position relative for inner elements
+    experience_container.style.height = '20px';
+    experience_container.style.width = '100%';
+    experience_container.style.border = 'solid 1px white';
+
+    // Create the experience bar fill (blue bar)
+    create_el('experience_bar_fill', 'div', 'experience_container');
+    experience_bar_fill.style.backgroundColor = 'blue';
+    experience_bar_fill.style.height = '100%';
+//experience_bar_fill.style.width = '15%';  // 15% fill
+    experience_bar_fill.style.position = 'absolute';
+    experience_bar_fill.style.top = '0';
+    experience_bar_fill.style.left = '0';
+
+    create_el('experience_text', 'span', 'experience_container');
+    experience_text.style.position = 'absolute';
+    experience_text.style.top = '50%';
+    experience_text.style.left = '50%';
+    experience_text.style.transform = 'translate(-50%, -50%)';  // Center text
+    experience_text.style.color = 'white';  // Ensure text is visible on blue background
+    experience_text.style.zIndex = '1';  // Ensure text is above the fill bar
+    experience_text.style.whiteSpace = 'nowrap';  // Prevent wrapping
+    experience_text.style.fontSize = '10px';
+    experience_text.innerHTML = 'Experience: <span id="e_char_exp">' + d_player_character.char_exp + '</span>&nbsp;/&nbsp;';
+    // Inserts e_char_exp
+
+    create_el('experience_percent', 'span', 'experience_container');
+    experience_percent.style.position = 'absolute';
+    experience_percent.style.top = '50%';
+    experience_percent.style.right = '10px';
+    experience_percent.style.transform = 'translateY(-50%)';  // Center Y
+    experience_percent.style.color = 'white';  // Ensure text is visible on blue background
+    experience_percent.style.zIndex = '2';  // Ensure text is above the fill/text bar
+    experience_percent.style.fontSize = '10px';
+
+    // Calculate experience values
+    let d_exp_filter = characterData.filter(c => c.type === 'exp');
+    let d_exp = d_exp_filter[0];
+    
+    // Store experience values for each level
+    d_exp.experienceValues = [];
+    
+    for (let i = 1; i <= d_exp.level_cap; i++) {
+        let expToLevel = Math.round((d_exp.starting_val * (i**1.5 + d_exp.level_rate)) / 10) * 10;
+        d_exp.experienceValues.push({
+            level: i,
+            exp_to_level: expToLevel,
+            //diff: expToLevel - Math.round((d_exp.starting_val * ((i - 1)**1.5 + d_exp.level_rate)) / 10) * 10 // Uncomment if you need the diff
+        });
+    }
+    
+    // Log experience values for each level
+    d_exp.experienceValues.forEach(xp => {
+        //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}`);
+        //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}, Diff: ${xp.diff}`);
+        if (d_player_character.char_level === xp.level) {
+            d_player_character.char_exp_to_level = xp.exp_to_level;
+        }
+    });
+
+    create_el('experience_to_level', 'span', 'experience_text');
+    experience_to_level.innerHTML = d_player_character.char_exp_to_level;
+
+    // Initial display
+    update_xp();
+
+
+
+
+
+
 
     let combat_log = document.getElementById('combat_log');
     combat_log.innerHTML = '';
     toggleElement('h', 'start_battle_button');
     toggleElement('s', 'attack_box_button');
-    toggleElement('sf', 'verses_box');
+    
+    /*toggleElement('sf', 'verses_box');
     toggleElement('sf', 'health_bars');
 
     let character = characterData.find(char => char.id === 'my_character');
@@ -1085,7 +1250,43 @@ export function start_battle_button(elementId) {
     let random_class = enemy.char_class[Math.floor(Math.random() * enemy.char_class.length)];
     // store name in array
     enemy.char_name = random_race + '&nbsp;' + random_class;
-    enemy_battle_name.innerHTML = enemy.char_name;
+    enemy_battle_name.innerHTML = enemy.char_name;*/
+}
+
+export function update_xp() {
+
+    let d_player_character = saveData[1].savedCharacterData[0];
+    // Update xp progress
+    let e_char_exp = document.getElementById('e_char_exp');
+    let e_experience_bar_fill = document.getElementById('experience_bar_fill');
+    let e_experience_percent = document.getElementById('experience_percent');
+    let e_player_level = document.getElementById('player_level');
+    let e_experience_to_level = document.getElementById('experience_to_level');
+    let fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
+    // Experience values
+    let d_exp_filter = characterData.filter(c => c.type === 'exp');
+    let d_exp = d_exp_filter[0];
+    e_char_exp.innerHTML = d_player_character.char_exp;
+
+    // Calculate fill
+    fill_amt = Math.round(fill_amt * 10) / 10 + '%';
+    e_experience_bar_fill.style.width = fill_amt;
+    e_experience_percent.innerHTML = fill_amt;
+    if (d_player_character.char_exp >= d_player_character.char_exp_to_level) {
+        d_player_character.char_level += 1;
+        e_player_level.innerHTML = 'Level: ' + d_player_character.char_level;
+        let char_exp_level = d_exp.experienceValues.find(l => l.level === d_player_character.char_level);
+        let NEW_xp = char_exp_level.exp_to_level;
+        let leftover_xp = d_player_character.char_exp - d_player_character.char_exp_to_level;
+        d_player_character.char_exp = leftover_xp;
+        d_player_character.char_exp_to_level = NEW_xp;
+        fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
+        fill_amt = Math.round(fill_amt * 10) / 10 + '%';
+        e_char_exp.innerHTML = d_player_character.char_exp;
+        e_experience_bar_fill.style.width = fill_amt;
+        e_experience_percent.innerHTML = fill_amt;
+        e_experience_to_level.innerHTML = d_player_character.char_exp_to_level;
+    }
 }
 
 export function attack_box_button(elementId) {
@@ -1194,7 +1395,6 @@ export function attack_box_button(elementId) {
     }
 }
 
-//// WIP revamp inventory system
 let selectedSlot = null;
 export function inventory_setup() {
 
@@ -1218,11 +1418,6 @@ export function inventory_setup() {
             slot_container.classList.add('inv_slot_container');
             inventoryElements[index].e_slot_container = slot_container.id;
 
-            /*let slot = document.createElement('div');
-            slot_container.appendChild(slot);
-            slot.id = 'inventory_slot_' + slot_data.slot_id;
-            inventoryElements[index].e_slot = slot.id;*/
-            
             // append with zIndex: 2
             let slot_img = document.createElement('img');
             slot_container.appendChild(slot_img);

@@ -8,6 +8,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+09-13-2024
+- Player experience elements and data added and tested.
+- Possibly will soon need to split functions.js into categories of functions, as code is getting quite lengthy.
+
 09-11-2024
 - Inventory "mess" resolved and data is properly placed in saveData array. Need a bit more debugging for testing purposes. Thinking of adding a "bank" for extra storage space. Need to setup working Gold currency, which is essentially ready to go already.
 

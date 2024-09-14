@@ -513,7 +513,6 @@ export function first_run() {
     let e_start_battle_button = document.getElementById('start_battle_button');
     start_battle_button(e_start_battle_button.id);
 
-////
 // Add expwrience x200
     //let e_char_exp = document.getElementById('e_char_exp');
     let add_xp = document.createElement('button');
@@ -523,41 +522,7 @@ export function first_run() {
     add_xp.addEventListener('click', () => {
         let d_player_character = saveData[1].savedCharacterData[0];
         d_player_character.char_exp += 200;
-
-update_xp();
-
-
-
-/*
-    // Update xp progress
-    let e_experience_bar_fill = document.getElementById('experience_bar_fill');
-    let e_experience_percent = document.getElementById('experience_percent');
-    let e_player_level = document.getElementById('player_level');
-    let e_experience_to_level = document.getElementById('experience_to_level');
-    let fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
-    // Experience values
-    let d_exp_filter = characterData.filter(c => c.type === 'exp');
-    let d_exp = d_exp_filter[0];
-
-    fill_amt = Math.round(fill_amt * 10) / 10 + '%';
-    e_experience_bar_fill.style.width = fill_amt;
-    e_experience_percent.innerHTML = fill_amt;
-    if (d_player_character.char_exp >= d_player_character.char_exp_to_level) {
-        d_player_character.char_level += 1;
-        e_player_level.innerHTML = d_player_character.char_level;
-        let char_exp_level = d_exp.experienceValues.find(l => l.level === d_player_character.char_level);
-        let NEW_xp = char_exp_level.exp_to_level;
-        let leftover_xp = d_player_character.char_exp - d_player_character.char_exp_to_level;
-        d_player_character.char_exp = leftover_xp;
-        d_player_character.char_exp_to_level = NEW_xp;
-        fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
-        fill_amt = Math.round(fill_amt * 10) / 10 + '%';
-        e_char_exp.innerHTML = d_player_character.char_exp;
-        e_experience_bar_fill.style.width = fill_amt;
-        e_experience_percent.innerHTML = fill_amt;
-        e_experience_to_level.innerHTML = d_player_character.char_exp_to_level;
-    }*/
-
+        update_xp();
     });
 }
 
@@ -987,34 +952,115 @@ create_el('char_equipment_container', 'div', char_equipment);
 
         // Character stat information
         // Calculates ALL stat effects
+
+//// Needs update_player_stats() function
         const stat_data = characterData.filter(d => d.type === 'stat');
         stat_data.forEach(stat => {
 
             let stats_effect = `<br><span style="color:lightgreen">(Default)</span>`;
+            // Cwrtain base stats (lvl_mod: true) are increased by player level
+            let base_level_stat = 0;
+            let equip_stat_amt = 0;
+            let d_player_character = saveData[1].savedCharacterData[0];
+            let player_level = d_player_character.char_level;
+            
+            // Main array to store calculations
+            let playerStats = characterData.find(d => d.id === 'player_stats');
+            
+            if (stat.lvl_mod) {
+                // Adjust to equipment amount 
+                equip_stat_amt = stat.amt - (stat.id === 'armor' ? 100 : 10);
+                // Based on player 
+                base_level_stat = stat.lvl_amt;
+                base_level_stat *= d_player_character.char_level;
+                //console.log(base_level_stat);
+            }
 
             switch (stat.id) {
                 case 'armor': 
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-100}, reduces damage received by <b>${(stat.amt-100)*0.1}%</b></span>`;
+                    let total_armor = base_level_stat + equip_stat_amt;
+                    let total_armor_effect = total_armor * 0.1;
+                    playerStats.total_armor = total_armor;
+                    playerStats.total_armor_effect = total_armor_effect;
+                    stats_effect = `<br><span style="color:lightgreen">Player level (${player_level}): +${base_level_stat}, reduces damage received by <b>${base_level_stat*0.1}%</b></span>
+                    <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, reduces damage received by <b>${equip_stat_amt*0.1}%</b></span>
+                    <br><span style="color:lightgreen">Total Armor: +${total_armor}, reduces damage received by <b>${total_armor_effect}%</b></span>`;
+                    stat.amt = total_armor;
                     break;
                 case 'strength':
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases both melee damage dealt by <b>${(stat.amt-10)*0.1}%</b> and total energy by <b>${(stat.amt-10)*10}</b></span>`;
+                    let total_strength = base_level_stat + equip_stat_amt;
+                    let total_strength_effect_dmg = total_strength * 0.1;
+                    let total_strength_effect_res = (base_level_stat*0.1) + equip_stat_amt;
+                    playerStats.total_strength = total_strength;
+                    playerStats.total_strength_effect_dmg = total_strength_effect_dmg;
+                    playerStats.total_strength_effect_res = total_strength_effect_res;
+                    stats_effect = `<br><span style="color:lightgreen">Player level (${player_level}): +${base_level_stat}, increases both melee damage dealt by <b>${base_level_stat*0.1}%</b> and total energy by <b>${base_level_stat*0.1}</b></span>
+                    <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, increases both melee damage dealt by <b>${equip_stat_amt*0.1}%</b> and total energy by <b>${equip_stat_amt}</b></span>
+                    <br><span style="color:lightgreen">Total Strength: +${total_strength}, increases both melee damage dealt by <b>${total_strength_effect_dmg}%</b> and total energy by <b>${total_strength_effect_res}</b></span>`;
+                    stat.amt = total_strength;
                     break;
                 case 'intelligence':
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases both magic damage dealt by <b>${(stat.amt-10)*0.1}%</b> and total mana by <b>${(stat.amt-10)*10}</b></span>`;
+                    let total_intelligence = base_level_stat + equip_stat_amt;
+                    let total_intelligence_effect_dmg = total_intelligence * 0.1;
+                    let total_intelligence_effect_res = (base_level_stat + equip_stat_amt) * 10;
+                    // Assign to array
+                    playerStats.total_intelligence = total_intelligence;
+                    playerStats.total_intelligence_effect_dmg = total_intelligence_effect_dmg;
+                    playerStats.total_intelligence_effect_res = total_intelligence_effect_res;
+                    stats_effect = `<br><span style="color:lightgreen">Player Level (${player_level}): +${base_level_stat}, increases magic damage dealt by <b>${base_level_stat*0.1}%</b> and total mana by <b>${base_level_stat*10}</b></span>
+                    <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, increases magic damage dealt by <b>${equip_stat_amt*0.1}%</b> and total mana by <b>${equip_stat_amt*10}</b></span>
+                    <br><span style="color:lightgreen">Total Intelligence: +${total_intelligence}, increases magic damage dealt by <b>${total_intelligence_effect_dmg}%</b> and total mana by <b>${total_intelligence_effect_res}</b></span>`;
+                    stat.amt = total_intelligence;
                     break;
                 case 'dexterity':
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases hit chance by <b>${(stat.amt-10)*0.1}%</b>. Current same-level enemy hit chance: <b>${((stat.amt-10)*0.1)+90}%</b></span>`;
+                    let default_hit = 90;
+                    let total_dexterity = base_level_stat + equip_stat_amt;
+                    let total_dexterity_effect = default_hit+(equip_stat_amt*0.1);
+                    // Assign to array
+                    playerStats.hit_chance = total_dexterity_effect;
+                    stats_effect = `
+                    <br><span style="color:lightgreen">Player Level (${player_level}) +${base_level_stat}, increases hit chance to <b>${default_hit}%</b>. Base same-level enemy hit chance: <b>${default_hit}%</b></span>
+                    <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, increases hit chance by <b>${equip_stat_amt*0.1}%</b></span>
+                    <br><span style="color:lightgreen">Total Dexterity: +${total_dexterity}. Same-level enemy hit chance: <b>${total_dexterity_effect}%</b></span>`;
+                    stat.amt = total_dexterity;
                     break;
                 case 'constitution':
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases maximum health by <b>${(stat.amt-10)*0.1}%</b></span>`;
+                    let total_constitution = base_level_stat + equip_stat_amt;
+                    let total_constitution_effect = total_constitution*10;
+                    let max_health = total_constitution_effect; // Default 100 at level 1
+                    let health_difference = (equip_stat_amt*10)/(base_level_stat*10)*100;
+                    // Assign to array
+                    playerStats.max_health = max_health;
+                    stats_effect = `<br><span style="color:lightgreen">Player Level (${player_level}): +${base_level_stat}, sets base maximum health to <b>${base_level_stat*10}</b></span>
+                    <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, increases maximum health by <b>${equip_stat_amt*10}</b> (${Math.round(health_difference)}%)</span>
+                    <br><span style="color:lightgreen">Total Constitution: +${total_constitution}, increases total maximum health to <b>${total_constitution_effect}</b> (${Math.round(health_difference+100)}% of base)</span>`;
+                    stat.amt = total_constitution;
                     break;
                 case 'agility':
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases melee critical strike chance by <b>${(stat.amt-10)*0.1}%</b></span>`;
-                    trackingData[0].stat_agility = stat.amt - 10;
+                    let base_crit = 5;
+                    let total_agility = base_level_stat + equip_stat_amt;
+                    let total_agility_effect = base_crit + (equip_stat_amt*0.1);
+                    // Assign to array
+                    playerStats.total_agility = total_agility;
+                    playerStats.total_agility_effect = total_agility_effect;
+                    playerStats.agility_equip = equip_stat_amt;
+                    stats_effect = `<br><span style="color:lightgreen">Player Level (${player_level}): +${base_level_stat}, increases melee critical strike chance by <b>${base_crit}%</b></span>
+                    <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, increases melee critical strike chance by <b>${equip_stat_amt*0.1}%</b></span>
+                    <br><span style="color:lightgreen">Total Agility: +${total_agility}, increases melee critical strike chance by <b>${total_agility_effect}%</b></span>`;
+                    stat.amt = total_agility;
                     break;
                 case 'wisdom':
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases magic critical strike chance by <b>${(stat.amt-10)*0.1}%</b></span>`;
-                    trackingData[0].stat_wisdom = stat.amt - 10;
+                    let base_crit_wis = 5;
+                    let total_wisdom = base_level_stat + equip_stat_amt;
+                    let total_wisdom_effect = base_crit_wis + (equip_stat_amt*0.1);
+                    // Add starting amt
+                    playerStats.total_wisdom = total_wisdom;
+                    playerStats.total_wisdom_effect = total_wisdom_effect;
+                    playerStats.wisdom_equip = equip_stat_amt;
+                    stats_effect = `<br><span style="color:lightgreen">Player Level (${player_level}): +${base_level_stat}, increases magic critical strike chance by <b>${base_crit_wis}%</b></span>
+                    <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, increases magic critical strike chance by <b>${(equip_stat_amt)*0.1}%</b></span>
+                    <br><span style="color:lightgreen">Total Wisdom: +${total_wisdom}, increases magic critical strike chance by <b>${total_wisdom_effect}%</b></span>`;
+                    stat.amt = total_wisdom;
                     break;
                 case 'power':
                     let equipped_items = saveData[3].equippedData;
@@ -1026,7 +1072,7 @@ create_el('char_equipment_container', 'div', char_equipment);
                     trackingData[0].current_weapon_dmg_min = current_weapon_dmg_min.amt;
                     trackingData[0].current_weapon_dmg_max = current_weapon_dmg_max.amt;
                     //console.log(current_weapon_dmg_min.amt + ' : ' + current_weapon_dmg_max.amt);
-                    let [pwr_weapon_min, pwr_weapon_max]  = calculate_weapon_damage(1, stat.amt);
+                    let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt);
                     //console.log(pwr_weapon_min + ' : ' + pwr_weapon_max)
                     let incr_dmg_min = Math.round((((pwr_weapon_min / current_weapon_dmg_min.amt) - 1) * 100) * 10) / 10;
                     let incr_dmg_max = Math.round((((pwr_weapon_max / current_weapon_dmg_max.amt) - 1) * 100) * 10) / 10;
@@ -1035,39 +1081,47 @@ create_el('char_equipment_container', 'div', char_equipment);
                     // Store calculations for tooltip display
                     trackingData[0].pwr_weapon_min = pwr_weapon_min;
                     trackingData[0].pwr_weapon_max = pwr_weapon_max;
+                    // Assign to array
+                    playerStats.pwr_weapon_min = pwr_weapon_min;
+                    playerStats.pwr_weapon_max = pwr_weapon_max;
                     break;
                 case 'attackMinimum':
                     let differ_dmg_min = Math.round((trackingData[0].pwr_weapon_min - trackingData[0].current_weapon_dmg_min) * 10) / 10;
                     stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_min}, minimum damage is increased by power from ${stat.amt} to <b>${trackingData[0].pwr_weapon_min}</b></span>`;
+                    stat.amt = trackingData[0].pwr_weapon_min;
                     break;
                 case 'attackMaximum':
                     let differ_dmg_max = Math.round((trackingData[0].pwr_weapon_max - trackingData[0].current_weapon_dmg_max) * 10) / 10;
                     stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_max}, minimum damage is increased by power from ${stat.amt} to <b>${trackingData[0].pwr_weapon_max}</b></span>`;
+                    stat.amt = trackingData[0].pwr_weapon_max;
                     break;
                 case 'hitChance':
+                    // Assign to array
+                    playerStats.hit_flat = 90+stat.amt;
+                    playerStats.hit_plus_1 = 87+stat.amt;
+                    playerStats.hit_plus_2 = 85+stat.amt;
+                    playerStats.hit_plus_3on = 50+stat.amt;
                     stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt}%, current probability an attack will cause damage to same-level enemies: ${90+stat.amt}%</span>`;
                     stats_effect += `<br><span style="color:lightgreen">- Current probability an attack will cause damage to <u>level +1</u> enemies: ${87+stat.amt}%</span>`;
                     stats_effect += `<br><span style="color:lightgreen">- Current probability an attack will cause damage to <u>level +2</u> enemies: ${85+stat.amt}%</span>`;
                     stats_effect += `<br><span style="color:lightgreen">- Current probability an attack will cause damage to <u>level +3 or higher</u> enemies: ${50+stat.amt}%</span>`;
+                    stat.amt = playerStats.hit_chance + '%';
                     break;
                 case 'criticalStrikeChance':
-                    stats_effect = `<br><span style="color:lightgreen">Combined equipment and base bonus: +${stat.amt*100}%, increases the probability any successful attack is critical by <b>${stat.amt*100}%</b></span>`;
-                    stats_effect += `<br><span style="color:lightgreen">- Melee equipment bonus: +${trackingData[0].stat_agility} Agility, increases the probability a successful melee attack is critical by <b>${trackingData[0].stat_agility*0.1+5}%</b></span>`;
-                    stats_effect += `<br><span style="color:lightgreen">- Magic equipment bonus: +${trackingData[0].stat_wisdom} Wisdom, increases the probability a successful magic attack is critical by <b>${trackingData[0].stat_wisdom*0.1+5}%</b></span>`;
+                    let base_crit_strike_rating = 5;
+                    let crit_strike_rating = stat.amt;
+                    // 0 unless a +_% Meleee Citical Strike Rating stat
+                    playerStats.base_crit_strike_rating = base_crit_strike_rating;
+                    playerStats.crit_strike_rating = crit_strike_rating;
+                    stats_effect = `<br><span style="color:lightgreen">Combined equipment and base bonus: +${base_crit_strike_rating}%, increases the probability any successful attack is critical by <b>${base_crit_strike_rating}%</b></span>`;
+                    stats_effect += `<br><span style="color:lightgreen">- Melee equipment bonus: +${playerStats.agility_equip} Agility, increases the probability a successful melee attack is critical by <b>${playerStats.total_agility_effect}%</b></span>`;
+                    stats_effect += `<br><span style="color:lightgreen">- Magic equipment bonus: +${playerStats.wisdom_equip} Wisdom, increases the probability a successful magic attack is critical by <b>${playerStats.total_wisdom_effect}%</b></span>`;
+                    stat.amt = playerStats.base_crit_strike_rating + playerStats.crit_strike_rating + '%';
                     break;
-            }
-            
-            if (stat.id === 'hitChance' || stat.id === 'criticalStrikeChance') {
-                stat.amt = (stat.amt * 100) + '%';
-            }
-            if (stat.id === 'attackMinimum') {
-                stat.amt = trackingData[0].pwr_weapon_min;
-            }
-            if (stat.id === 'attackMaximum') {
-                stat.amt = trackingData[0].pwr_weapon_max;
             }
 
             let line_item = stat.label + stat.amt + stats_effect + '<br>';
+
             stats_info.innerHTML += line_item;
         });
 
@@ -1119,7 +1173,6 @@ export function update_equipment() {
             const stat_data = characterData.filter(d => d.type === 'stat');
             const stat_gains = d_itemData.gains;
             stat_data.forEach(stat => {
-                //stat_gains.id = stat_gains.id.toLowerCase();
                 stat_gains.forEach(char_stat => {
                     if (char_stat.stat === stat.id) {
                         stat.amt += char_stat.amt;
@@ -1135,6 +1188,7 @@ export function start_battle_button(elementId) {
 
     // Data
     let d_player_character = saveData[1].savedCharacterData[0];
+    let playerStats = characterData.find(d => d.id === 'player_stats');
 
     // Main battle container
     let battle_section_container = document.getElementById('battle_section_container');
@@ -1159,40 +1213,19 @@ export function start_battle_button(elementId) {
 
     // Create the experience container
     create_el('experience_container', 'div', 'battle_ui_container');
-    experience_container.style.position = 'relative';  // Position relative for inner elements
-    experience_container.style.height = '20px';
-    experience_container.style.width = '100%';
-    experience_container.style.border = 'solid 1px white';
+    experience_container.classList.add('bar_with_border_container');
 
     // Create the experience bar fill (blue bar)
     create_el('experience_bar_fill', 'div', 'experience_container');
-    experience_bar_fill.style.backgroundColor = 'blue';
-    experience_bar_fill.style.height = '100%';
-//experience_bar_fill.style.width = '15%';  // 15% fill
-    experience_bar_fill.style.position = 'absolute';
-    experience_bar_fill.style.top = '0';
-    experience_bar_fill.style.left = '0';
+    experience_bar_fill.classList.add('bar_with_border_fill');
 
     create_el('experience_text', 'span', 'experience_container');
-    experience_text.style.position = 'absolute';
-    experience_text.style.top = '50%';
-    experience_text.style.left = '50%';
-    experience_text.style.transform = 'translate(-50%, -50%)';  // Center text
-    experience_text.style.color = 'white';  // Ensure text is visible on blue background
-    experience_text.style.zIndex = '1';  // Ensure text is above the fill bar
-    experience_text.style.whiteSpace = 'nowrap';  // Prevent wrapping
-    experience_text.style.fontSize = '10px';
+    experience_text.classList.add('bar_with_border_text');
     experience_text.innerHTML = 'Experience: <span id="e_char_exp">' + d_player_character.char_exp + '</span>&nbsp;/&nbsp;';
     // Inserts e_char_exp
 
     create_el('experience_percent', 'span', 'experience_container');
-    experience_percent.style.position = 'absolute';
-    experience_percent.style.top = '50%';
-    experience_percent.style.right = '10px';
-    experience_percent.style.transform = 'translateY(-50%)';  // Center Y
-    experience_percent.style.color = 'white';  // Ensure text is visible on blue background
-    experience_percent.style.zIndex = '2';  // Ensure text is above the fill/text bar
-    experience_percent.style.fontSize = '10px';
+    experience_percent.classList.add('bar_with_border_percent');
 
     // Calculate experience values
     let d_exp_filter = characterData.filter(c => c.type === 'exp');
@@ -1225,7 +1258,45 @@ export function start_battle_button(elementId) {
     // Initial display
     update_xp();
 
+    // Spacer
+    create_el('spacer', 'div', battle_section_container);
+    spacer.style.height = '15px';
+    spacer.style.backgroundColor = 'black';
 
+    create_el('battle_ui_container2', 'div', battle_section_container);
+    battle_ui_container2.classList.add('location_box_style');
+
+    // Create player health container
+    create_el('player_health_container', 'div', 'battle_ui_container2');
+    player_health_container.classList.add('bar_with_border_container');
+
+    // Create the player_health bar fill (blue bar)
+    create_el('player_health_bar_fill', 'div', 'player_health_container');
+    player_health_bar_fill.classList.add('bar_with_border_fill');
+    player_health_bar_fill.style.backgroundColor = 'green';
+// Need fill calculated
+
+    create_el('player_current_health_text', 'span', 'player_health_container');
+    player_current_health_text.classList.add('bar_with_border_text');
+    // initial Health
+    d_player_character.char_cur_health = playerStats.max_health;
+    player_current_health_text.innerHTML = 'Player Health: <span id="e_char_health">' + d_player_character.char_cur_health + '</span>&nbsp;/&nbsp;';
+    // Inserts e_char_health
+
+    create_el('player_maximum_health', 'span', 'player_current_health_text');
+    player_maximum_health.innerHTML = playerStats.max_health;
+
+    create_el('player_current_health_percent', 'span', 'player_health_container');
+    player_current_health_percent.classList.add('bar_with_border_percent');
+    let d_player_health_percent = (d_player_character.char_cur_health / playerStats.max_health) * 100;
+    d_player_health_percent = Math.round(d_player_health_percent * 10) / 10;
+    player_current_health_percent.innerHTML = d_player_health_percent + '%';
+
+    // Display bar width fill
+    player_health_bar_fill.style.width = d_player_health_percent + '%';
+
+
+// Need function for updates in battle
 
 
 

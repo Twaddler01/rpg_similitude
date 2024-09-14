@@ -8,6 +8,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+09-14-2024
+- Added many stat calculations, stored main values in array for use in battles. Finished health bar.
+- Need dynamic ability for equipment changes in a function to update as equipment is modified. Likely, this is the next process before starting on the "battle" functionality.
+
 09-13-2024
 - Player experience elements and data added and tested.
 - Possibly will soon need to split functions.js into categories of functions, as code is getting quite lengthy.

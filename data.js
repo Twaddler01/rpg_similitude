@@ -506,6 +506,7 @@ export function init_itemData() {
         gains: [ 
             { stat: 'armor', lbl: 'Armor', amt: 10 },
             { stat: 'strength', lbl: 'Strength', amt: 1 },
+            { stat: 'intelligence', lbl: 'Intelligence', amt: 1 },
         ],
         //gains: [ {stat: 'Armor', amt: 10 }, { stat: 'Constitution', amt: 1 } ],
         cnt: 0,
@@ -580,6 +581,7 @@ export function init_itemData() {
             { stat: 'dmg_min', amt: 1.2 }, 
             { stat: 'dmg_max', amt: 1.6 }, 
             { stat: 'constitution', lbl: 'Constitution', amt: 10 }, 
+            { stat: 'agility', lbl: 'Agility', amt: 5 }, 
         ],
         cnt: 0,
         value: 0,
@@ -626,24 +628,24 @@ export function init_locationsData() {
 export function init_characterData() {
 
     const characterData = [
-        { id: 'armor', type: 'stat', amt: 100, label: 'Armor: ' },
-        { id: 'strength', type: 'stat', amt: 10, label: 'Strength: ' },
-        { id: 'intelligence', type: 'stat', amt: 10, label: 'Intelligence: ' },
-        { id: 'dexterity', type: 'stat', amt: 10, label: 'Dexterity: ' },
-        { id: 'constitution', type: 'stat', amt: 10, label: 'Constitution: ' },
-        { id: 'agility', type: 'stat', amt: 10, label: 'Agility: ' },
-        { id: 'wisdom', type: 'stat', amt: 10, label: 'Wisdom: ' },
+        { id: 'armor', type: 'stat', amt: 100, label: 'Armor: ', lvl_mod: true, lvl_amt: 100 }, // lvl_mod -> increases with level to lvl_amt
+        { id: 'strength', type: 'stat', amt: 10, label: 'Strength: ', lvl_mod: true, lvl_amt: 10 },
+        { id: 'intelligence', type: 'stat', amt: 10, label: 'Intelligence: ', lvl_mod: true, lvl_amt: 10 },
+        { id: 'dexterity', type: 'stat', amt: 10, label: 'Dexterity: ', lvl_mod: true, lvl_amt: 10 },
+        { id: 'constitution', type: 'stat', amt: 10, label: 'Constitution: ', lvl_mod: true, lvl_amt: 10 },
+        { id: 'agility', type: 'stat', amt: 10, label: 'Agility: ', lvl_mod: true, lvl_amt: 10 },
+        { id: 'wisdom', type: 'stat', amt: 10, label: 'Wisdom: ', lvl_mod: true, lvl_amt: 10 },
         { id: 'power', type: 'stat', amt: 0.0, label: 'Power: ' },
         { id: 'attackMinimum', type: 'stat', amt: 1.2, label: 'Attack Minimum: ' },
         { id: 'attackMaximum', type: 'stat', amt: 1.6, label: 'Attack Maximum: ' }, // stat_attack_min * 1.5
         { id: 'hitChance', type: 'stat', amt: 0.9, label: 'Hit Chance: ' },
-        { id: 'criticalStrikeChance', type: 'stat', amt: 0.05, label: 'Critical Strike Chance: ' }, // bsse stats: [0] - [12]
+        { id: 'criticalStrikeChance', type: 'stat', amt: 0.0, label: 'Critical Strike Chance: ' }, // bsse stats: [0] - [12]
         // desc
-        { id: 'armor', label: 'Armor', type: 'desc', def: 'Reduces damage received by 0.1% per point above base amount.' },
-        { id: 'strength', label: 'Strength', type: 'desc', def: 'Increases both melee damage dealt by 0.1% and total energy by 10 per point above base amount.' },
-        { id: 'intelligence', label: 'Intelligence', type: 'desc', def: 'Increases both magic damage dealt by 0.1% and total mana by 10 per point above base amount.' },
+        { id: 'armor', label: 'Armor', type: 'desc', def: 'Reduces damage received by 0.1% per point.' },
+        { id: 'strength', label: 'Strength', type: 'desc', def: 'Increases melee damage dealt by 0.1% per point and total energy by both 0.1 per base level amount and 1 per equipment bonus point.' },
+        { id: 'intelligence', label: 'Intelligence', type: 'desc', def: 'Increases magic damage dealt by 0.1% and total mana by 10 per point.' },
         { id: 'dexterity', label: 'Dexterity', type: 'desc', def: 'Increases hit chance by 0.1% per point above base amount. Default hit chance is 90%, or 100% at 100+ dex' },
-        { id: 'constitution', label: 'Constitution', type: 'desc', def: 'Increases maximum health by 0.1% per point above base amount.' },
+        { id: 'constitution', label: 'Constitution', type: 'desc', def: 'Increases total maximum health by 10 per point.' },
         { id: 'agility', label: 'Agility', type: 'desc', def: 'Increases melee critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
         { id: 'wisdom', label: 'Wisdom', type: 'desc', def: 'Increases magic critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
         { id: 'power', label: 'Power', type: 'desc', def: 'Increases both attack damage minimum and maximum per turn.' },
@@ -654,8 +656,9 @@ export function init_characterData() {
         // misc
         // d_exp_filter = characterData.filter(c => c.type === 'exp');
         // d_exp = d_exp_filter[0];
-        { /*experienceValues []*/ id: 'level_exp', type: 'exp', level_cap: 20, starting_val: 800, level_rate: 0.2 },
-
+        { /* experienceValues [] */ id: 'level_exp', type: 'exp', level_cap: 20, starting_val: 800, level_rate: 0.2 },
+        { id: 'player_stats', /* playerStats.total_armor, etc */ }, // See character_setup() 
+        // let playerStats = characterData.find(d => d.id === 'player_stats');
     ];
     
     return characterData;
@@ -691,6 +694,8 @@ export function init_saveData() {
         char_class: 'Fighter',
         char_level: 1,
         char_exp: 0, 
+        // Others: see playerStats = characterData.find(d => d.id === 'player_stats')
+        char_cur_health: 0, // only for battles
         // char_exp_to_level -> see start_battle_button()
         },
         ] },
@@ -756,15 +761,15 @@ export function init_trackingData() {
         // trackingData[0].current_weapon_dmg_max (float)
         // trackingData[0].pwr_weapon_min (float)
         // trackingData[0].pwr_weapon_max (float)
-        // *** stats WIP
+        // *** stats WIP -- ***most will go to characterData array
         // trackingData[0].stat_armor (int)
         // trackingData[0].stat_strength (int)
         // trackingData[0].stat_intelligence (int)
         // trackingData[0].stat_dexterity (int)
         // trackingData[0].stat_constitution (int)
-        // trackingData[0].stat_agility (int) done
-        // trackingData[0].stat_wisdom (int) done
-        // trackingData[0].stat_power (int)
+        // trackingData[0].stat_agility (int)
+        // trackingData[0].stat_wisdom (int)
+        // trackingData[0].stat_power (int) ???
     ];
 
     return trackingData;

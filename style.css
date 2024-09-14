@@ -34,6 +34,39 @@ body {
 .box {
     display: flex;
 }
+/* Experience and health bars */
+.bar_with_border_container {
+    position: relative;  /* Position relative for inner elements */
+    height: 20px;
+    width: 100%;
+    border: solid 1px white;
+}
+.bar_with_border_fill {
+    background-color: blue;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.bar_with_border_text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center text */
+    color: white;  /* Ensure text is visible on blue background */
+    z-index: 1;  /* Ensure text is above the fill bar */
+    white-space: nowrap;  /* Prevent wrapping */
+    font-size: 10px;
+}
+.bar_with_border_percent {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);  /* Center Y */
+    color: white;  /* Ensure text is visible on blue background */
+    z-index: 2;  /* Ensure text is above the fill/text bar */
+    font-size: 10px;
+}
 .currency_gold {
     width: 10px;
     height: 10px;

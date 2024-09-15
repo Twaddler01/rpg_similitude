@@ -524,6 +524,14 @@ export function first_run() {
         d_player_character.char_exp += 200;
         update_xp();
     });
+    
+// Toggle combat status
+    let toggle_combat = document.createElement('button');
+    test_section.appendChild(toggle_combat);
+    toggle_combat.innerHTML = 'Toggle Combat Status';
+    toggle_combat.addEventListener('click', () => {
+        toggle_combat_status();
+    });
 }
 
 export function update_locations() {
@@ -998,6 +1006,11 @@ create_el('char_equipment_container', 'div', char_equipment);
                     <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, increases both melee damage dealt by <b>${equip_stat_amt*0.1}%</b> and total energy by <b>${equip_stat_amt}</b></span>
                     <br><span style="color:lightgreen">Total Strength: +${total_strength}, increases both melee damage dealt by <b>${total_strength_effect_dmg}%</b> and total energy by <b>${total_strength_effect_res}</b></span>`;
                     stat.amt = total_strength;
+                    // Assign max resource to array
+                    // Default: 100 (for melee classes)
+                    let default_max_resource = 100;
+                    playerStats.max_resource = default_max_resource + total_strength_effect_res;
+                    playerStats.cur_resource = default_max_resource + total_strength_effect_res;
                     break;
                 case 'intelligence':
                     let total_intelligence = base_level_stat + equip_stat_amt;
@@ -1031,6 +1044,7 @@ create_el('char_equipment_container', 'div', char_equipment);
                     let health_difference = (equip_stat_amt*10)/(base_level_stat*10)*100;
                     // Assign to array
                     playerStats.max_health = max_health;
+                    playerStats.cur_health = max_health;
                     stats_effect = `<br><span style="color:lightgreen">Player Level (${player_level}): +${base_level_stat}, sets base maximum health to <b>${base_level_stat*10}</b></span>
                     <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, increases maximum health by <b>${equip_stat_amt*10}</b> (${Math.round(health_difference)}%)</span>
                     <br><span style="color:lightgreen">Total Constitution: +${total_constitution}, increases total maximum health to <b>${total_constitution_effect}</b> (${Math.round(health_difference+100)}% of base)</span>`;
@@ -1259,12 +1273,33 @@ export function start_battle_button(elementId) {
     update_xp();
 
     // Spacer
-    create_el('spacer', 'div', battle_section_container);
-    spacer.style.height = '15px';
-    spacer.style.backgroundColor = 'black';
+    create_el('spacer_player_combat_status', 'div', battle_section_container);
+    spacer_player_combat_status.style.height = '17px';
+    spacer_player_combat_status.style.backgroundColor = 'black';
+    spacer_player_combat_status.style.height = '17px';
+    // Toggle combat on
+    //spacer_player_combat_status.style.height = '5px';
 
-    create_el('battle_ui_container2', 'div', battle_section_container);
-    battle_ui_container2.classList.add('location_box_style');
+    // Spacer
+    create_el('player_combat_status', 'span', battle_section_container);
+    player_combat_status.style.textAlign = 'center';
+    player_combat_status.style.fontSize = '12px';
+    player_combat_status.style.width = '100%';
+    player_combat_status.style.display = 'none';
+    // Toggle combat on
+    //player_combat_status.style.display = 'block';
+    player_combat_status.innerHTML = '<b><span style="background-color:red;">&nbsp;&nbsp; IN COMBAT &nbsp;&nbsp;</span></b>';
+
+    // Place battle_ui_container2/3 here
+    create_el('player_battle_status_bars', 'div', battle_section_container);
+    player_battle_status_bars.style.width = "100%";
+    player_battle_status_bars.style.border = 'solid 5px #333';
+    // Toggle combat on
+    //player_battle_status_bars.style.border = 'solid 5px red';
+
+    // Player health
+    // Add to group player_battle_status_bars
+    create_el('battle_ui_container2', 'div', 'player_battle_status_bars');
 
     // Create player health container
     create_el('player_health_container', 'div', 'battle_ui_container2');
@@ -1274,13 +1309,11 @@ export function start_battle_button(elementId) {
     create_el('player_health_bar_fill', 'div', 'player_health_container');
     player_health_bar_fill.classList.add('bar_with_border_fill');
     player_health_bar_fill.style.backgroundColor = 'green';
-// Need fill calculated
+    // Fill calculated below
 
     create_el('player_current_health_text', 'span', 'player_health_container');
     player_current_health_text.classList.add('bar_with_border_text');
-    // initial Health
-    d_player_character.char_cur_health = playerStats.max_health;
-    player_current_health_text.innerHTML = 'Player Health: <span id="e_char_health">' + d_player_character.char_cur_health + '</span>&nbsp;/&nbsp;';
+    player_current_health_text.innerHTML = 'Player Health: <span id="e_char_health">' + playerStats.cur_health + '</span>&nbsp;/&nbsp;';
     // Inserts e_char_health
 
     create_el('player_maximum_health', 'span', 'player_current_health_text');
@@ -1288,15 +1321,55 @@ export function start_battle_button(elementId) {
 
     create_el('player_current_health_percent', 'span', 'player_health_container');
     player_current_health_percent.classList.add('bar_with_border_percent');
-    let d_player_health_percent = (d_player_character.char_cur_health / playerStats.max_health) * 100;
+    let d_player_health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
     d_player_health_percent = Math.round(d_player_health_percent * 10) / 10;
     player_current_health_percent.innerHTML = d_player_health_percent + '%';
 
     // Display bar width fill
     player_health_bar_fill.style.width = d_player_health_percent + '%';
 
+    // Initial display
+    update_health();
 
-// Need function for updates in battle
+    // Player resource
+    // Add to group player_battle_status_bars
+    create_el('battle_ui_container3', 'div', 'player_battle_status_bars');
+
+    // Create player resource container
+    create_el('player_resource_container', 'div', 'battle_ui_container3');
+    player_resource_container.classList.add('bar_with_border_container');
+
+    // Create the player_resource bar fill (yellow bar)
+    create_el('player_resource_bar_fill', 'div', 'player_resource_container');
+    player_resource_bar_fill.classList.add('bar_with_border_fill');
+    player_resource_bar_fill.style.backgroundColor = '#6E6800';
+    // Fill calculated below
+
+// Test
+playerStats.cur_resource = 88;
+
+    create_el('player_current_resource_text', 'span', 'player_resource_container');
+    player_current_resource_text.classList.add('bar_with_border_text');
+    player_current_resource_text.innerHTML = 'Player Resource: <span id="e_char_resource">' + playerStats.cur_resource + '</span>&nbsp;/&nbsp;';
+    // Inserts e_char_resource
+
+    create_el('player_maximum_resource', 'span', 'player_current_resource_text');
+    player_maximum_resource.innerHTML = playerStats.max_resource;
+
+    create_el('player_current_resource_percent', 'span', 'player_resource_container');
+    player_current_resource_percent.classList.add('bar_with_border_percent');
+    let d_player_resource_percent = (playerStats.cur_resource / playerStats.max_resource) * 100;
+    d_player_resource_percent = Math.round(d_player_resource_percent * 10) / 10;
+    player_current_resource_percent.innerHTML = d_player_resource_percent + '%';
+
+    // Display bar width fill
+    player_resource_bar_fill.style.width = d_player_resource_percent + '%';
+
+// Need update_resource
+
+
+
+
 
 
 
@@ -1324,8 +1397,69 @@ export function start_battle_button(elementId) {
     enemy_battle_name.innerHTML = enemy.char_name;*/
 }
 
-export function update_xp() {
+export function update_health() {
+    
+    // Data needed
+    let playerStats = characterData.find(d => d.id === 'player_stats');
+    // Elements to update
+    let e_char_health = document.getElementById('e_char_health');
+    let e_player_health_bar_fill = document.getElementById('player_health_bar_fill');
+    let e_player_current_health_percent = document.getElementById('player_current_health_percent');
+    // If death occurs
+    let e_player_current_health_text = document.getElementById('player_current_health_text');
+    let e_player_maximum_health = document.getElementById('player_maximum_health');
 
+// Test
+playerStats.cur_health = 180;
+
+    // Update elements
+    e_char_health.innerHTML = playerStats.cur_health;
+    e_player_health_bar_fill.style.width = Math.round(((playerStats.cur_health / playerStats.max_health) * 100)) + '%';
+    let d_player_current_health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
+    d_player_current_health_percent = Math.round(d_player_current_health_percent * 10) / 10;
+    e_player_current_health_percent.innerHTML = d_player_current_health_percent + '%';
+    
+    // Player death
+    if (playerStats.cur_health <= 0) {
+        playerStats.cur_health = 0;
+        e_player_health_bar_fill.style.width = '0%';
+        e_player_current_health_percent.innerHTML = '';
+        e_player_current_health_text.innerHTML = '[ PLAYER HAS DIED ]';
+        e_player_maximum_health.innerHTML = '';
+    }
+}
+
+export function toggle_combat_status() {
+
+    let playerCombat = characterData.find(c => c.id === 'player_combat_status');
+    // playerCombat.in_combat = true/false
+    
+    let spacer_player_combat_status = document.getElementById('spacer_player_combat_status');
+    let player_combat_status = document.getElementById('player_combat_status');
+    let player_battle_status_bars = document.getElementById('player_battle_status_bars');
+
+    // Toggle combat off
+    if (playerCombat.in_combat === true) {
+        spacer_player_combat_status.style.height = '17px';
+        player_combat_status.style.display = 'none';
+        player_battle_status_bars.style.border = 'solid 5px #333';
+        playerCombat.in_combat = false;
+        return;
+    }
+
+    // Toggle combat on
+    if (playerCombat.in_combat === false) {
+        spacer_player_combat_status.style.height = '5px';
+        player_combat_status.style.display = 'block';
+        player_battle_status_bars.style.border = 'solid 5px red';
+        playerCombat.in_combat = true;
+        return;
+    }
+}
+
+export function update_xp() {
+    
+    // Data needed
     let d_player_character = saveData[1].savedCharacterData[0];
     // Update xp progress
     let e_char_exp = document.getElementById('e_char_exp');

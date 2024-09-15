@@ -659,6 +659,7 @@ export function init_characterData() {
         { /* experienceValues [] */ id: 'level_exp', type: 'exp', level_cap: 20, starting_val: 800, level_rate: 0.2 },
         { id: 'player_stats', /* playerStats.total_armor, etc */ }, // See character_setup() 
         // let playerStats = characterData.find(d => d.id === 'player_stats');
+        { id: 'player_combat_status', in_combat: false }, // See toggle_combat_status()
     ];
     
     return characterData;
@@ -695,7 +696,6 @@ export function init_saveData() {
         char_level: 1,
         char_exp: 0, 
         // Others: see playerStats = characterData.find(d => d.id === 'player_stats')
-        char_cur_health: 0, // only for battles
         // char_exp_to_level -> see start_battle_button()
         },
         ] },

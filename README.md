@@ -9,6 +9,11 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 # Updates
 
 09-14-2024
+- Added health and resource bars for combat (energy/mana).
+- Created a function for showing player status as in combat, which is whenever a battle is started.
+- Need enemies and abilities to equip/swap gear as top priorities.
+
+09-14-2024
 - Added many stat calculations, stored main values in array for use in battles. Finished health bar.
 - Need dynamic ability for equipment changes in a function to update as equipment is modified. Likely, this is the next process before starting on the "battle" functionality.
 

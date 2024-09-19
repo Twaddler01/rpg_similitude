@@ -8,6 +8,11 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+09-19-2024
+- Worked on an issue with equipment items that was removing an extra item from inventory when integrating 'REMOVE' button. Button works now but still needs actions (like placing back into inventory, etc). But, it is removed from array and disappears from elements when called again, as intended.
+- "Equipment" and "inventory" elements/tooltips are treated more universal, with slight variations between functions to perform similar tasks, which gives code a much cleaner organization.
+- Allowed user zooming in index.htnl file, which will probably stay.
+
 09-14-2024
 - Added health and resource bars for combat (energy/mana).
 - Created a function for showing player status as in combat, which is whenever a battle is started.

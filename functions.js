@@ -1,7 +1,7 @@
 // functions.js
 
 // import arrays
-import { elementsData, inventoryData, itemData, locationsData, characterData, saveData, trackingData } from './data.js';
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, saveData, trackingData } from './data.js';
 
 // to create new elements
 export function createNewSection(newType, newId, newClass, content, parentID) {
@@ -801,6 +801,7 @@ export function character_setup() {
     let character_container = document.getElementById('character_container');
 
     let charData = saveData[1].savedCharacterData[0];
+
     if (charData.char_name && charData.char_race && charData.char_class) {
         trackingData[0].character_created = true;
     }
@@ -891,49 +892,50 @@ export function character_setup() {
         char_equipment.innerHTML = '<p><b>EQUIPMENT:</b></p>';
 
 // equipment image with slots around image
-
 create_el('char_equipment_container', 'div', char_equipment);
-    create_el('head', 'div', 'char_equipment_container');
-    head.classList.add('top-box');
+    create_el('div_top_box', 'div', 'char_equipment_container');
+    div_top_box.classList.add('top-box');
+    create_el('equip_slot_head', 'div', 'div_top_box');
+    equip_slot_head.classList.add('item-box');
     create_el('div_side_boxes_left', 'div', 'char_equipment_container');
     div_side_boxes_left.classList.add('side-boxes', 'left');
-        create_el('shoulders', 'div', 'div_side_boxes_left', 'Shoulders');
-        shoulders.classList.add('item-box');
-        create_el('neck', 'div', 'div_side_boxes_left', 'Neck');
-        neck.classList.add('item-box');
-        create_el('chest', 'div', 'div_side_boxes_left');
-        chest.classList.add('item-box');
-        create_el('wrist', 'div', 'div_side_boxes_left', 'Wrist');
-        wrist.classList.add('item-box');
-        create_el('ring1', 'div', 'div_side_boxes_left', 'Ring1');
-        ring1.classList.add('item-box');
+        create_el('equip_slot_shoulders', 'div', 'div_side_boxes_left');
+        equip_slot_shoulders.classList.add('item-box');
+        create_el('equip_slot_neck', 'div', 'div_side_boxes_left');
+        equip_slot_neck.classList.add('item-box');
+        create_el('equip_slot_chest', 'div', 'div_side_boxes_left');
+        equip_slot_chest.classList.add('item-box');
+        create_el('equip_slot_wrist', 'div', 'div_side_boxes_left');
+        equip_slot_wrist.classList.add('item-box');
+        create_el('equip_slot_ring1', 'div', 'div_side_boxes_left');
+        equip_slot_ring1.classList.add('item-box');
     create_el('char_equipment_image', 'img', 'char_equipment_container');
     char_equipment_image.src = 'media/char_equip.png';
     char_equipment_image.style.height = '240px';
     char_equipment_image.style.width = '80px';
     create_el('div_side_boxes_right', 'div', 'char_equipment_container');
     div_side_boxes_right.classList.add('side-boxes', 'right');
-        create_el('hands', 'div', 'div_side_boxes_right');
-        hands.classList.add('item-box');
-        create_el('waist', 'div', 'div_side_boxes_right', 'Waist');
-        waist.classList.add('item-box');
-        create_el('legs', 'div', 'div_side_boxes_right', 'Legs');
-        legs.classList.add('item-box');
-        create_el('feet', 'div', 'div_side_boxes_right');
-        feet.classList.add('item-box');
-        create_el('ring2', 'div', 'div_side_boxes_right', 'Ring2');
-        ring2.classList.add('item-box');
+        create_el('equip_slot_hands', 'div', 'div_side_boxes_right');
+        equip_slot_hands.classList.add('item-box');
+        create_el('equip_slot_waist', 'div', 'div_side_boxes_right');
+        equip_slot_waist.classList.add('item-box');
+        create_el('equip_slot_legs', 'div', 'div_side_boxes_right');
+        equip_slot_legs.classList.add('item-box');
+        create_el('equip_slot_feet', 'div', 'div_side_boxes_right');
+        equip_slot_feet.classList.add('item-box');
+        create_el('equip_slot_ring2', 'div', 'div_side_boxes_right');
+        equip_slot_ring2.classList.add('item-box');
     create_el('div_bottom_boxes', 'div', 'char_equipment_container');
     div_bottom_boxes.classList.add('bottom-boxes');
-        create_el('mh', 'div', 'div_bottom_boxes');
-        mh.classList.add('item-box');
-        create_el('oh', 'div', 'div_bottom_boxes', 'OH');
-        oh.classList.add('item-box');
+        create_el('equip_slot_mh', 'div', 'div_bottom_boxes');
+        equip_slot_mh.classList.add('item-box');
+        create_el('equip_slot_oh', 'div', 'div_bottom_boxes');
+        equip_slot_oh.classList.add('item-box');
 
         // First run setup
-        if (!trackingData[0].starting_equip_added) {
+        /*if (!trackingData[0].starting_equip_added) {
             // Add starting items
-            const starting_items = itemData.filter(i => i.start_equipped === true);
+            const starting_items = itemData.filter(i => i.player_equipped === true);
             starting_items.forEach(item => {
                 let slot_element = document.getElementById(item.slot);
                 if (slot_element) {
@@ -944,15 +946,73 @@ create_el('char_equipment_container', 'div', char_equipment);
             // Save starting equipment to saveData array
             let saveDataEquip = saveData[3].equippedData;
             saveDataEquip.forEach(saveItem => {
-                const d_itemData = itemData.find(i => i.slot === saveItem.id && i.start_equipped === true);
+                const d_itemData = itemData.find(i => i.slot === saveItem.id && i.player_equipped === true);
                 if (d_itemData) {
                     saveItem.equipped = d_itemData.id;
                 }
             });
             trackingData[0].starting_equip_added = true;
-        }
+        }*/
         
-        // Add equipmemt from equipped items
+        // Recurring modifications
+        //if (trackingData[0].starting_equip_added && trackingData[0].regular_equip_flag) {
+            // Add savedData equipment items
+            //console.log('regular_equip_flag');
+            let equippedItems = saveData[3].equippedData;
+            //let filtered_equippedItems = equippedItems.filter(e => e.equipped !== null);
+            //console.log(filtered_equippedItems);
+            equippedItems.forEach(slot_data => {
+                const d_itemData = itemData.find(i => i.id === slot_data.equipped);
+                if (d_itemData) {
+                    slot_data.equipped = d_itemData.id;
+                    equipmentElements.e_slot_container = 'equip_slot_' + slot_data.id;
+                } else {
+                    slot_data.id = 'equip_slot_EMPTY';
+                    equipmentElements.e_slot_container = slot_data.id;
+                }
+                
+                let slot_container = document.getElementById(equipmentElements.e_slot_container);
+
+
+// adj in character_setup()
+
+console.log('equipmentElements.e_slot_container: ' + equipmentElements.e_slot_container);
+//// new
+                if (slot_container) {
+                    slot_container.classList.add('equip_slot_container');
+                    
+                    // append with zIndex: 2
+                    let slot_img = document.createElement('img');
+                    slot_container.appendChild(slot_img);
+                    slot_img.id = 'equipment_slot_img_' + slot_data.id;
+                    slot_img.classList.add('equip_slot_img');
+                    equipmentElements.e_slot_img = slot_img.id;
+                    slot_img.src = d_itemData.img;
+
+                    // new tt
+                    slot_container.addEventListener('click', (equip_tt) => {
+                        removeItemTooltip('equipment');
+                        createItemElements(slot_container, slot_data, equipmentElements, 'equipment');
+                        
+                        // Add event listeners to hide the tooltip
+                        setTimeout(() => {
+                            document.addEventListener('click', handleOutsideClick);
+                        }, 20);
+
+                        function handleOutsideClick(equip_tt) {
+                            const tooltipContainer = document.getElementById(slot_container.id);
+                            if (tooltipContainer && !tooltipContainer.contains(equip_tt.target)) {
+                                removeItemTooltip('equipment');
+                                document.removeEventListener('click', handleOutsideClick);
+                            }
+                        }
+                    });
+                }
+            });
+
+// WIP Needs update_player_stats() function after equipment swap
+
+        // Add stats for equipmemt from equipped items
         update_equipment();
 
         create_el('stats_info', 'div', character_container);
@@ -961,11 +1021,10 @@ create_el('char_equipment_container', 'div', char_equipment);
         // Character stat information
         // Calculates ALL stat effects
 
-//// Needs update_player_stats() function
         const stat_data = characterData.filter(d => d.type === 'stat');
         stat_data.forEach(stat => {
 
-            let stats_effect = `<br><span style="color:lightgreen">(Default)</span>`;
+            let stats_effect = `<br><span style="color:lightgreen">(Base)</span>`;
             // Cwrtain base stats (lvl_mod: true) are increased by player level
             let base_level_stat = 0;
             let equip_stat_amt = 0;
@@ -1079,25 +1138,32 @@ create_el('char_equipment_container', 'div', char_equipment);
                 case 'power':
                     let equipped_items = saveData[3].equippedData;
                     let current_weapon = equipped_items.find(i => i.id === 'mh');
-                    let item_info = itemData.find(i => i.id === current_weapon.equipped);
-                    let current_weapon_item_info = item_info.gains;
-                    let current_weapon_dmg_min = current_weapon_item_info.find(w => w.stat === 'dmg_min');
-                    let current_weapon_dmg_max = current_weapon_item_info.find(w => w.stat === 'dmg_max');
-                    trackingData[0].current_weapon_dmg_min = current_weapon_dmg_min.amt;
-                    trackingData[0].current_weapon_dmg_max = current_weapon_dmg_max.amt;
-                    //console.log(current_weapon_dmg_min.amt + ' : ' + current_weapon_dmg_max.amt);
-                    let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt);
-                    //console.log(pwr_weapon_min + ' : ' + pwr_weapon_max)
-                    let incr_dmg_min = Math.round((((pwr_weapon_min / current_weapon_dmg_min.amt) - 1) * 100) * 10) / 10;
-                    let incr_dmg_max = Math.round((((pwr_weapon_max / current_weapon_dmg_max.amt) - 1) * 100) * 10) / 10;
-                    //console.log(incr_dmg_min + ' : ' + incr_dmg_max)
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt-10}, increases attack damage per turn minimum by <b>${incr_dmg_min}%</b> and attack damage per turn maximum by <b>${incr_dmg_max}%</b></span>`;
-                    // Store calculations for tooltip display
-                    trackingData[0].pwr_weapon_min = pwr_weapon_min;
-                    trackingData[0].pwr_weapon_max = pwr_weapon_max;
-                    // Assign to array
-                    playerStats.pwr_weapon_min = pwr_weapon_min;
-                    playerStats.pwr_weapon_max = pwr_weapon_max;
+                    if (current_weapon && current_weapon.equipped) {
+                        let item_info = itemData.find(i => i.id === current_weapon.equipped);
+                        let current_weapon_item_info = item_info.gains;
+                        let current_weapon_dmg_min = current_weapon_item_info.find(w => w.stat === 'dmg_min');
+                        let current_weapon_dmg_max = current_weapon_item_info.find(w => w.stat === 'dmg_max');
+                        trackingData[0].current_weapon_dmg_min = current_weapon_dmg_min.amt;
+                        trackingData[0].current_weapon_dmg_max = current_weapon_dmg_max.amt;
+                        //console.log(current_weapon_dmg_min.amt + ' : ' + current_weapon_dmg_max.amt);
+                        let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt);
+                        //console.log(pwr_weapon_min + ' : ' + pwr_weapon_max)
+                        let incr_dmg_min = Math.round((((pwr_weapon_min / current_weapon_dmg_min.amt) - 1) * 100) * 10) / 10;
+                        let incr_dmg_max = Math.round((((pwr_weapon_max / current_weapon_dmg_max.amt) - 1) * 100) * 10) / 10;
+                        //console.log(incr_dmg_min + ' : ' + incr_dmg_max)
+                        stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt}, increases attack damage per turn minimum by <b>${incr_dmg_min}%</b> and attack damage per turn maximum by <b>${incr_dmg_max}%</b></span>`;
+                        // Store calculations for tooltip display
+                        trackingData[0].pwr_weapon_min = pwr_weapon_min;
+                        trackingData[0].pwr_weapon_max = pwr_weapon_max;
+                        // Assign to array
+                        playerStats.pwr_weapon_min = pwr_weapon_min;
+                        playerStats.pwr_weapon_max = pwr_weapon_max;
+                    } else {
+                        trackingData[0].current_weapon_dmg_min = 0;
+                        trackingData[0].current_weapon_dmg_max = 0;
+                        trackingData[0].pwr_weapon_min = 1;
+                        trackingData[0].pwr_weapon_max = 1.2;
+                    }
                     break;
                 case 'attackMinimum':
                     let differ_dmg_min = Math.round((trackingData[0].pwr_weapon_min - trackingData[0].current_weapon_dmg_min) * 10) / 10;
@@ -1111,15 +1177,18 @@ create_el('char_equipment_container', 'div', char_equipment);
                     break;
                 case 'hitChance':
                     // Assign to array
-                    playerStats.hit_flat = 90+stat.amt;
-                    playerStats.hit_plus_1 = 87+stat.amt;
-                    playerStats.hit_plus_2 = 85+stat.amt;
-                    playerStats.hit_plus_3on = 50+stat.amt;
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt}%, current probability an attack will cause damage to same-level enemies: ${90+stat.amt}%</span>`;
-                    stats_effect += `<br><span style="color:lightgreen">- Current probability an attack will cause damage to <u>level +1</u> enemies: ${87+stat.amt}%</span>`;
-                    stats_effect += `<br><span style="color:lightgreen">- Current probability an attack will cause damage to <u>level +2</u> enemies: ${85+stat.amt}%</span>`;
-                    stats_effect += `<br><span style="color:lightgreen">- Current probability an attack will cause damage to <u>level +3 or higher</u> enemies: ${50+stat.amt}%</span>`;
-                    stat.amt = playerStats.hit_chance + '%';
+                    playerStats.hit_chance = stat.amt;
+                    let stat_display = 90 + stat.amt + '%';
+                    playerStats.hit_chance_display = stat_display;
+                    playerStats.hit_flat = 90;
+                    playerStats.hit_plus_1 = 87;
+                    playerStats.hit_plus_2 = 85;
+                    playerStats.hit_plus_3on = 50;
+                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt}%`;
+                    stats_effect += `<br><b>- Probability an attack will cause damage to <u>same-level</u> enemies: ${90+stat.amt}%</b>`;
+                    stats_effect += `<br>- Current probability an attack will cause damage to <u>level +1</u> enemies: ${87+stat.amt}%`;
+                    stats_effect += `<br>- Current probability an attack will cause damage to <u>level +2</u> enemies: ${85+stat.amt}%`;
+                    stats_effect += `<br>- Current probability an attack will cause damage to <u>level +3 or higher</u> enemies: ${50+stat.amt}%</span>`;
                     break;
                 case 'criticalStrikeChance':
                     let base_crit_strike_rating = 5;
@@ -1135,7 +1204,9 @@ create_el('char_equipment_container', 'div', char_equipment);
             }
 
             let line_item = stat.label + stat.amt + stats_effect + '<br>';
-
+            if (stat.id === 'hitChance') {
+                line_item = stat.label + playerStats.hit_chance_display + stats_effect + '<br>';
+            }
             stats_info.innerHTML += line_item;
         });
 
@@ -1177,11 +1248,60 @@ export function calculate_weapon_damage(itemLevel, statPower) {
     return [damage_min, damage_max];
 }
 
+//// WIP Equip new/swap items from inventory
+// Swap equipment as equipped/unequipped after clicking 'EQUIP'/'REMOVE'
+export function swap_equipment(item, slot, action) {
+
+// BASIC_HELMET, HEAD
+    let d_itemData = itemData.find(i => i.id === item);
+    let saveDataEquipAll = saveData[3].equippedData;
+    let saveDataEquip = saveDataEquipAll.filter(e => e.equipped !== null);
+
+    let currentInventory = saveData[2].inventoryData;
+
+    let equipped_item = saveDataEquip.find(i => i.equipped === d_itemData.id);
+    let equipped_item_container = 'equipment_tooltip_container_' + d_itemData.id;
+    let e_equipped_item_container = document.getElementById(equipped_item_container);
+    // BASIC_HELMET
+
+    // Remove item if match
+    if (action === 'remove' && e_equipped_item_container && equipped_item && equipped_item.equipped === item) {
+        // Clear item
+        //console.log('before');
+        //console.log(saveDataEquip);
+
+        let item_to_remove = equipped_item.equipped;
+        equipped_item.equipped = null;
+
+        saveDataEquip = saveDataEquipAll.filter(e => e.equipped !== null);
+
+        //console.log('after');
+        //console.log(saveDataEquip);
+
+        let character_container = document.getElementById('character_container');
+        character_container.innerHTML = '';
+
+        //removeItemTooltip('equipment');
+        character_setup();
+
+
+    }
+
+
+
+    // Add removed item to inventory
+
+    // Add item if empty slot
+
+    // Add new item as equipped, move old item to inventory
+
+}
+
 export function update_equipment() {
     // Match saveData with items
     let d_equippedData = saveData[3].equippedData;
     d_equippedData.forEach(item => {
-        // Calculate total armor equipped
+        // Calculate total stats equipped
         let d_itemData = itemData.find(i => i.id === item.equipped);
         if (d_itemData) {
             const stat_data = characterData.filter(d => d.type === 'stat');
@@ -1193,11 +1313,19 @@ export function update_equipment() {
                     }
                 });
             });
-        }
+        } /*else {
+            // Clear stats
+            const stat_data = characterData.filter(d => d.type === 'stat');
+            stat_data.forEach(stat => {
+                if (stat) {
+                    stat.amt = stat.lvl_amt;
+                }
+            });
+        }*/
     });
 }
 
-//// WIP
+// WIP
 export function start_battle_button(elementId) {
 
     // Data
@@ -1367,8 +1495,7 @@ playerStats.cur_resource = 88;
 
 // Need update_resource
 
-
-
+    // Setup battle encounter
 
 
 
@@ -1396,6 +1523,54 @@ playerStats.cur_resource = 88;
     enemy.char_name = random_race + '&nbsp;' + random_class;
     enemy_battle_name.innerHTML = enemy.char_name;*/
 }
+
+// Test
+// Quick DOM modifications
+function gel(id, css = null, inner = null, ...styles) {
+    try {
+        const element = document.getElementById(id);
+        
+        // If element is not found, throw an error
+        if (!element) {
+            throw new Error(`Element with ID '${id}' not found`);
+        }
+
+        // Apply CSS class if provided
+        if (css) {
+            element.classList.add(css);
+        }
+        
+        // Apply innerHTML if provided
+        if (inner) {
+            element.innerHTML = inner;
+        }
+        
+        // Apply styles if any are provided
+        styles.forEach(style => {
+            let [property, value] = style.split(':').map(s => s.trim()); // Split and trim the style string
+            if (property && value) {
+                element.style[property] = value;
+            }
+        });
+
+        return element;
+    } catch (error) {
+        // Log the error, ID, and stack trace for easy tracking
+        console.error(`Error in manipulating element with ID '${id}':`, error.message);
+        console.error(`Error occurred at:`, error.stack);
+    }
+}
+
+// Example usage:
+// let e_my_element = gel('my_element', 'css_class', 'Text', 'display: block', 'padding: 5px');
+// e_my_element.innerHTML = 'Change to this text';
+/* let mods = [
+{ id: 'my_element',
+{ css: 'css_class',
+{ inner: 'Text',
+{ styles: 'display: block',
+{ styles: 'padding: 5px'
+];*/
 
 export function update_health() {
     
@@ -1559,10 +1734,10 @@ export function attack_box_button(elementId) {
             if (enemy.dead) {
                 new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated ' + enemy.char_name + '.</span></p>';
                 // get loot from battle
-                inventory_setup();
+                update_inventory();
 
                 //d_inventory.current_loot.push({ id: lootItem.name, cnt: quantity });
-                let d_inventory = inventoryData.find(inv => inv.id === 'inventory');
+                let d_inventory = inventoryElements.find(inv => inv.id === 'inventory');
 
                 if (d_inventory && d_inventory.current_loot) {
                     // Iterate over each item in current_loot
@@ -1601,11 +1776,11 @@ export function attack_box_button(elementId) {
 }
 
 let selectedSlot = null;
-export function inventory_setup() {
+export function update_inventory() {
 
     let savedInventory = saveData[2].inventoryData;
     let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
-    let inventoryElements = inventoryData.filter(i => i.type === 'slot');
+    let d_inventoryElements = inventoryElements.filter(i => i.type === 'slot');
 
     // setup inventory
     if (!savedInventory[0].setup) {
@@ -1621,29 +1796,26 @@ export function inventory_setup() {
             inv_parent.appendChild(slot_container);
             slot_container.id = 'inventory_slot_container_' + slot_data.slot_id;
             slot_container.classList.add('inv_slot_container');
-            inventoryElements[index].e_slot_container = slot_container.id;
+            d_inventoryElements[index].e_slot_container = slot_container.id;
 
             // append with zIndex: 2
             let slot_img = document.createElement('img');
             slot_container.appendChild(slot_img);
             slot_img.id = 'inventory_slot_img_' + slot_data.slot_id;
             slot_img.classList.add('new_slot_img');
-            inventoryElements[index].e_slot_img = slot_img.id;
+            d_inventoryElements[index].e_slot_img = slot_img.id;
 
             // append inv_slot_counter ÷> z-index: 3
             let slot_counter = document.createElement('div');
             slot_container.appendChild(slot_counter);
             slot_counter.id = 'inventory_slot_counter_' + slot_data.slot_id;
             slot_counter.classList.add('normal', 'inv_slot_counter');
-            inventoryElements[index].e_slot_counter = slot_counter.id;
+            d_inventoryElements[index].e_slot_counter = slot_counter.id;
 
             // Add event listener to slot_container
             slot_container.addEventListener('click', () => {
-                handleSlotClick(slot_container, slot_img, slot_counter, slot_data, inventoryElements);
+                handleSlotClick(slot_container, slot_img, slot_counter, slot_data, d_inventoryElements);
             });
-            
-            // All empty slots
-            //console.log(slot_data);
 
         });
         savedInventory[0].setup = true;
@@ -1667,56 +1839,89 @@ export function inventory_setup() {
             });
         }
     });
-    
+
     // insert test items
     updateLootCount('TOOTH', 1);
     updateLootCount('TOOTH', 1);
     updateLootCount('BASIC_HELMET', 1);
-    updateLootCount('BASIC_HELMET', 1);
+    updateLootCount('BASIC_BOOTS', 1);
     updateLootCount('CLOTH_BASIC', 2);
     updateLootCount('CLOTH_BASIC', 1);
 
-    // reset empty slots
-    //applyTransparencyToEmptySlots();
+
 }
 
 export function updateLootCount(itemId, quantity) {
     let savedInventory = saveData[2].inventoryData;
     let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
-    let inventoryElements = inventoryData.filter(i => i.type === 'slot'); // For updating element ids
+    let d_inventoryElements = inventoryElements.filter(i => i.type === 'slot'); // For updating element ids
     let lootItem = itemData.find(i => i.id === itemId);
 
-    // If the loot item exists
+    // If the loot item exists, add it
     if (lootItem) {
+        let itemFound = false; // Track if the stackable item was found
+
+        // First, check if the stackable item already exists in any slot
         for (let i = 0; i < savedInventorySlots.length; i++) {
             let slot_data = savedInventorySlots[i];
 
-            // Check if the slot is empty
-            if (slot_data.contents === '[ EMPTY ]') {
-                // Assign itemId and quantity to the empty slot
-                slot_data.contents = lootItem.id;
-                slot_data.cnt = quantity;
-                // Update the corresponding inventory element using the index
-                let e_slot_img = document.getElementById(inventoryElements[i].e_slot_img);
-                e_slot_img.style.display = 'block';
-                e_slot_img.src = lootItem.img;
-                // (e_slot_counter is hidden for single items)
-                break;
-            } 
             // If the item is stackable and already exists in the slot, increment its count
-            else if (lootItem.stackable && slot_data.contents === lootItem.id) {
+            if (lootItem.stackable && slot_data.contents === lootItem.id) {
                 slot_data.cnt += quantity;
                 // Update the corresponding inventory element using the index
-                let e_slot_counter = document.getElementById(inventoryElements[i].e_slot_counter);
+                let e_slot_counter = document.getElementById(d_inventoryElements[i].e_slot_counter);
                 e_slot_counter.innerHTML = slot_data.cnt;
+                itemFound = true;
                 break;
             }
         }
+
+        // If the stackable item wasn't found in any slot, add it to an empty slot
+        if (!itemFound) {
+            for (let i = 0; i < savedInventorySlots.length; i++) {
+                let slot_data = savedInventorySlots[i];
+
+                // Check if the slot is empty
+                if (slot_data.contents === '[ EMPTY ]') {
+                    // Assign itemId and quantity to the empty slot
+                    slot_data.contents = lootItem.id;
+                    slot_data.cnt = quantity;
+                    // Update the corresponding inventory element using the index
+                    let e_slot_img = document.getElementById(d_inventoryElements[i].e_slot_img);
+                    e_slot_img.style.display = 'block';
+                    e_slot_img.src = lootItem.img;
+                    // (e_slot_counter is hidden for single items)
+                    break;
+                }
+            }
+        }
+    }
+
+    // Check if inventory is full
+    let max_inventory = savedInventorySlots.length;
+    let inventory_full = false;  // Assume inventory is not full unless we find no empty slots
+    trackingData[0].inventory_full = false;
+
+    for (let i = 0; i < max_inventory; i++) {  // Loop starts at 0
+        if (savedInventorySlots[i].contents === '[ EMPTY ]') {
+            inventory_full = false;  // Found empty slot, inventory not full
+            break;
+        } else {
+            inventory_full = true;
+            trackingData[0].inventory_full = true;
+        }
+    }
+    
+    if (inventory_full) {
+        let messages_section_container = document.getElementById('messages_section_container');
+        let currentDateTime = new Date().toLocaleString();
+        messages_section_container.innerHTML = '' ? '<br>' : '';
+        messages_section_container.innerHTML += `<span style="color: gray;">(${currentDateTime})</span><br><span style="color: red;">Inventory is full.</span>`;
     }
 }
 
 // Function to handle various slot click situations
-function handleSlotClick(slot_container, slotImg, slotCounter, slot_data, inventoryElements) {
+function handleSlotClick(slot_container, slotImg, slotCounter, slot_data, d_inventoryElements) {
 
     // Clear all tooltips found in inventory
     removeItemTooltip('inventory');
@@ -1740,7 +1945,7 @@ function handleSlotClick(slot_container, slotImg, slotCounter, slot_data, invent
         if (selectedSlot.slot_container === slot_container) {
             // If the selected slot is clicked again, show tooltip, reset
             // Show tooltip
-            createItemTooltip(slot_container, slot_data, inventoryElements, 'inventory');
+            createItemElements(slot_container, slot_data, d_inventoryElements, 'inventory');
             // Reset
             selectedSlot = null;
             slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
@@ -1823,14 +2028,138 @@ function handleSlotClick(slot_container, slotImg, slotCounter, slot_data, invent
     }
 }
 
-function createItemTooltip(slot_container, slot_data, inventoryElements, type) {
+trackingData[0].currentTooltip = null; // Store the currently open tooltip container
+trackingData[0].currentTooltipElement = null; // Store the element that triggered the current tooltip
+//// type: only 'equipment'
+// possible BUG on character_setup()
+export function item_tooltip(targetElement, itemId, type) {
+
+    // item = array from itemData
+    let item = itemData.find(i => i.id === itemId);
+
+    let item_box_DOM = null;
+    let elid = null;
+
+    item_box_DOM = document.getElementById('item_box_' + item.id);
+    elid = document.getElementById(targetElement.id);
+
+    trackingData[0].tooltipTargetElementId = targetElement.id;
+
+    // Append item to string
+    let item_tooltip_container_item = 'item_tooltip_container_' + item.id;
+
+    if (!trackingData[0].tooltip_open) {
+        if (!item_box_DOM) {
+            item_box_DOM = document.createElement('div');
+            item_box_DOM.id = 'item_box_' + item.id;
+            item_box_DOM.classList.add('item_box_equip');
+            elid.appendChild(item_box_DOM);
+        }
+
+        elid.style.position = 'relative';
+        item_box_DOM.style.position = 'relative';
+
+        item_box_DOM.style.backgroundImage = `url(${item.img})`;        
+        item_box_DOM.style.backgroundSize = '50px 50px';
+        
+        item_box_DOM.onclick = (event) => {
+ 
+            // Check and close any currently open tooltip
+            if (trackingData[0].currentTooltip && trackingData[0].currentTooltipElement !== elid) {
+                removeTooltip();
+            }
+
+            event.stopPropagation(); // Prevent the click from propagating
+
+            if (!trackingData[0].tooltip_open) {
+                trackingData[0].tooltip_open = true;
+
+                // Create tooltip container
+                let item_tooltip_container = document.createElement('div');
+                item_tooltip_container.id = 'item_tooltip_container_' + item.id;
+                elid.appendChild(item_tooltip_container);
+
+                // Overlay styles
+                elid.style.zIndex = '9999';
+                item_tooltip_container.style.width = '200px';
+                item_tooltip_container.style.pointerEvents = 'auto'; // Allow interactions with the tooltip
+
+                // Calculate the position relative to the container
+                const elidRect = elid.getBoundingClientRect();
+                const clickX = event.clientX;
+                const clickY = event.clientY;
+
+                // Position the tooltip 20px away from the mouse click
+                item_tooltip_container.style.left = `${clickX - elidRect.left + 20}px`;
+                item_tooltip_container.style.top = `${clickY - elidRect.top + 20}px`;
+
+                setup_tooltip_div(item_tooltip_container.id, item, null, 'equipment');
+
+                // Equip / Remove (back to inventory)
+                // for REMOVE button
+                /*if (!item.player_equipped) {
+                    if (type === 'equipment' && item.type === 'armor' || item.type === 'weapon') {
+                        create_el('equip', 'div', 'item_tooltip_div');
+                        create_el('equip_btn', 'button', 'equip');
+                        equip_btn.classList.add('item_tooltip_armor');
+                        equip_btn.style.background = 'black';
+                        equip_btn.innerHTML = 'REMOVE';
+                    }
+                }*/
+
+                // Store the current tooltip and element references
+                trackingData[0].currentTooltip = item_tooltip_container;
+                trackingData[0].currentTooltipElement = elid;
+
+                // Add event listeners to hide the tooltip
+                setTimeout(() => {
+                    document.addEventListener('click', handleOutsideClick);
+                }, 20);
+            } else {
+                removeTooltip();
+                elid.style.zIndex = '0';
+                item_box_DOM.style.zIndex = '0';
+
+            }
+        };
+    
+    } else {
+        let tooltipElement = document.getElementById(item_tooltip_container_item);
+        if (tooltipElement) {
+            elid.removeChild(tooltipElement);
+        }
+        trackingData[0].tooltip_open = false;
+    }
+
+    function handleOutsideClick(event) {
+        const tooltipContainer = document.getElementById(item_tooltip_container_item);
+        if (tooltipContainer && !elid.contains(event.target) && !tooltipContainer.contains(event.target)) {
+            removeTooltip();
+        }
+    }
+
+    function removeTooltip() {
+        if (trackingData[0].currentTooltip) {
+            // reset layer z-index
+            trackingData[0].currentTooltipElement.style.zIndex = 'auto'; // Reset z-index
+            trackingData[0].currentTooltipElement.removeChild(trackingData[0].currentTooltip);
+            trackingData[0].currentTooltip = null;
+            trackingData[0].currentTooltipElement = null;
+            trackingData[0].tooltip_open = false;
+            document.removeEventListener('click', handleOutsideClick);
+        }
+    }
+}
+
+function createItemElements(slot_container, slot_data, elements, type) {
 
     if (type === 'inventory') {
 
         // Get index match for element ida
         let index = slot_data.slot_id - 1;
         // To get slot_container.id that matches e_slot_container
-        let matched_slot = inventoryElements[index].e_slot_container;
+        // elements = inventoryElements
+        let matched_slot = elements[index].e_slot_container;
 
         if (slot_data.contents !== '[ EMPTY ]' && matched_slot === slot_container.id) {
             // Parent container
@@ -1842,20 +2171,44 @@ function createItemTooltip(slot_container, slot_data, inventoryElements, type) {
             let tooltip_container_div = document.createElement('div');
             container_parent.appendChild(tooltip_container_div);
             tooltip_container_div.id = 'inventory_tooltip_container_' + slot_data.contents + '_' + slot_data.slot_id;
-            
+
             tooltip_container_div.style.position = 'absolute';
             tooltip_container_div.style.top = '65px';
             tooltip_container_div.style.width = '200px';
             tooltip_container_div.style.pointerEvents = 'auto'; // Allow interactions with the tooltip
             
             let item = itemData.find(i => i.id === slot_data.contents);
-            setup_tooltip_div(tooltip_container_div.id, item, slot_data);
+            setup_tooltip_div(tooltip_container_div.id, item, slot_data, 'inventory');
         }
+    }
+    if (type === 'equipment') {
+        if (slot_container.id !== 'equip_slot_EMPTY') {
+            // Parent container
+            let container_parent = document.getElementById(slot_container.id);
+            container_parent.style.zIndex = '9999';
+            container_parent.style.position = 'relative';
+
+            // Create tooltip containers
+            let tooltip_container_div = document.createElement('div');
+            container_parent.appendChild(tooltip_container_div);
+            tooltip_container_div.id = 'equipment_tooltip_container_' + slot_data.equipped;
+
+            tooltip_container_div.style.position = 'absolute';
+            tooltip_container_div.style.top = '65px';
+            tooltip_container_div.style.width = '200px';
+            tooltip_container_div.style.pointerEvents = 'auto'; // Allow interactions with the tooltip
+
+            let item = itemData.find(i => i.id === slot_data.equipped);
+            if (item) {
+                setup_tooltip_div(tooltip_container_div.id, item, slot_data, 'equipment');
+            }
+        }
+
     }
 }
 
 // Setup each tooltip box
-function setup_tooltip_div(tooltip_container_div, item, slot_data) {
+function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
 
     create_el('item_tooltip_div', 'div', tooltip_container_div);
     item_tooltip_div.classList.add('item_tooltip');
@@ -1908,7 +2261,7 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data) {
             item_name.classList.add('r_ancient');
             break;
     }
-    create_el('hr1', 'hr', 'item_tooltip_div');
+    create_el('tt_hr1', 'hr', 'item_tooltip_div');
     create_el('item_desc', 'div', 'item_tooltip_div');
     item_desc.classList.add('light_small');
     if (item.desc) {
@@ -1980,6 +2333,34 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data) {
         gold_div.style.display = 'none';
         sell_price_amt.innerHTML = '[ None ]';
     }
+
+//// Setup equip buttons here
+
+    if (tt_type === 'equipment') {
+        // Get equipped items
+        let saveDataEquip = saveData[3].equippedData;
+
+        // Find equipped item in saveData array
+        saveDataEquip.forEach(saveItem => {
+
+            //let matched_item_equipped = itemData.find(i => i.id === saveItem.equipped && i.slot === item.slot);
+            let e_equipment_slot = document.getElementById('equip_slot_' + item.slot);
+            
+            // Items equipped only
+            if (e_equipment_slot && saveItem.equipped === item.id) {
+    
+                create_el('tt_hr2', 'hr', 'item_tooltip_div');
+                create_el('equip_actions', 'div', 'item_tooltip_div');
+                equip_actions.classList.add('light_small');
+                equip_actions.innerHTML = '<b>Equipment Actions:</b>';
+                create_el('unequip_btn', 'button', 'equip_actions');
+                unequip_btn.innerHTML = 'REMOVE';
+                unequip_btn.addEventListener('click', () => {
+                    swap_equipment(item.id, item.slot, 'remove');
+                });
+            }
+        });
+    }
 }
 
 // Remove ALL tooltips
@@ -2000,145 +2381,22 @@ function removeItemTooltip(type) {
             }
         });
     }
-}
-
-trackingData[0].currentTooltip = null; // Store the currently open tooltip container
-trackingData[0].currentTooltipElement = null; // Store the element that triggered the current tooltip
-// type: equipment, inventory
-export function item_tooltip(targetElement, itemId, type) {
-
-    // item = array from itemData
-    let item = itemData.find(i => i.id === itemId);
-
-    let item_box_DOM = null;
-    let elid = null;
-    // tooltip toggle for equipped items
-    if (type === 'equipment') {
-        item_box_DOM = document.getElementById('item_box_' + item.id);
-        elid = document.getElementById(targetElement.id);
-        trackingData[0].tooltipTargetElementId = targetElement.id;
-        //console.log('elid_equip: ' + targetElement.id + ' / item_box: item_box_' + item.id);
-    }
-    // tooltip toggle for inventory items
-    if (type === 'inventory') {
-        item_box_DOM = document.getElementById(targetElement.id + '_' + item.id);
-        elid = document.getElementById(targetElement.id);
-        trackingData[0].tooltipTargetElementId = targetElement.id;
-        //console.log('elid_inv: ' + targetElement.id + ' / item_box: ' + targetElement.id + '_' + item.id);
-    }
-
-    // Append item to string
-    let item_tooltip_container_item = 'item_tooltip_container_' + item.id;
-
-    if (!trackingData[0].tooltip_open) {
-        if (!item_box_DOM) {
-            if (type === 'equipment') {
-                item_box_DOM = document.createElement('div');
-                item_box_DOM.id = 'item_box_' + item.id;
-                item_box_DOM.classList.add('item_box_equip');
-                elid.appendChild(item_box_DOM);
-            }
-            if (type === 'inventory') {
-                item_box_DOM = document.createElement('div');
-                item_box_DOM.id = targetElement.id + '_' + item.id;
-                item_box_DOM.classList.add('item_box_inv');
-                elid.appendChild(item_box_DOM);
-            }
-        }
-
-        elid.style.position = 'relative';
-        item_box_DOM.style.position = 'relative';
-
-        if (type === 'equipment') {
-            item_box_DOM.style.backgroundImage = `url(${item.img})`;        
-            item_box_DOM.style.backgroundSize = '50px 50px';
-        }
-        item_box_DOM.onclick = (event) => {
- 
-        // Check and close any currently open tooltip
-        if (trackingData[0].currentTooltip && trackingData[0].currentTooltipElement !== elid) {
-            removeTooltip();
-        }
-
-            event.stopPropagation(); // Prevent the click from propagating
-
-            if (!trackingData[0].tooltip_open) {
-                trackingData[0].tooltip_open = true;
-
-                // Create tooltip container
-                let item_tooltip_container = document.createElement('div');
-                item_tooltip_container.id = 'item_tooltip_container_' + item.id;
-                elid.appendChild(item_tooltip_container);
-
-                // Overlay styles
-                elid.style.zIndex = '9999';
-                item_tooltip_container.style.width = '200px';
-                item_tooltip_container.style.pointerEvents = 'auto'; // Allow interactions with the tooltip
-
-                // Calculate the position relative to the container
-                const elidRect = elid.getBoundingClientRect();
-                const clickX = event.clientX;
-                const clickY = event.clientY;
-
-                // Position the tooltip 20px away from the mouse click
-                item_tooltip_container.style.left = `${clickX - elidRect.left + 20}px`;
-                item_tooltip_container.style.top = `${clickY - elidRect.top + 20}px`;
-
-                setup_tooltip_div(item_tooltip_container_item, item);
-
-                // Equip / Remove (back to inventory)
-                // for REMOVE button
-                if (!item.start_equipped) {
-                    if (type === 'equipment' && item.type === 'armor' || item.type === 'weapon') {
-                        create_el('equip', 'div', 'item_tooltip_div');
-                        create_el('equip_btn', 'button', 'equip');
-                        equip_btn.classList.add('item_tooltip_armor');
-                        equip_btn.style.background = 'black';
-                        equip_btn.innerHTML = 'REMOVE';
-                    }
-                }
-
-                // Store the current tooltip and element references
-                trackingData[0].currentTooltip = item_tooltip_container;
-                trackingData[0].currentTooltipElement = elid;
-
-                // Add event listeners to hide the tooltip
-                setTimeout(() => {
-                    document.addEventListener('click', handleOutsideClick);
-                }, 20);
-            } else {
-                removeTooltip();
-                elid.style.zIndex = '0';
-                item_box_DOM.style.zIndex = '0';
-
-            }
-        };
     
-    } else {
-        let tooltipElement = document.getElementById(item_tooltip_container_item);
-        if (tooltipElement) {
-            elid.removeChild(tooltipElement);
-        }
-        trackingData[0].tooltip_open = false;
-    }
+    if (type === 'equipment') {
+        // Get all elements with id starting with 'inventory_tooltip_container_'
+        let equip_tooltip_container_divs = document.querySelectorAll("[id^='equipment_tooltip_container_']");
 
-    function handleOutsideClick(event) {
-        const tooltipContainer = document.getElementById(item_tooltip_container_item);
-        if (tooltipContainer && !elid.contains(event.target) && !tooltipContainer.contains(event.target)) {
-            removeTooltip();
-        }
-    }
-
-    function removeTooltip() {
-        if (trackingData[0].currentTooltip) {
-            // reset layer z-index
-            trackingData[0].currentTooltipElement.style.zIndex = 'auto'; // Reset z-index
-            trackingData[0].currentTooltipElement.removeChild(trackingData[0].currentTooltip);
-            trackingData[0].currentTooltip = null;
-            trackingData[0].currentTooltipElement = null;
-            trackingData[0].tooltip_open = false;
-            document.removeEventListener('click', handleOutsideClick);
-        }
+        // Loop through each element and remove it
+        equip_tooltip_container_divs.forEach(tooltip => {
+            if (tooltip.parentNode) {
+                // Reset the zIndex and position if they were modified
+                if (tooltip.parentNode.style.zIndex === '9999') {
+                    tooltip.parentNode.style.zIndex = '0';  // Reset zIndex
+                    //tooltip.parentNode.style.position = ''; // Reset position to default
+                }
+                tooltip.parentNode.removeChild(tooltip);
+            }
+        });
     }
 }
 
@@ -2158,6 +2416,10 @@ function applyTransparencyToEmptySlots() {
             slotImg.style.display = 'none';
             slotCounter.innerHTML = '';
         }
+        
+        if (slot[i].contents !== '[ EMPTY ]') {
+            
+        }
     }
 }
 // Call this function after setting up the inventory or updating it
@@ -2166,7 +2428,7 @@ function applyTransparencyToEmptySlots() {
 // Setup gold elements, purchases, etc
 export function handle_gold() {
     let inventory_section = document.getElementById('inventory_section');
-    let d_gold = inventoryData.find(inv => inv.id === 'GOLD');
+    let d_gold = inventoryElements.find(inv => inv.id === 'GOLD');
 
     if (!d_gold.setup && inventory_section) {
         let gold_container = document.createElement('div');

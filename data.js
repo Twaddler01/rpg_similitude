@@ -32,6 +32,21 @@ export function init_elementsData() {
         */
 
         // section
+        { id: 'messages_section',
+        section_cat: true,
+        type: 'div',
+        parent_el: 'body',
+        content: 'Game Messages',
+        css_class: 'h1_yellow_font',
+        },
+            // attach (messages_section)
+            { id: 'messages_section_container',
+            section_cat: true,
+            fetch_cat: true,
+            type: 'div',
+            parent_el: 'messages_section',
+            css_class: 'location_box_style',
+            },
         { id: 'character_section',
         section_cat: true,
         type: 'div',
@@ -429,9 +444,30 @@ export function init_characterData() {
     return characterData;
 }*/ // ****** OLD DATA
 
-export function init_inventoryData() {
+export function init_equipmentElements() {
 
-    const inventoryData = [
+    const equipmentElements = [
+        { num: 1, type: 'equip_slot', id: 'head' }, 
+        { num: 2, type: 'equip_slot', id: 'shoulders' }, 
+        { num: 3, type: 'equip_slot', id: 'hands' }, 
+        { num: 4, type: 'equip_slot', id: 'neck' }, 
+        { num: 5, type: 'equip_slot', id: 'waist' }, 
+        { num: 6, type: 'equip_slot', id: 'chest' }, 
+        { num: 7, type: 'equip_slot', id: 'legs' }, 
+        { num: 8, type: 'equip_slot', id: 'wrist' }, 
+        { num: 9, type: 'equip_slot', id: 'feet' }, 
+        { num: 10, type: 'equip_slot', id: 'ring1' }, 
+        { num: 11, type: 'equip_slot', id: 'ring2' }, 
+        { num: 12, type: 'equip_slot', id: 'mh' }, 
+        { num: 13, type: 'equip_slot', id: 'oh' }, 
+    ];
+
+    return equipmentElements;
+}
+
+export function init_inventoryElements() {
+
+    const inventoryElements = [
         { id: 'inventory',
         size: 10,
         lbl: 'Inventory',
@@ -453,7 +489,7 @@ export function init_inventoryData() {
         },
     ];
 
-    return inventoryData;
+    return inventoryElements;
 }
 
 export function init_itemData() {
@@ -500,7 +536,7 @@ export function init_itemData() {
         name: 'Basic Helm',
         slot: 'head',
         slot_name: 'Head',
-        start_equipped: true,
+        player_equipped: true,
         rarity: 0,
         desc: 'Basic head protection, nothing extraordinary.',
         gains: [ 
@@ -520,7 +556,7 @@ export function init_itemData() {
         name: 'Basic Chestpiece',
         slot: 'chest',
         slot_name: 'Chest',
-        start_equipped: true,
+        player_equipped: true,
         rarity: 0,
         desc: 'Basic chest protection. Not very stylish.',
         gains: [ 
@@ -538,7 +574,7 @@ export function init_itemData() {
         name: 'Basic Gloves',
         slot: 'hands',
         slot_name: 'Hands',
-        start_equipped: true,
+        player_equipped: true,
         rarity: 0,
         desc: 'Basic hand protection. Almost as good as junk...almost.',
         gains: [ 
@@ -556,7 +592,7 @@ export function init_itemData() {
         name: 'Basic Boots',
         slot: 'feet',
         slot_name: 'Feet',
-        start_equipped: true,
+        player_equipped: true,
         rarity: 0,
         desc: 'Basic feet protection. Not very comfortable.',
         gains: [ 
@@ -574,7 +610,7 @@ export function init_itemData() {
         name: 'Basic Dagger',
         slot: 'mh',
         slot_name: 'Mainhand',
-        start_equipped: true,
+        player_equipped: true,
         rarity: 0,
         desc: 'A cheap dagger. Dull. You&apos;ll stab your eye out, kid.',
         gains: [ 
@@ -635,11 +671,11 @@ export function init_characterData() {
         { id: 'constitution', type: 'stat', amt: 10, label: 'Constitution: ', lvl_mod: true, lvl_amt: 10 },
         { id: 'agility', type: 'stat', amt: 10, label: 'Agility: ', lvl_mod: true, lvl_amt: 10 },
         { id: 'wisdom', type: 'stat', amt: 10, label: 'Wisdom: ', lvl_mod: true, lvl_amt: 10 },
-        { id: 'power', type: 'stat', amt: 0.0, label: 'Power: ' },
-        { id: 'attackMinimum', type: 'stat', amt: 1.2, label: 'Attack Minimum: ' },
-        { id: 'attackMaximum', type: 'stat', amt: 1.6, label: 'Attack Maximum: ' }, // stat_attack_min * 1.5
+        { id: 'power', type: 'stat', amt: 0.0, label: 'Power: ', lvl_amt: 0 },
+        { id: 'attackMinimum', type: 'stat', amt: 1.2, label: 'Attack Minimum: ', lvl_amt: 0 },
+        { id: 'attackMaximum', type: 'stat', amt: 1.6, label: 'Attack Maximum: ', lvl_amt: 0 }, // stat_attack_min * 1.5
         { id: 'hitChance', type: 'stat', amt: 0.9, label: 'Hit Chance: ' },
-        { id: 'criticalStrikeChance', type: 'stat', amt: 0.0, label: 'Critical Strike Chance: ' }, // bsse stats: [0] - [12]
+        { id: 'criticalStrikeChance', type: 'stat', amt: 0.0, label: 'Critical Strike Chance: ', lvl_amt: 5 }, // bsse stats: [0] - [12]
         // desc
         { id: 'armor', label: 'Armor', type: 'desc', def: 'Reduces damage received by 0.1% per point.' },
         { id: 'strength', label: 'Strength', type: 'desc', def: 'Increases melee damage dealt by 0.1% per point and total energy by both 0.1 per base level amount and 1 per equipment bonus point.' },
@@ -700,38 +736,43 @@ export function init_saveData() {
         },
         ] },
     // saveData[2]
-    { inventoryData: [ // to be added to static inventoryData array
-        { size: 10, 
-          setup: false
-        },
-        { type: 'slot', slot_id: 1, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 2, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 3, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 4, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 5, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 6, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 7, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 8, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 9, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 10, contents: '[ EMPTY ]', cnt: 0 },
-        ] },
+    { inventoryData: [ // slots added below
+        { size: 10, // manually input for trackimg max
+          created: false, // before slots added
+          setup: false,
+          full: false,
+        }, 
+    ] },
     // saveData[3]
     { equippedData: [ // to be added to static array?
-        { id: 'head' , equipped: null }, // l = 0
+        { id: 'head' , equipped: 'BASIC_HELMET' }, // l = 0
         { id: 'shoulders', equipped: null },
         { id: 'hands', equipped: null },
         { id: 'neck', equipped: null },
         { id: 'waist', equipped: null },
-        { id: 'chest', equipped: null },
+        { id: 'chest', equipped: 'BASIC_CHESTPIECE' },
         { id: 'legs', equipped: null },
         { id: 'wrist', equipped: null },
         { id: 'feet', equipped: null },
         { id: 'ring1', equipped: null },
         { id: 'ring2', equipped: null },
-        { id: 'mh', equipped: null },
+        { id: 'mh', equipped: 'MH_BASIC_DAGGER' },
         { id: 'oh', equipped: null },
         ] },
     ];
+
+    if (!saveData[2].inventoryData[0].created) {
+        // Dynamically create the inventory slots (1-10 initially)
+        for (let i = 1; i <= 10; i++) {
+            saveData[2].inventoryData.push({
+                type: 'slot',
+                slot_id: i,
+                contents: '[ EMPTY ]',
+                cnt: 0
+            });
+        }
+        saveData[2].inventoryData[0].created = true;
+    }
     //console.log(saveData[0]); // with 'killsData'
     //console.log(saveData[1]); // with 'characterData'
     //console.log(saveData[2]); // with 'inventoryData'
@@ -739,7 +780,7 @@ export function init_saveData() {
     //console.log(saveData[1].savedCharacterData); // like a standalone array
     //console.log(saveData[2].inventoryData); // like a standalone array
     //console.log(saveData[0].killsData[0]); // for array lengths
-
+    
     return saveData;
 }
 
@@ -777,7 +818,8 @@ export function init_trackingData() {
 
 export const elementsData = init_elementsData();
 //export const battleData = init_battleData();
-export const inventoryData = init_inventoryData();
+export const equipmentElements = init_equipmentElements();
+export const inventoryElements = init_inventoryElements();
 export const itemData = init_itemData();
 //export const locationData = init_locationData();
 export const locationsData = init_locationsData();

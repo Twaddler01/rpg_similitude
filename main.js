@@ -1,6 +1,6 @@
 // main.js
 
-import { elementsData, inventoryData, itemData, locationsData, characterData, saveData, trackingData } from './data.js';
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, saveData, trackingData } from './data.js';
 
 import * as f from  './functions.js';
 
@@ -107,7 +107,7 @@ f.character_setup()
 document.addEventListener('DOMContentLoaded', () => {
     f.first_run();
     f.update_locations();
-    f.inventory_setup();
+    f.update_inventory();
     //
     
 });

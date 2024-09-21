@@ -467,7 +467,7 @@ export function init_equipmentElements() {
 
 export function init_inventoryElements() {
 
-    const inventoryElements = [
+    var inventoryElements = [
         { id: 'inventory',
         size: 10,
         lbl: 'Inventory',
@@ -604,6 +604,22 @@ export function init_itemData() {
         iSlot: 'eF',
         img: 'media/icons/boots_01.jpg',
         },
+        { id: 'BETTER_BOOTS',
+        type: 'armor',
+        name: 'Better Boots',
+        slot: 'feet',
+        slot_name: 'Feet',
+        rarity: 1,
+        desc: 'Better feet protection. A tiny bit more comfortable.',
+        gains: [ 
+            { stat: 'armor', lbl: 'Armor', amt: 20 },
+            { stat: 'agility', lbl: 'Agility', amt: 15 },
+        ],
+        cnt: 0,
+        value: 5,
+        iSlot: 'eF',
+        img: 'media/icons/boots_01.jpg',
+        },
         //
         { id: 'MH_BASIC_DAGGER',
         type: 'weapon',
@@ -664,18 +680,18 @@ export function init_locationsData() {
 export function init_characterData() {
 
     const characterData = [
-        { id: 'armor', type: 'stat', amt: 100, label: 'Armor: ', lvl_mod: true, lvl_amt: 100 }, // lvl_mod -> increases with level to lvl_amt
-        { id: 'strength', type: 'stat', amt: 10, label: 'Strength: ', lvl_mod: true, lvl_amt: 10 },
-        { id: 'intelligence', type: 'stat', amt: 10, label: 'Intelligence: ', lvl_mod: true, lvl_amt: 10 },
-        { id: 'dexterity', type: 'stat', amt: 10, label: 'Dexterity: ', lvl_mod: true, lvl_amt: 10 },
-        { id: 'constitution', type: 'stat', amt: 10, label: 'Constitution: ', lvl_mod: true, lvl_amt: 10 },
-        { id: 'agility', type: 'stat', amt: 10, label: 'Agility: ', lvl_mod: true, lvl_amt: 10 },
-        { id: 'wisdom', type: 'stat', amt: 10, label: 'Wisdom: ', lvl_mod: true, lvl_amt: 10 },
-        { id: 'power', type: 'stat', amt: 0.0, label: 'Power: ', lvl_amt: 0 },
-        { id: 'attackMinimum', type: 'stat', amt: 1.2, label: 'Attack Minimum: ', lvl_amt: 0 },
-        { id: 'attackMaximum', type: 'stat', amt: 1.6, label: 'Attack Maximum: ', lvl_amt: 0 }, // stat_attack_min * 1.5
-        { id: 'hitChance', type: 'stat', amt: 0.9, label: 'Hit Chance: ' },
-        { id: 'criticalStrikeChance', type: 'stat', amt: 0.0, label: 'Critical Strike Chance: ', lvl_amt: 5 }, // bsse stats: [0] - [12]
+        { id: 'armor', type: 'stat', amt: 100, label: 'Armor: ', lvl_mod: true, lvl_amt: 100, base: 100 }, // lvl_mod -> increases with level to lvl_amt
+        { id: 'strength', type: 'stat', amt: 10, label: 'Strength: ', lvl_mod: true, lvl_amt: 10, base: 10 },
+        { id: 'intelligence', type: 'stat', amt: 10, label: 'Intelligence: ', lvl_mod: true, lvl_amt: 10, base: 10 },
+        { id: 'dexterity', type: 'stat', amt: 10, label: 'Dexterity: ', lvl_mod: true, lvl_amt: 10, base: 10 },
+        { id: 'constitution', type: 'stat', amt: 10, label: 'Constitution: ', lvl_mod: true, lvl_amt: 10, base: 10 },
+        { id: 'agility', type: 'stat', amt: 10, label: 'Agility: ', lvl_mod: true, lvl_amt: 10, base: 10 },
+        { id: 'wisdom', type: 'stat', amt: 10, label: 'Wisdom: ', lvl_mod: true, lvl_amt: 10, base: 10 },
+        { id: 'power', type: 'stat', amt: 0.0, label: 'Power: ', lvl_amt: 0, base: 0 },
+        { id: 'attackMinimum', type: 'stat', amt: 1.2, label: 'Attack Minimum: ', lvl_amt: 0, base: 1.2 },
+        { id: 'attackMaximum', type: 'stat', amt: 1.6, label: 'Attack Maximum: ', lvl_amt: 0, base: 1.6 }, // stat_attack_min * 1.5
+        { id: 'hitChance', type: 'stat', amt: 0.0, label: 'Hit Chance: ', base: 0 },
+        { id: 'criticalStrikeChance', type: 'stat', amt: 0.0, label: 'Critical Strike Chance: ', lvl_amt: 5, base: 0 }, // bsse stats: [0] - [12]
         // desc
         { id: 'armor', label: 'Armor', type: 'desc', def: 'Reduces damage received by 0.1% per point.' },
         { id: 'strength', label: 'Strength', type: 'desc', def: 'Increases melee damage dealt by 0.1% per point and total energy by both 0.1 per base level amount and 1 per equipment bonus point.' },
@@ -753,7 +769,7 @@ export function init_saveData() {
         { id: 'chest', equipped: 'BASIC_CHESTPIECE' },
         { id: 'legs', equipped: null },
         { id: 'wrist', equipped: null },
-        { id: 'feet', equipped: null },
+        { id: 'feet', equipped: 'BASIC_BOOTS' },
         { id: 'ring1', equipped: null },
         { id: 'ring2', equipped: null },
         { id: 'mh', equipped: 'MH_BASIC_DAGGER' },
@@ -819,7 +835,7 @@ export function init_trackingData() {
 export const elementsData = init_elementsData();
 //export const battleData = init_battleData();
 export const equipmentElements = init_equipmentElements();
-export const inventoryElements = init_inventoryElements();
+export var inventoryElements = init_inventoryElements();
 export const itemData = init_itemData();
 //export const locationData = init_locationData();
 export const locationsData = init_locationsData();

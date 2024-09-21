@@ -3,448 +3,21 @@
 // import arrays
 import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, saveData, trackingData } from './data.js';
 
-// to create new elements
-export function createNewSection(newType, newId, newClass, content, parentID) {
-    var newElement = document.createElement(newType);
-    newElement.id = newId;
-    newElement.innerHTML = content;
+// general functions needed
+import * as gf from './general_functions.js';
 
-    if (newClass != null) {
-        newElement.className = newClass;
-    }
-
-    var parentElement;
-    if (parentID === 'body') {
-        parentElement = document.body;
+// Main function to create new elements
+export function create_el(newId, type, parentId, content) {
+    let parent_el = document.getElementById(parentId);
+    let new_el = document.createElement(type);
+    if (parent_el) {
+        parent_el.appendChild(new_el);
     } else {
-        parentElement = document.getElementById(parentID);
+        parentId.appendChild(new_el);
     }
-    if (parentElement) {
-        parentElement.appendChild(newElement);
-    } else {
-        console.error("Parent element not found with id: " + parentID);
-    }
-}
-
-// Function to add tooltips
-export function addTooltip(element, tooltipContent) {
-  let tapHoldTimer;
-  let tooltipVisible = false; // Track tooltip visibility
-
-  element.addEventListener('mousedown', () => handleTapHoldStart(element, tooltipContent));
-  element.addEventListener('touchstart', () => handleTapHoldStart(element, tooltipContent));
-
-  document.addEventListener('click', handleDocumentClick); // Listen for clicks outside the tooltip
-
-  function handleTapHoldStart(element, tooltipContent) {
-    event.preventDefault();
-
-    const clickX = event.clientX || event.touches[0].clientX;
-    const clickY = event.clientY || event.touches[0].clientY;
-
-    tapHoldTimer = setTimeout(() => {
-      // Append the provided tooltip content to the body
-      document.body.appendChild(tooltipContent);
-
-      // Position the tooltip at the click location
-      const offset = 10;
-      tooltipContent.style.position = 'absolute';
-      tooltipContent.style.left = clickX + offset + 'px';
-      tooltipContent.style.top = clickY + offset + 'px';
-      tooltipContent.style.zIndex = '9999';
-      tooltipContent.style.backgroundColor = '#333333';
-      tooltipContent.style.opacity = '0.9';
-      tooltipContent.style.width = '200px';
-      tooltipContent.style.display = 'block';
-
-      tooltipVisible = true; // Tooltip is now visible
-
-      // Optionally, you can set a timeout to remove the tooltip after a certain period
-      setTimeout(() => {
-      if (document.body.contains(tooltipContent)) {
-        document.body.removeChild(tooltipContent);
-        tooltipVisible = false; // Tooltip is no longer visible
-      }
-    }, 30000); // Remove after 30 seconds (adjust as needed)
-}, 500);
-
-    document.addEventListener('mouseup', () => handleTapHoldEnd(tapHoldTimer));
-    document.addEventListener('touchend', () => handleTapHoldEnd(tapHoldTimer));
-  }
-
-  function handleDocumentClick(event) {
-    if (tooltipVisible && !element.contains(event.target) && !tooltipContent.contains(event.target)) {
-      // Clicked outside the tooltip and its associated element
-      document.body.removeChild(tooltipContent);
-      tooltipVisible = false; // Tooltip is no longer visible
-    }
-  }
-
-  function handleTapHoldEnd(tapHoldTimer) {
-    clearTimeout(tapHoldTimer);
-
-    document.removeEventListener('mouseup', handleTapHoldEnd);
-    document.removeEventListener('touchend', handleTapHoldEnd);
-  }
-}
-
-// Function to create custom tooltip content
-export function createCustomTooltipContent() {
-
-    let border_container = document.createElement('div');
-    border_container.className = 'tooltip-style';
-
-    let tooltipContainer = document.createElement('div');
-    tooltipContainer.style.padding = '10px';
-    border_container.appendChild(tooltipContainer);
-
-    let content_title = document.createElement('p');
-    tooltipContainer.appendChild(content_title);
-    content_title.style.textAlign = 'center';
-    content_title.className = 'yellowtxt';
-    content_title.innerHTML = 'Food<hr>';
-
-    let production = document.createElement('div');
-    tooltipContainer.appendChild(production);
-    production.innerHTML = 'Production:&nbsp;';
-
-    let TRIBE_LEADER_lbl = document.createElement('div');
-    TRIBE_LEADER_lbl.id = 'TRIBE_LEADER_lbl';
-    tooltipContainer.appendChild(TRIBE_LEADER_lbl);
-    TRIBE_LEADER_lbl.innerHTML = '...tribe leader:&nbsp'; // WIP
-
-    let TRIBE_LEADER_eid = document.createElement('span');
-    TRIBE_LEADER_eid.id = 'TRIBE_LEADER_prod_cnt';
-    TRIBE_LEADER_eid.className = 'ltgreentxt';
-    TRIBE_LEADER_lbl.appendChild(TRIBE_LEADER_eid);
-
-    // gatherer
-    let gatherer_prod_div = document.createElement('div');
-    gatherer_prod_div.id = 'gatherer_prod_div';
-    tooltipContainer.appendChild(gatherer_prod_div);
-
-    let gatherer_prod_lbl = document.createElement('span');
-    gatherer_prod_div.appendChild(gatherer_prod_lbl);
-    gatherer_prod_lbl.id = 'gatherer_prod_lbl';
-    gatherer_prod_lbl.innerHTML = '...gatherer:&nbsp;';
-
-    let gatherer_prod = document.createElement('span');
-    gatherer_prod_div.appendChild(gatherer_prod);
-    gatherer_prod.id = 'gatherer_prod';
-    gatherer_prod.className = 'ltgreentxt';
-
-    // hunters
-    let basic_hunter_prod_div = document.createElement('div');
-    basic_hunter_prod_div.id = 'basic_hunter_prod_div';
-    tooltipContainer.appendChild(basic_hunter_prod_div);
-
-    let basic_hunter_prod_lbl = document.createElement('span');
-    basic_hunter_prod_div.appendChild(basic_hunter_prod_lbl);
-    basic_hunter_prod_lbl.id = 'basic_hunter_prod_lbl';
-    basic_hunter_prod_lbl.innerHTML = '...basic hunter:&nbsp;';
-
-    let basic_hunter_prod = document.createElement('span');
-    basic_hunter_prod_div.appendChild(basic_hunter_prod);
-    basic_hunter_prod.id = 'basic_hunter_prod';
-    basic_hunter_prod.className = 'ltgreentxt';
-
-    // production totals
-    let production_totals_lbl = document.createElement('div');
-    tooltipContainer.appendChild(production_totals_lbl);
-    production_totals_lbl.className = 'yellowtxt';
-    production_totals_lbl.innerHTML = 'Production Total:&nbsp;';
-    //append
-    let production_totals = document.createElement('span');
-    production_totals.id = 'production_totals_live';
-    production_totals_lbl.appendChild(production_totals);
-    production_totals.className = 'ltgreentxt';
-
-    let auto_tick = document.createElement('div');
-    tooltipContainer.appendChild(auto_tick);
-    let food_loss = document.getElementById('food_loss');
-    auto_tick.innerHTML = food_loss.innerHTML;
-
-    let consumption = document.createElement('div');
-    tooltipContainer.appendChild(consumption);
-    consumption.innerHTML = '<hr>Consumption:&nbsp;';
-
-    let population = document.createElement('span');
-    tooltipContainer.appendChild(population);
-    population.innerHTML = '...population&nbsp';
-
-    let population_cnt = document.createElement('span');
-    population_cnt.id = 'population_cnt';
-    population.appendChild(population_cnt);
-
-    let food_dep_live = document.createElement('span');
-    population.appendChild(food_dep_live);
-    food_dep_live.id = 'food_dep_live_eid';
-    food_dep_live.className = 'ltred';
-
-    let spoiled_lbl = document.createElement('div');
-    tooltipContainer.appendChild(spoiled_lbl);
-    spoiled_lbl.innerHTML = '...spoiled food:&nbsp;';
-    //append
-    let spoiled_mult = document.createElement('span');
-    spoiled_mult.id = 'spoiled_mult';
-    spoiled_lbl.appendChild(spoiled_mult);
-    //append
-    let spoiled_loss = document.createElement('span');
-    spoiled_lbl.appendChild(spoiled_loss);
-    spoiled_loss.className = 'ltred';
-    spoiled_loss.id = 'spoiled_loss';
-
-    let consumption_totals_live = document.createElement('div');
-    tooltipContainer.appendChild(consumption_totals_live);
-    consumption_totals_live.className = 'yellowtxt';
-    consumption_totals_live.innerHTML = 'Consumption Total:&nbsp;';
-    //append
-    let consumption_totals_lbl = document.createElement('span');
-    consumption_totals_live.appendChild(consumption_totals_lbl);
-    consumption_totals_lbl.id = 'consumption_totals_live_eid';
-    consumption_totals_lbl.className = 'ltred ';
-
-    let totals_live = document.createElement('div');
-    if (foodResource[0].loss >= 0) {
-        totals_live.className = 'ltgreentxt';
-    }
-    if (foodResource[0].loss < 0) {
-        totals_live.className = 'ltred';
-    }
-    totals_live.id = 'totals_live_eid';
-    tooltipContainer.appendChild(totals_live);
-
-    return border_container;
-}
-
-// OLD CODE
-// Function to create event listener for each toggle button
-export function createEventListener(details_div, toggleButton, container_id) {
-    let initialTitle = toggleButton.dataset.title; // Store the initial title
-
-    toggleButton.addEventListener('click', function() {
-        // Check if the button is already active
-        if (toggleButton.classList.contains('active')) {
-            // If active, hide the details_div and reset button state
-            details_div.style.display = 'none';
-            toggleButton.classList.remove('active');
-            toggleButton.innerHTML = '<span style="color:white">[ + ]</span> ' + initialTitle;
-            container_id.style.backgroundColor = '';
-        } else {
-            // Reset state of previously clicked button and its associated container
-            let prevButton = document.querySelector('.toggle-button.active');
-            if (prevButton) {
-                let prevContainer = document.getElementById(prevButton.dataset.container);
-                let prevDetailsDiv = document.getElementById(prevButton.dataset.details);
-                prevButton.classList.remove('active');
-                prevButton.innerHTML = '<span style="color:white">[ + ]</span> ' + prevButton.dataset.title;
-                prevDetailsDiv.style.display = 'none'; // Hide previously active details_div
-                prevContainer.style.backgroundColor = '';
-            }
-
-            // Toggle current button and show/hide details
-            details_div.style.display = 'block';
-            container_id.style.backgroundColor = "#252525"; // Set background color
-            toggleButton.classList.add('active');
-            toggleButton.innerHTML = '<span style="color:white">[ - ]</span> ' + initialTitle; // Reset to initial title
-        }
-    });
-}
-
-// OLD CODE
-// show or hide sections on click
-export function section_collapse(id) {
-    let section = id + '_sect_id';
-    let section_title = id + '_sect_title';
-    let fetch_section = document.getElementById(section);
-    let fetch_section_title = document.getElementById(section_title);
-
-    if (fetch_section_title) {
-        if (!fetch_section_title.dataset.listenerSet) {
-            fetch_section_title.addEventListener('click', function toggleSection() {
-                if (fetch_section.style.display === "none") {
-                    fetch_section.style.display = "block";
-                    fetch_section_title.innerHTML = '<p class="divsections_no_ul">&nbsp;[&nbsp;--&nbsp;]<span class="divsections">' + id.toUpperCase() + '</span></p>';
-                } else {
-                    fetch_section.style.display = "none";
-                    fetch_section_title.innerHTML = '<p class="divsections_no_ul">&nbsp;[&nbsp;+&nbsp;]<span class="divsections">' + id.toUpperCase() + '</span></p>';
-                }
-            });
-            fetch_section_title.dataset.listenerSet = true;
-        }
-    }
-}
-
-// show/hide elements
-export function toggleElement(method, elementId) {
-    let element_id = document.getElementById(elementId);
-    if (element_id) {
-        if (method === 's') {
-            element_id.style.display = 'block';
-        } else if (method === 'sv') {
-            element_id.visibility = 'visible';
-        } else if (method === 'sf') {
-            element_id.style.display = 'flex';
-        } else if (method === 'sib') {
-            element_id.style.display = 'inline-block';
-        } else if (method === 'hv') {
-            element_id.visibility = 'hidden';
-        } else if (method === 'h') {
-            element_id.style.display = 'none';
-        } else {
-            console.error('Invalid method specified: "' + method + ', ' + elementId + '"');
-        }
-    } else {
-        console.error('toggleElement(), element "' + elementId + '" not found. ');
-    }
-}
-
-// add elements
-export function add_allElements() {
-    elementsData.forEach(element => {
-
-        // sections elements
-        if (element.section_cat === true) {
-
-            let element_id = document.createElement(element.type);
-            element_id.id = element.id;
-            let parent_el = element.parent_el;
-            let fetched_parent_el = document.getElementById(parent_el);
-
-            // append elements
-            if (!element.fetch_cat) {
-                if (parent_el === 'body') {
-                    document.body.appendChild(element_id);
-                } else {
-                    parent_el.appendChild(element_id);
-                }
-            } else {
-                if (fetched_parent_el) {
-                    fetched_parent_el.appendChild(element_id);
-                }
-            }
-
-            if (element.content) {
-                element_id.innerHTML = element.content;
-            }
-
-            if (element.css_class) {
-                element_id.className = element.css_class;
-            }
-
-            if (element.css_class2) {
-                element_id.classList.add(element.css_class2);
-            }
-
-            if (element.css_class3) {
-                element_id.classList.add(element.css_class3);
-            }
-
-            // 'hidden' flag (if set TRUE in array) to hide element
-            if (element.hidden) {
-                element_id.style.display = 'none';
-            }
-
-            // add click event
-            if (element.on_click) {
-                let element_click_DOM = document.getElementById(element.id);
-                if (element_click_DOM) {
-                    element_click_DOM.addEventListener('click', function() {
-                        if (element.id === 'start_battle_button') {
-                            start_battle_button(element.id);
-                        }
-                        if (element.id === 'attack_box_button') {
-                            attack_box_button(element.id);
-                        }
-                    });
-                } else {
-                    console.error('element_click_DOM NULL for: ' + element.id);
-                }
-            }
-            //
-        }
-        // battle elements
-        //
-
-
-
-
-/*
-        // tables
-        if (element.table_cat === true) {
-
-            // table id
-            let table_id = document.createElement(element.type);
-            table_id.id = element.id;
-            let parent_el = element.parent_el;
-
-            // table header
-            let thead = document.createElement('thead');
-            table_id.appendChild(thead);
-            thead.innerHTML = 'Battle Table';
-
-            let fetched_parent_el = document.getElementById(parent_el);
-            if (fetched_parent_el) {
-                fetched_parent_el.appendChild(table_id);
-            } else {
-                parent_el.appendChild(table_id);
-            }
-
-            // tr
-            let rows = element.rows; // 3
-            if (rows >= 1) {
-                for (let row = 1; row <= rows; row++) {
-                    let table_row = document.createElement('tr');
-                    table_id.appendChild(table_row);
-
-                    // td
-                    let cols = element.cols; // 4
-                    if (cols >= 1 && table_row) {
-                        for (let col = 1; col <= cols; col++) {
-                            let cell_content = document.createElement('td');
-                            table_row.appendChild(cell_content);
-
-                            let contentKey = `content${row}_${col}`;
-                            if (element[contentKey]) {
-                                cell_content.innerHTML = element[contentKey];
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (element.css_class) {
-                table_id.className = element.css_class;
-            }
-
-            // 'hidden' flag (if set TRUE in array) to hide element
-            if (element.hidden) {
-                table_id.style.display = 'none';
-            }
-        }*/
-    });
-}
-
-// div flex
-export function add_divFlex(newContainerId, newId, parentId, qtyNum) {
-
-    let parent_id = document.getElementById(parentId);
-
-    // new container
-    let new_container = document.createElement('div');
-    new_container.id = newContainerId;
-    new_container.className = 'box';
-    if (parent_id) {
-        parent_id.appendChild(new_container);
-    } else {
-        console.error('Parent ID not found in add_divFlex(), newContainerId specified: ' + newContainerId + '.');
-    }
-
-    for (let i = 1; i <= qtyNum; i++) {
-        let new_id = document.createElement('div');
-        new_container.appendChild(new_id);
-        new_id.id = newId + '_' + i;
-        new_id.innerHTML = 'DIV:&nbsp;' + new_id.id;
+    new_el.id = newId;
+    if (content) {
+        new_el.innerHTML = content;
     }
 }
 
@@ -782,23 +355,11 @@ export function reset_game(elid) {
     }
 }
 
-export function create_el(newId, type, parentId, content) {
-    let parent_el = document.getElementById(parentId);
-    let new_el = document.createElement(type);
-    if (parent_el) {
-        parent_el.appendChild(new_el);
-    } else {
-        parentId.appendChild(new_el);
-    }
-    new_el.id = newId;
-    if (content) {
-        new_el.innerHTML = content;
-    }
-}
+export function update_character() {
 
-export function character_setup() {
-
+    // Clear character_container elements
     let character_container = document.getElementById('character_container');
+    character_container.innerHTML = '';
 
     let charData = saveData[1].savedCharacterData[0];
 
@@ -932,85 +493,68 @@ create_el('char_equipment_container', 'div', char_equipment);
         create_el('equip_slot_oh', 'div', 'div_bottom_boxes');
         equip_slot_oh.classList.add('item-box');
 
-        // First run setup
-        /*if (!trackingData[0].starting_equip_added) {
-            // Add starting items
-            const starting_items = itemData.filter(i => i.player_equipped === true);
-            starting_items.forEach(item => {
-                let slot_element = document.getElementById(item.slot);
-                if (slot_element) {
-                    item_tooltip(slot_element, item.id, 'equipment');
-                }
+        let equippedItems = saveData[3].equippedData;
+
+        // add to array only once
+        if (!trackingData[0].update_equip_array) {
+            equippedItems.forEach(equip_slot => {
+                equip_slot.slot = equip_slot.id;
             });
-            
-            // Save starting equipment to saveData array
-            let saveDataEquip = saveData[3].equippedData;
-            saveDataEquip.forEach(saveItem => {
-                const d_itemData = itemData.find(i => i.slot === saveItem.id && i.player_equipped === true);
-                if (d_itemData) {
-                    saveItem.equipped = d_itemData.id;
-                }
-            });
-            trackingData[0].starting_equip_added = true;
-        }*/
+            trackingData[0].update_equip_array = true;
+        }
         
-        // Recurring modifications
-        //if (trackingData[0].starting_equip_added && trackingData[0].regular_equip_flag) {
-            // Add savedData equipment items
-            //console.log('regular_equip_flag');
-            let equippedItems = saveData[3].equippedData;
-            //let filtered_equippedItems = equippedItems.filter(e => e.equipped !== null);
-            //console.log(filtered_equippedItems);
-            equippedItems.forEach(slot_data => {
-                const d_itemData = itemData.find(i => i.id === slot_data.equipped);
-                if (d_itemData) {
-                    slot_data.equipped = d_itemData.id;
-                    equipmentElements.e_slot_container = 'equip_slot_' + slot_data.id;
-                } else {
-                    slot_data.id = 'equip_slot_EMPTY';
-                    equipmentElements.e_slot_container = slot_data.id;
-                }
+        equippedItems.forEach(slot_data => {
+            const d_itemData = itemData.find(i => i.id === slot_data.equipped);
+            if (d_itemData) {
+                slot_data.equipped = d_itemData.id;
+                equipmentElements.e_slot_container = 'equip_slot_' + slot_data.id;
+            } else {
+                let empty_slot = 'equip_slot_EMPTY_' + slot_data.slot;
+                slot_data.id = empty_slot;
+                equipmentElements.e_slot_container = slot_data.id;
+            }
+            //console.log('renamed array ids [MORE]:');
+            //console.log(slot_data);
+
+            let slot_container = document.getElementById(equipmentElements.e_slot_container);
+            if (slot_container) {
+                slot_container.classList.add('equip_slot_container');
                 
-                let slot_container = document.getElementById(equipmentElements.e_slot_container);
+                // append with zIndex: 2
+                let slot_img = document.createElement('img');
+                slot_container.appendChild(slot_img);
+                slot_img.id = 'equipment_slot_img_' + slot_data.id;
+                slot_img.classList.add('equip_slot_img');
+                equipmentElements.e_slot_img = slot_img.id;
+                slot_img.src = d_itemData.img;
 
-
-// adj in character_setup()
-
-console.log('equipmentElements.e_slot_container: ' + equipmentElements.e_slot_container);
-//// new
-                if (slot_container) {
-                    slot_container.classList.add('equip_slot_container');
-                    
-                    // append with zIndex: 2
-                    let slot_img = document.createElement('img');
-                    slot_container.appendChild(slot_img);
-                    slot_img.id = 'equipment_slot_img_' + slot_data.id;
-                    slot_img.classList.add('equip_slot_img');
-                    equipmentElements.e_slot_img = slot_img.id;
-                    slot_img.src = d_itemData.img;
-
-                    // new tt
-                    slot_container.addEventListener('click', (equip_tt) => {
-                        removeItemTooltip('equipment');
-                        createItemElements(slot_container, slot_data, equipmentElements, 'equipment');
+                // new tt
+                slot_container.addEventListener('click', (equip_tt) => {
+                    removeItemTooltip('equipment');
+                    createItemElements(slot_container, slot_data, equipmentElements, 'equipment');
                         
-                        // Add event listeners to hide the tooltip
-                        setTimeout(() => {
-                            document.addEventListener('click', handleOutsideClick);
-                        }, 20);
+                    // Add event listeners to hide the tooltip
+                    setTimeout(() => {
+                        document.addEventListener('click', handleOutsideClick);
+                    }, 20);
 
-                        function handleOutsideClick(equip_tt) {
-                            const tooltipContainer = document.getElementById(slot_container.id);
-                            if (tooltipContainer && !tooltipContainer.contains(equip_tt.target)) {
-                                removeItemTooltip('equipment');
-                                document.removeEventListener('click', handleOutsideClick);
-                            }
+                    function handleOutsideClick(equip_tt) {
+                        const tooltipContainer = document.getElementById(slot_container.id);
+                        if (tooltipContainer && !tooltipContainer.contains(equip_tt.target)) {
+                            removeItemTooltip('equipment');
+                            document.removeEventListener('click', handleOutsideClick);
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
+        });
 
-// WIP Needs update_player_stats() function after equipment swap
+        // Reset stats
+        let stat_data_reset = characterData.filter(d => d.type === 'stat');
+
+        stat_data_reset.forEach(reset => {
+            reset.amt = reset.base;
+        });
 
         // Add stats for equipmemt from equipped items
         update_equipment();
@@ -1033,7 +577,7 @@ console.log('equipmentElements.e_slot_container: ' + equipmentElements.e_slot_co
             
             // Main array to store calculations
             let playerStats = characterData.find(d => d.id === 'player_stats');
-            
+
             if (stat.lvl_mod) {
                 // Adjust to equipment amount 
                 equip_stat_amt = stat.amt - (stat.id === 'armor' ? 100 : 10);
@@ -1042,6 +586,9 @@ console.log('equipmentElements.e_slot_container: ' + equipmentElements.e_slot_co
                 base_level_stat *= d_player_character.char_level;
                 //console.log(base_level_stat);
             }
+            
+            let equipped_items = saveData[3].equippedData;
+            let current_weapon = equipped_items.find(i => i.id === 'mh');
 
             switch (stat.id) {
                 case 'armor': 
@@ -1089,7 +636,7 @@ console.log('equipmentElements.e_slot_container: ' + equipmentElements.e_slot_co
                     let total_dexterity = base_level_stat + equip_stat_amt;
                     let total_dexterity_effect = default_hit+(equip_stat_amt*0.1);
                     // Assign to array
-                    playerStats.hit_chance = total_dexterity_effect;
+                    playerStats.total_dexterity_effect = total_dexterity_effect;
                     stats_effect = `
                     <br><span style="color:lightgreen">Player Level (${player_level}) +${base_level_stat}, increases hit chance to <b>${default_hit}%</b>. Base same-level enemy hit chance: <b>${default_hit}%</b></span>
                     <br><span style="color:lightgreen">Equipment bonus: +${equip_stat_amt}, increases hit chance by <b>${equip_stat_amt*0.1}%</b></span>
@@ -1136,21 +683,16 @@ console.log('equipmentElements.e_slot_container: ' + equipmentElements.e_slot_co
                     stat.amt = total_wisdom;
                     break;
                 case 'power':
-                    let equipped_items = saveData[3].equippedData;
-                    let current_weapon = equipped_items.find(i => i.id === 'mh');
                     if (current_weapon && current_weapon.equipped) {
                         let item_info = itemData.find(i => i.id === current_weapon.equipped);
                         let current_weapon_item_info = item_info.gains;
                         let current_weapon_dmg_min = current_weapon_item_info.find(w => w.stat === 'dmg_min');
                         let current_weapon_dmg_max = current_weapon_item_info.find(w => w.stat === 'dmg_max');
+                        let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt, current_weapon_dmg_min.amt, current_weapon_dmg_max.amt);
                         trackingData[0].current_weapon_dmg_min = current_weapon_dmg_min.amt;
                         trackingData[0].current_weapon_dmg_max = current_weapon_dmg_max.amt;
-                        //console.log(current_weapon_dmg_min.amt + ' : ' + current_weapon_dmg_max.amt);
-                        let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt);
-                        //console.log(pwr_weapon_min + ' : ' + pwr_weapon_max)
                         let incr_dmg_min = Math.round((((pwr_weapon_min / current_weapon_dmg_min.amt) - 1) * 100) * 10) / 10;
                         let incr_dmg_max = Math.round((((pwr_weapon_max / current_weapon_dmg_max.amt) - 1) * 100) * 10) / 10;
-                        //console.log(incr_dmg_min + ' : ' + incr_dmg_max)
                         stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt}, increases attack damage per turn minimum by <b>${incr_dmg_min}%</b> and attack damage per turn maximum by <b>${incr_dmg_max}%</b></span>`;
                         // Store calculations for tooltip display
                         trackingData[0].pwr_weapon_min = pwr_weapon_min;
@@ -1159,36 +701,54 @@ console.log('equipmentElements.e_slot_container: ' + equipmentElements.e_slot_co
                         playerStats.pwr_weapon_min = pwr_weapon_min;
                         playerStats.pwr_weapon_max = pwr_weapon_max;
                     } else {
-                        trackingData[0].current_weapon_dmg_min = 0;
-                        trackingData[0].current_weapon_dmg_max = 0;
-                        trackingData[0].pwr_weapon_min = 1;
-                        trackingData[0].pwr_weapon_max = 1.2;
+                        trackingData[0].current_weapon_dmg_min = 1;
+                        trackingData[0].current_weapon_dmg_max = 1.2;
+                        let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt, trackingData[0].current_weapon_dmg_min, trackingData[0].current_weapon_dmg_max);
+                        trackingData[0].pwr_weapon_min = pwr_weapon_min;
+                        trackingData[0].pwr_weapon_max = pwr_weapon_max;
+                        let incr_dmg_min = Math.round((((pwr_weapon_min / trackingData[0].current_weapon_dmg_min) - 1) * 100) * 10) / 10;
+                        let incr_dmg_max = Math.round((((pwr_weapon_max / trackingData[0].current_weapon_dmg_max) - 1) * 100) * 10) / 10;
+                        stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt}, increases attack damage per turn minimum by <b>${incr_dmg_min}%</b> and attack damage per turn maximum by <b>${incr_dmg_max}%</b></span>`;
                     }
                     break;
                 case 'attackMinimum':
-                    let differ_dmg_min = Math.round((trackingData[0].pwr_weapon_min - trackingData[0].current_weapon_dmg_min) * 10) / 10;
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_min}, minimum damage is increased by power from ${stat.amt} to <b>${trackingData[0].pwr_weapon_min}</b></span>`;
-                    stat.amt = trackingData[0].pwr_weapon_min;
+                    if (current_weapon && current_weapon.equipped) {
+                        let differ_dmg_min = Math.round((trackingData[0].pwr_weapon_min - trackingData[0].current_weapon_dmg_min) * 10) / 10;
+                        stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_min}, minimum damage is increased by power from ${trackingData[0].current_weapon_dmg_min} to <b>${trackingData[0].pwr_weapon_min}</b></span>`;
+                        stat.amt = trackingData[0].pwr_weapon_min;
+                    } else {
+                        let base_attack_min = 1;
+                        let differ_dmg_min = Math.round((trackingData[0].pwr_weapon_min - base_attack_min) * 10) / 10;
+                        stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_min}, minimum damage is increased by power from ${trackingData[0].current_weapon_dmg_min} to <b>${trackingData[0].pwr_weapon_min}</b></span>`;
+                        stat.amt = trackingData[0].pwr_weapon_min;
+                    }
                     break;
                 case 'attackMaximum':
-                    let differ_dmg_max = Math.round((trackingData[0].pwr_weapon_max - trackingData[0].current_weapon_dmg_max) * 10) / 10;
-                    stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_max}, minimum damage is increased by power from ${stat.amt} to <b>${trackingData[0].pwr_weapon_max}</b></span>`;
-                    stat.amt = trackingData[0].pwr_weapon_max;
+                    if (current_weapon && current_weapon.equipped) {
+                        let differ_dmg_max = Math.round((trackingData[0].pwr_weapon_max - trackingData[0].current_weapon_dmg_max) * 10) / 10;
+                        stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_max}, minimum damage is increased by power from ${trackingData[0].current_weapon_dmg_max} to <b>${trackingData[0].pwr_weapon_max}</b></span>`;
+                        stat.amt = trackingData[0].pwr_weapon_max;
+                    } else {
+                        let base_attack_max = 1.2;
+                        let differ_dmg_max = Math.round((trackingData[0].pwr_weapon_max - base_attack_max) * 10) / 10;
+                        stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${differ_dmg_max}, minimum damage is increased by power from ${trackingData[0].current_weapon_dmg_max} to <b>${trackingData[0].pwr_weapon_max}</b></span>`;
+                        stat.amt = trackingData[0].pwr_weapon_max;
+                    }
                     break;
                 case 'hitChance':
                     // Assign to array
-                    playerStats.hit_chance = stat.amt;
-                    let stat_display = 90 + stat.amt + '%';
+                    stat.amt += playerStats.total_dexterity_effect;
+                    let stat_display = stat.amt + '%';
                     playerStats.hit_chance_display = stat_display;
                     playerStats.hit_flat = 90;
                     playerStats.hit_plus_1 = 87;
                     playerStats.hit_plus_2 = 85;
                     playerStats.hit_plus_3on = 50;
                     stats_effect = `<br><span style="color:lightgreen">Equipment bonus: +${stat.amt}%`;
-                    stats_effect += `<br><b>- Probability an attack will cause damage to <u>same-level</u> enemies: ${90+stat.amt}%</b>`;
-                    stats_effect += `<br>- Current probability an attack will cause damage to <u>level +1</u> enemies: ${87+stat.amt}%`;
-                    stats_effect += `<br>- Current probability an attack will cause damage to <u>level +2</u> enemies: ${85+stat.amt}%`;
-                    stats_effect += `<br>- Current probability an attack will cause damage to <u>level +3 or higher</u> enemies: ${50+stat.amt}%</span>`;
+                    stats_effect += `<br><b>- Probability an attack will cause damage to <u>same-level</u> enemies: ${stat.amt}%</b>`;
+                    stats_effect += `<br>- Current probability an attack will cause damage to <u>level +1</u> enemies: ${-3+stat.amt}%`;
+                    stats_effect += `<br>- Current probability an attack will cause damage to <u>level +2</u> enemies: ${-5+stat.amt}%`;
+                    stats_effect += `<br>- Current probability an attack will cause damage to <u>level +3 or higher</u> enemies: ${-40+stat.amt}%</span>`;
                     break;
                 case 'criticalStrikeChance':
                     let base_crit_strike_rating = 5;
@@ -1223,16 +783,15 @@ console.log('equipmentElements.e_slot_container: ' + equipmentElements.e_slot_co
     }
 }
 
-export function calculate_weapon_damage(itemLevel, statPower) {
+// calc not ready for ilvl !== 1
+// sets all ilvls to 1
+export function calculate_weapon_damage(itemLevel, statPower, minDmg, maxDmg) {
 
-    let ilvl = itemLevel;
+    itemLevel = 1;
 
-    // weapon damage ramge multiplier
-    let min = 1;
-    let max = 1.5;
     // calc min/max damage of weapons for player display
-    let damage_min = Math.round((1.2*ilvl*min)*10)/10;
-    let damage_max = Math.round((1.08*ilvl*max)*10)/10;
+    let damage_min = Math.round((1.08*itemLevel*minDmg)*10)/10;
+    let damage_max = Math.round((1.06*itemLevel*maxDmg)*10)/10;
         
     // *** multipliers
     
@@ -1245,55 +804,45 @@ export function calculate_weapon_damage(itemLevel, statPower) {
     damage_min = Math.round(damage_min*10)/10;
     damage_max = Math.round(damage_max*10)/10;
 
+    if (power === 0) {
+        damage_min = minDmg;
+        damage_max = maxDmg;
+    }
+
     return [damage_min, damage_max];
 }
 
-//// WIP Equip new/swap items from inventory
 // Swap equipment as equipped/unequipped after clicking 'EQUIP'/'REMOVE'
 export function swap_equipment(item, slot, action) {
 
-// BASIC_HELMET, HEAD
     let d_itemData = itemData.find(i => i.id === item);
     let saveDataEquipAll = saveData[3].equippedData;
     let saveDataEquip = saveDataEquipAll.filter(e => e.equipped !== null);
-
-    let currentInventory = saveData[2].inventoryData;
-
     let equipped_item = saveDataEquip.find(i => i.equipped === d_itemData.id);
     let equipped_item_container = 'equipment_tooltip_container_' + d_itemData.id;
     let e_equipped_item_container = document.getElementById(equipped_item_container);
-    // BASIC_HELMET
 
-    // Remove item if match
+    // Remove: remove item from equipped
     if (action === 'remove' && e_equipped_item_container && equipped_item && equipped_item.equipped === item) {
-        // Clear item
-        //console.log('before');
-        //console.log(saveDataEquip);
 
-        let item_to_remove = equipped_item.equipped;
+        // Remember item
+        let item_to_remove = item;
+let d_itemData_item_to_remove = itemData.find(i => i.id === item_to_remove);
+        // Clear item from equippes
         equipped_item.equipped = null;
 
-        saveDataEquip = saveDataEquipAll.filter(e => e.equipped !== null);
-
-        //console.log('after');
-        //console.log(saveDataEquip);
-
-        let character_container = document.getElementById('character_container');
-        character_container.innerHTML = '';
-
-        //removeItemTooltip('equipment');
-        character_setup();
-
-
+        // Add previously equipped item back into inventory
+        if (item_to_remove) {
+            updateLootCount(item_to_remove, 1);
+        }
+        
+        // Reload character equipment & stats
+        update_character();
     }
+//// WIP
+    // Equip: Add item from inventory if empty slot
 
-
-
-    // Add removed item to inventory
-
-    // Add item if empty slot
-
-    // Add new item as equipped, move old item to inventory
+    // Swap: Add new item as equipped, move old item to inventory
 
 }
 
@@ -1301,11 +850,12 @@ export function update_equipment() {
     // Match saveData with items
     let d_equippedData = saveData[3].equippedData;
     d_equippedData.forEach(item => {
-        // Calculate total stats equipped
         let d_itemData = itemData.find(i => i.id === item.equipped);
+
         if (d_itemData) {
-            const stat_data = characterData.filter(d => d.type === 'stat');
             const stat_gains = d_itemData.gains;
+            const stat_data = characterData.filter(d => d.type === 'stat');
+            // Calculate total stats equipped
             stat_data.forEach(stat => {
                 stat_gains.forEach(char_stat => {
                     if (char_stat.stat === stat.id) {
@@ -1313,19 +863,11 @@ export function update_equipment() {
                     }
                 });
             });
-        } /*else {
-            // Clear stats
-            const stat_data = characterData.filter(d => d.type === 'stat');
-            stat_data.forEach(stat => {
-                if (stat) {
-                    stat.amt = stat.lvl_amt;
-                }
-            });
-        }*/
+        } 
     });
 }
 
-// WIP
+// WIP2
 export function start_battle_button(elementId) {
 
     // Data
@@ -1504,11 +1046,11 @@ playerStats.cur_resource = 88;
 
     let combat_log = document.getElementById('combat_log');
     combat_log.innerHTML = '';
-    toggleElement('h', 'start_battle_button');
-    toggleElement('s', 'attack_box_button');
+    gf.toggleElement('h', 'start_battle_button');
+    gf.toggleElement('s', 'attack_box_button');
     
-    /*toggleElement('sf', 'verses_box');
-    toggleElement('sf', 'health_bars');
+    /*gf.toggleElement('sf', 'verses_box');
+    gf.toggleElement('sf', 'health_bars');
 
     let character = characterData.find(char => char.id === 'my_character');
     let d_char_battle_name = document.getElementById('char_name');
@@ -1564,7 +1106,7 @@ function gel(id, css = null, inner = null, ...styles) {
 // Example usage:
 // let e_my_element = gel('my_element', 'css_class', 'Text', 'display: block', 'padding: 5px');
 // e_my_element.innerHTML = 'Change to this text';
-/* let mods = [
+/* WIP: let mods = [
 { id: 'my_element',
 { css: 'css_class',
 { inner: 'Text',
@@ -1684,7 +1226,7 @@ export function attack_box_button(elementId) {
 
     // start battle
     if (enemy.enemy_health > 0 && !enemy.dead) {
-        toggleElement('s', 'combat_log');
+        gf.toggleElement('s', 'combat_log');
 
         // Generate a random number to determine if the attack misses (10% chance)
         let missChance = Math.random();
@@ -1752,13 +1294,13 @@ export function attack_box_button(elementId) {
                 d_inventory.current_loot = [];
 
                 // setup new battle
-                toggleElement('h', 'attack_box_button');
-                toggleElement('h', 'verses_box');
+                gf.toggleElement('h', 'attack_box_button');
+                gf.toggleElement('h', 'verses_box');
                 let e_verses_box = document.getElementById('verses_box');
 
-                toggleElement('h', 'health_bars');
-                toggleElement('s', 'start_battle_button');
-                toggleElement('s', 'enemy_levels');
+                gf.toggleElement('h', 'health_bars');
+                gf.toggleElement('s', 'start_battle_button');
+                gf.toggleElement('s', 'enemy_levels');
                 enemy.dead = false;
                 enemy.enemy_health = enemy.enemy_health_total;
                 d_enemy_health_total.cnt = enemy.enemy_health;
@@ -1776,48 +1318,87 @@ export function attack_box_button(elementId) {
 }
 
 let selectedSlot = null;
+// Create a global object to store listeners by slot_id
+const inventorySlotListeners = {};
 export function update_inventory() {
 
+    // Clear section data
+    let inventory_section = document.getElementById('inventory_section');
+    if (inventory_section) {
+        inventory_section.innerHTML = '';
+    }
+    
+    // Clear all previous event listeners first
+    Object.keys(inventorySlotListeners).forEach(slot_id => {
+        removeInventorySlotListener(slot_id);  // Remove old listeners
+    });
+    // Clear the object after removing listeners
+    Object.keys(inventorySlotListeners).forEach(slot_id => {
+        delete inventorySlotListeners[slot_id];
+    });
+    
     let savedInventory = saveData[2].inventoryData;
     let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
     let d_inventoryElements = inventoryElements.filter(i => i.type === 'slot');
-
+    
     // setup inventory
+    let inv_parent = document.createElement('div');
+    inv_parent.classList.add('inv_parent');
+    inv_parent.id = 'inventory_parent';
+    inventory_section.appendChild(inv_parent);
+    
+    savedInventorySlots.forEach((slot_data, index)  => {
+    
+        let d_itemData = itemData.find(i => i.id === slot_data.contents);
+    
+        let slot_container = document.createElement('div');
+        inv_parent.appendChild(slot_container);
+        slot_container.id = 'inventory_slot_container_' + slot_data.slot_id;
+        slot_container.classList.add('inv_slot_container');
+        d_inventoryElements[index].e_slot_container = slot_container.id;
+    
+        // append with zIndex: 2
+        let slot_img = document.createElement('img');
+        slot_container.appendChild(slot_img);
+        slot_img.id = 'inventory_slot_img_' + slot_data.slot_id;
+        slot_img.classList.add('new_slot_img');
+        if (d_itemData) {
+            slot_img.src = d_itemData.img;
+            slot_img.style.display = 'block';
+        }
+        d_inventoryElements[index].e_slot_img = slot_img.id;
+    
+        // append inv_slot_counter ÷> z-index: 3
+        let slot_counter = document.createElement('div');
+        slot_container.appendChild(slot_counter);
+        slot_counter.id = 'inventory_slot_counter_' + slot_data.slot_id;
+        slot_counter.classList.add('normal', 'inv_slot_counter');
+        d_inventoryElements[index].e_slot_counter = slot_counter.id;
+        if (slot_data.contents !== '[ EMPTY ]' && slot_data.cnt > 1) {
+            slot_counter.innerHTML = slot_data.cnt;
+        }
+        
+        function inventorySlotClicks() {
+            handleSlotClick(slot_container, slot_img, slot_counter, slot_data, d_inventoryElements);
+        }
+        slot_container.addEventListener('click', inventorySlotClicks);
+        
+        // Store the listener in the global object using the slot ID
+        inventorySlotListeners[slot_data.slot_id] = inventorySlotClicks;
+
+    });
+
+    // insert test items
     if (!savedInventory[0].setup) {
-        let inventory_section = document.getElementById('inventory_section');
 
-        let inv_parent = document.createElement('div');
-        inv_parent.classList.add('inv_parent');
-        inventory_section.appendChild(inv_parent);
-
-        savedInventorySlots.forEach((slot_data, index)  => {
-
-            let slot_container = document.createElement('div');
-            inv_parent.appendChild(slot_container);
-            slot_container.id = 'inventory_slot_container_' + slot_data.slot_id;
-            slot_container.classList.add('inv_slot_container');
-            d_inventoryElements[index].e_slot_container = slot_container.id;
-
-            // append with zIndex: 2
-            let slot_img = document.createElement('img');
-            slot_container.appendChild(slot_img);
-            slot_img.id = 'inventory_slot_img_' + slot_data.slot_id;
-            slot_img.classList.add('new_slot_img');
-            d_inventoryElements[index].e_slot_img = slot_img.id;
-
-            // append inv_slot_counter ÷> z-index: 3
-            let slot_counter = document.createElement('div');
-            slot_container.appendChild(slot_counter);
-            slot_counter.id = 'inventory_slot_counter_' + slot_data.slot_id;
-            slot_counter.classList.add('normal', 'inv_slot_counter');
-            d_inventoryElements[index].e_slot_counter = slot_counter.id;
-
-            // Add event listener to slot_container
-            slot_container.addEventListener('click', () => {
-                handleSlotClick(slot_container, slot_img, slot_counter, slot_data, d_inventoryElements);
-            });
-
-        });
+        updateLootCount('TOOTH', 1);
+        updateLootCount('TOOTH', 1);
+        updateLootCount('BASIC_HELMET', 1);
+        updateLootCount('BETTER_BOOTS', 1);
+        updateLootCount('CLOTH_BASIC', 2);
+        updateLootCount('CLOTH_BASIC', 1);
+        updateLootCount('BASIC_GLOVES', 1);
+    
         savedInventory[0].setup = true;
     }
 
@@ -1840,6 +1421,7 @@ export function update_inventory() {
         }
     });
 
+    /*
     // insert test items
     updateLootCount('TOOTH', 1);
     updateLootCount('TOOTH', 1);
@@ -1847,11 +1429,22 @@ export function update_inventory() {
     updateLootCount('BASIC_BOOTS', 1);
     updateLootCount('CLOTH_BASIC', 2);
     updateLootCount('CLOTH_BASIC', 1);
-
+    */
 
 }
 
-export function updateLootCount(itemId, quantity) {
+// Function to remove the event listener by slot_id
+export function removeInventorySlotListener(slot_id) {
+    const slot_container = document.getElementById('inventory_slot_container_' + slot_id);
+
+    if (slot_container && inventorySlotListeners[slot_id]) {
+        // Remove the event listener using the stored function reference
+        slot_container.removeEventListener('click', inventorySlotListeners[slot_id]);
+        delete inventorySlotListeners[slot_id];  // Optionally remove the reference
+    }
+}
+
+export function updateLootCount(itemId, quantity, requestedSlot) {
     let savedInventory = saveData[2].inventoryData;
     let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
     let d_inventoryElements = inventoryElements.filter(i => i.type === 'slot'); // For updating element ids
@@ -1865,8 +1458,20 @@ export function updateLootCount(itemId, quantity) {
         for (let i = 0; i < savedInventorySlots.length; i++) {
             let slot_data = savedInventorySlots[i];
 
+            // If requestedSlot is specified, add item to that slot
+            if (requestedSlot && requestedSlot === slot_data.slot_id) {
+                // Assign itemId and quantity to the specified slot
+                slot_data.contents = lootItem.id;
+                slot_data.cnt = quantity;
+                // Update the corresponding inventory element using the index
+                let e_slot_img = document.getElementById(d_inventoryElements[i].e_slot_img);
+                e_slot_img.style.display = 'block';
+                e_slot_img.src = lootItem.img;
+                break;
+            }
+
             // If the item is stackable and already exists in the slot, increment its count
-            if (lootItem.stackable && slot_data.contents === lootItem.id) {
+            if (!requestedSlot && lootItem.stackable && slot_data.contents === lootItem.id) {
                 slot_data.cnt += quantity;
                 // Update the corresponding inventory element using the index
                 let e_slot_counter = document.getElementById(d_inventoryElements[i].e_slot_counter);
@@ -1877,12 +1482,13 @@ export function updateLootCount(itemId, quantity) {
         }
 
         // If the stackable item wasn't found in any slot, add it to an empty slot
-        if (!itemFound) {
+        if (!requestedSlot && !itemFound) {
             for (let i = 0; i < savedInventorySlots.length; i++) {
                 let slot_data = savedInventorySlots[i];
 
                 // Check if the slot is empty
                 if (slot_data.contents === '[ EMPTY ]') {
+
                     // Assign itemId and quantity to the empty slot
                     slot_data.contents = lootItem.id;
                     slot_data.cnt = quantity;
@@ -2028,129 +1634,6 @@ function handleSlotClick(slot_container, slotImg, slotCounter, slot_data, d_inve
     }
 }
 
-trackingData[0].currentTooltip = null; // Store the currently open tooltip container
-trackingData[0].currentTooltipElement = null; // Store the element that triggered the current tooltip
-//// type: only 'equipment'
-// possible BUG on character_setup()
-export function item_tooltip(targetElement, itemId, type) {
-
-    // item = array from itemData
-    let item = itemData.find(i => i.id === itemId);
-
-    let item_box_DOM = null;
-    let elid = null;
-
-    item_box_DOM = document.getElementById('item_box_' + item.id);
-    elid = document.getElementById(targetElement.id);
-
-    trackingData[0].tooltipTargetElementId = targetElement.id;
-
-    // Append item to string
-    let item_tooltip_container_item = 'item_tooltip_container_' + item.id;
-
-    if (!trackingData[0].tooltip_open) {
-        if (!item_box_DOM) {
-            item_box_DOM = document.createElement('div');
-            item_box_DOM.id = 'item_box_' + item.id;
-            item_box_DOM.classList.add('item_box_equip');
-            elid.appendChild(item_box_DOM);
-        }
-
-        elid.style.position = 'relative';
-        item_box_DOM.style.position = 'relative';
-
-        item_box_DOM.style.backgroundImage = `url(${item.img})`;        
-        item_box_DOM.style.backgroundSize = '50px 50px';
-        
-        item_box_DOM.onclick = (event) => {
- 
-            // Check and close any currently open tooltip
-            if (trackingData[0].currentTooltip && trackingData[0].currentTooltipElement !== elid) {
-                removeTooltip();
-            }
-
-            event.stopPropagation(); // Prevent the click from propagating
-
-            if (!trackingData[0].tooltip_open) {
-                trackingData[0].tooltip_open = true;
-
-                // Create tooltip container
-                let item_tooltip_container = document.createElement('div');
-                item_tooltip_container.id = 'item_tooltip_container_' + item.id;
-                elid.appendChild(item_tooltip_container);
-
-                // Overlay styles
-                elid.style.zIndex = '9999';
-                item_tooltip_container.style.width = '200px';
-                item_tooltip_container.style.pointerEvents = 'auto'; // Allow interactions with the tooltip
-
-                // Calculate the position relative to the container
-                const elidRect = elid.getBoundingClientRect();
-                const clickX = event.clientX;
-                const clickY = event.clientY;
-
-                // Position the tooltip 20px away from the mouse click
-                item_tooltip_container.style.left = `${clickX - elidRect.left + 20}px`;
-                item_tooltip_container.style.top = `${clickY - elidRect.top + 20}px`;
-
-                setup_tooltip_div(item_tooltip_container.id, item, null, 'equipment');
-
-                // Equip / Remove (back to inventory)
-                // for REMOVE button
-                /*if (!item.player_equipped) {
-                    if (type === 'equipment' && item.type === 'armor' || item.type === 'weapon') {
-                        create_el('equip', 'div', 'item_tooltip_div');
-                        create_el('equip_btn', 'button', 'equip');
-                        equip_btn.classList.add('item_tooltip_armor');
-                        equip_btn.style.background = 'black';
-                        equip_btn.innerHTML = 'REMOVE';
-                    }
-                }*/
-
-                // Store the current tooltip and element references
-                trackingData[0].currentTooltip = item_tooltip_container;
-                trackingData[0].currentTooltipElement = elid;
-
-                // Add event listeners to hide the tooltip
-                setTimeout(() => {
-                    document.addEventListener('click', handleOutsideClick);
-                }, 20);
-            } else {
-                removeTooltip();
-                elid.style.zIndex = '0';
-                item_box_DOM.style.zIndex = '0';
-
-            }
-        };
-    
-    } else {
-        let tooltipElement = document.getElementById(item_tooltip_container_item);
-        if (tooltipElement) {
-            elid.removeChild(tooltipElement);
-        }
-        trackingData[0].tooltip_open = false;
-    }
-
-    function handleOutsideClick(event) {
-        const tooltipContainer = document.getElementById(item_tooltip_container_item);
-        if (tooltipContainer && !elid.contains(event.target) && !tooltipContainer.contains(event.target)) {
-            removeTooltip();
-        }
-    }
-
-    function removeTooltip() {
-        if (trackingData[0].currentTooltip) {
-            // reset layer z-index
-            trackingData[0].currentTooltipElement.style.zIndex = 'auto'; // Reset z-index
-            trackingData[0].currentTooltipElement.removeChild(trackingData[0].currentTooltip);
-            trackingData[0].currentTooltip = null;
-            trackingData[0].currentTooltipElement = null;
-            trackingData[0].tooltip_open = false;
-            document.removeEventListener('click', handleOutsideClick);
-        }
-    }
-}
-
 function createItemElements(slot_container, slot_data, elements, type) {
 
     if (type === 'inventory') {
@@ -2182,7 +1665,7 @@ function createItemElements(slot_container, slot_data, elements, type) {
         }
     }
     if (type === 'equipment') {
-        if (slot_container.id !== 'equip_slot_EMPTY') {
+        if (slot_container.id !== 'equip_slot_EMPTY_' + slot_data.id) {
             // Parent container
             let container_parent = document.getElementById(slot_container.id);
             container_parent.style.zIndex = '9999';
@@ -2358,6 +1841,73 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                 unequip_btn.addEventListener('click', () => {
                     swap_equipment(item.id, item.slot, 'remove');
                 });
+            }
+        });
+    }
+    
+    if (tt_type === 'inventory') {
+        // Get inventory items
+        let saveDataInv = saveData[2].inventoryData;
+        let saveDataEquip = saveData[3].equippedData;
+        // Find equipment items in inventoryData array
+        saveDataInv.forEach(ei => {
+            let d_EquipItemData = itemData.find(i => i.id === ei.contents && i.type === 'armor' || i.id === ei.contents && i.type === 'weapon');
+
+            if (d_EquipItemData) {
+                if (d_EquipItemData.id === item.id) {
+                    create_el('tt_hr3', 'hr', 'item_tooltip_div');
+                    create_el('equip_actions2', 'div', 'item_tooltip_div');
+                    equip_actions2.classList.add('light_small');
+                    equip_actions2.innerHTML = '<b>Equipment Actions:</b>';
+                    create_el('equip_btn', 'button', 'equip_actions2');
+                    equip_btn.innerHTML = 'EQUIP';
+                    equip_btn.addEventListener('click', () => {
+                        
+                        // Store current item data first
+                        let item_clicked = item;
+                        let item_slot_clicked = ei.slot_id;
+                        // Clear inventory event listener to prevent item movement on click after swap
+                        const slot_container = document.getElementById('inventory_slot_container_' + ei.slot_id);
+                        if (slot_container && inventorySlotListeners[ei.slot_id]) {
+                            // Remove the event listener using the stored function reference
+                            slot_container.removeEventListener('click', inventorySlotListeners[ei.slot_id]);
+                            delete inventorySlotListeners[ei.slot_id];  // Optionally remove the reference
+                        }
+                        // If an item is already equipped in the same slot
+                        let current_equipped = saveDataEquip.find(e => e.id === item.slot);
+                        if (current_equipped && current_equipped.equipped) {
+                            //console.log('(existing item) e: ' + current_equipped.equipped + ' / i: ' + item_clicked.id);
+                            if (current_equipped.equipped === item_clicked.id) {
+                                //console.log(current_equipped.equipped + '...is already equipped, skipping');
+                                update_inventory();
+                                update_character();
+                                return;
+                            }
+                            //console.log('adding to equipped: ' + item.id);
+                            ei.contents = '[ EMPTY ]';
+                            updateLootCount(current_equipped.equipped, 1, item_slot_clicked);
+                            // Swap new iten with equipment slot item
+                            current_equipped.equipped = item.id;
+                            update_inventory();
+                            update_character();
+                            return;
+                        }
+                        // If no items in current equipment slot
+                        let current_empty = saveDataEquip.find(e => e.id === 'equip_slot_EMPTY_' + item.slot);
+                        if (current_empty && current_empty.id === 'equip_slot_EMPTY_' + item.slot) {
+                            //console.log('no existing equipped item found in item slot, addimg... (new item) e(null): ' + current_empty.equipped + ' / i: ' + item_clicked.id);
+                            // Leave inventory slot empty
+                            // Add new iten to empty equipment slot
+                            ei.contents = '[ EMPTY ]';
+                            current_empty.equipped = item.id;
+                            current_empty.id = current_empty.slot;
+                            //console.log('check ids: ... equipped: ' + current_empty.equipped + '/ id: ' + current_empty.id)
+                            update_inventory();
+                            update_character();
+                            return;
+                        }
+                    });
+                }
             }
         });
     }

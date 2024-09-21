@@ -3,78 +3,15 @@
 import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, saveData, trackingData } from './data.js';
 
 import * as f from  './functions.js';
+import * as gf from './general_functions.js';
 
 //`
 
 // ******** DEBUGGING INFO
-// Override console.log for exporting into a file
-var logs = [];
-const originalConsoleLog = console.log;
-console.log = function (message) {
-    if (typeof message === 'object') {
-        // Convert objects to a string representation
-        message = JSON.stringify(message);
-    }
 
-    logs.push(message);
+gf.logExport();
+gf.htmlExport();
 
-    // You can still log to the console if needed
-    originalConsoleLog(message);
-};
-
-document.getElementById("exportButton").addEventListener("click", function () {
-    // Save logs to a file
-    let logString = logs.join('\n');
-
-    // Create a Blob containing the text data
-    const blob = new Blob([logString], { type: 'text/plain' });
-
-    // Create a download link
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = 'logs.txt';
-
-    // Append the link to the document
-    document.body.appendChild(link);
-
-    // Trigger the download
-    link.click();
-
-    // Remove the link from the document
-    document.body.removeChild(link);
-});
-
-// Allow exporting of HTML to inspect/debug elements
-// Create the "Export HTML" button
-const exportHTMLButton = document.createElement('button');
-exportHTMLButton.id = 'exportHTMLButton';
-exportHTMLButton.textContent = 'Export HTML';
-
-// Append the button to the document body
-document.body.appendChild(exportHTMLButton);
-
-// Add an event listener to the "Export HTML" button
-exportHTMLButton.addEventListener("click", function () {
-    // Get the HTML content of the entire document
-    let htmlContent = document.documentElement.outerHTML;
-
-    // Create a Blob containing the HTML content
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-
-    // Create a download link
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = 'vsim_page.html';
-
-    // Append the link to the document
-    document.body.appendChild(link);
-
-    // Trigger the download
-    link.click();
-
-    // Remove the link from the document
-    document.body.removeChild(link);
-});
 // ******** END DEBUGGING INFO
 
 // Iterate over the array and set other variables dynamically
@@ -99,8 +36,8 @@ exportHTMLButton.addEventListener("click", function () {
 outside_iteration();*/
 
 // Add main elements
-f.add_allElements();
-f.character_setup()
+gf.add_allElements();
+f.update_character();
 
 
 // after DOM initialized
@@ -109,42 +46,27 @@ document.addEventListener('DOMContentLoaded', () => {
     f.update_locations();
     f.update_inventory();
     //
-    
 });
 
+// TESTING FOR WEAPON DAMAGE VALUES
 /*
-// ilvl 1 = (1.2 - 1.6)
-let stat_power = 0;
+let stat_power = 5;
+// ilvl is simply a damage multiplier for weapon dmg generation
 for (let ilvl = 1; ilvl <= 20; ilvl ++) {
-    let [damage_min, damage_max] = calculate_damage(ilvl, stat_power);
-    console.log('ilvl: ' + ilvl + ' / Min: ' + damage_min + ' / Max: ' + damage_max);
+    let weap_min = 1 * ilvl;
+    // 20% difference in min/max does well
+    let weap_max = 1.2 * ilvl;
+    
+    let [damage_min, damage_max] = f.calculate_weapon_damage(ilvl, stat_power, weap_min, weap_max);
 
+    function roundValues(...values) {
+        return values.map(value => Math.round(value * 10) / 10);
+    }
+
+    [weap_min, weap_max, damage_min, damage_max] = roundValues(weap_min, weap_max, damage_min, damage_max);
+    console.log('ilvl: ' + ilvl + ' / Weapon: ' + weap_min + ' - ' + weap_max + ' / Pwr Dmg: ' + damage_min + ' - ' + damage_max);
 }
-
-function calculate_weapon_damage(itemLevel, statPower) {
-
-    let ilvl = itemLevel;
-
-    // weapon damage ramge multiplier
-    let min = 1;
-    let max = 1.5;
-    // calc min/max damage of weapons for player display
-    let damage_min = Math.round((1.2*ilvl*min)*10)/10;
-    let damage_max = Math.round((1.08*ilvl*max)*10)/10;
-        
-    // *** multipliers
-    
-    // Power
-    let power = statPower; // 0: 24 - 32.4 / 1: 24.2 - 34.7
-    damage_min *= (1 + (0.02 * power));
-    damage_max *= (1 + (0.02 * power));
-    
-    // final calculation
-    damage_min = Math.round(damage_min*10)/10;
-    damage_max = Math.round(damage_max*10)/10;
-
-    return [damage_min, damage_max];
-}*/
+*/
 
 function loaded_DOM() {
     locData.forEach(location => {

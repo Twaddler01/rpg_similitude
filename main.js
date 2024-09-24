@@ -48,6 +48,17 @@ document.addEventListener('DOMContentLoaded', () => {
     //
 });
 
+// MAX LOCALSTORAGE SIZE (5 MB)
+/* To monitor the size, you can use 
+JSON.stringify(array).length to get 
+an approximate count of characters being 
+stored. Keep in mind that each character 
+takes up 2 bytes in UTF-16 encoding, 
+which is commonly used by JavaScript.
+*/
+//console.log(JSON.stringify(saveData).length * 2);
+//console.log(JSON.stringify(saveData));
+
 // TESTING FOR WEAPON DAMAGE VALUES
 /*
 let stat_power = 5;

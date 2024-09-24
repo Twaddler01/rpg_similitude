@@ -8,6 +8,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+09-24-2024
+- Updated with some visual enhancements and working on getting first battle created.
+- Ensured saveData array is ready for saving/loading. Will likely use an encrypted array so game data can be saved to a file or copy/pasted.
+
 09-21-2024
 - Inventory SHOULD be working as intended. May still be bugs. Need to add the newer code to swap equipment function but wanted to commit now in case of unwanted behavior during integration.
 - A little restructuring with "general_functions.js" to make code cleaner. Will probably break down even more in functions.js soon, since it has about 2000 lines of code and is harder to navigate this way, etc.

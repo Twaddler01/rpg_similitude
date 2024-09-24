@@ -45,7 +45,7 @@ export function first_run() {
         if (message) {
             message.innerHTML = '';
         }
-        if (trackingData[0].loc !== 0 && trackingData[0].lvl !== 0) {
+        if (trackingData[0].lvl !== 0) {
             locationsData.forEach((item, index) => {
                 //console.log('trackingData[0].loc: ' + trackingData[0].loc);
                 //console.log('locationsData.loc: ' + locationsData[index].loc);
@@ -81,10 +81,22 @@ export function first_run() {
             updateLootCount(item.id, 1);
         });
     });
+    
+// Add gold button
+    let add_gold = document.createElement('button');
+    test_section.appendChild(add_gold);
+    add_gold.innerHTML = 'Add +1 GOLD';
+    add_gold.addEventListener('click', () => {
+        let gold_span_lbl = document.getElementById('gold_span');
+        let d_gold = saveData[4].currencyData[0];
+        d_gold.cnt += 1;
+        gold_span_lbl.innerHTML = '<b>GOLD:</b>&nbsp;' + d_gold.cnt;
+        handle_gold();
+    });
 
 // FOR BATTLE TESTING
-    let e_start_battle_button = document.getElementById('start_battle_button');
-    start_battle_button(e_start_battle_button.id);
+    //let e_start_battle_button = document.getElementById('start_battle_button');
+    //start_battle_button(e_start_battle_button.id);
 
 // Add expwrience x200
     //let e_char_exp = document.getElementById('e_char_exp');
@@ -162,18 +174,20 @@ export function update_locations() {
 
     // Create and append location buttons
     const max_location = Math.max(...locationsData.map(loc => loc.loc));
-    for (let i = 1; i <= max_location; i++) {
+    const starting_loc = 0; // previously 1
+    for (let i = starting_loc; i <= max_location; i++) {
         let loc_lvl1 = locationsData.find(l => l.loc === i && l.lvl === 1);
         let loc = document.createElement('div');
         loc.id = 'location_div_' + i;
         // Auto select current location/level from trackingData if present
-        if (trackingData[0].loc !== 0) {
+        if (trackingData[0].loc >= 0 && trackingData[0].lvl >= 1) {
             let fetched_loc = document.getElementById('location_div_' + trackingData[0].loc);
             if (fetched_loc) {
                 fetched_loc.classList.remove('green_border_off');
                 fetched_loc.classList.add('green_border_on');
             }
         }
+        loc.classList.remove('green_border_on');
         loc.classList.add('green_border_off');
         let unlocked = isAnyLocationUnlocked(i);
         //console.log(unlocked);
@@ -191,7 +205,7 @@ export function update_locations() {
             loc_levels.style.overflow = 'auto';
             loc.addEventListener('click', () => {
                 // Clear all green borders
-                for (let all = 1; all <= max_location; all++) {
+                for (let all = starting_loc; all <= max_location; all++) {
                     let DOM_all_loc_div = document.getElementById('location_div_' + all);
                     if (DOM_all_loc_div) {
                         DOM_all_loc_div.classList.remove('green_border_on');
@@ -237,7 +251,7 @@ export function selectLocation(location) {
 
     trackingData[0].currentLocation = location;
 
-    if (trackingData[0].loc !== 0) {
+    if (trackingData[0].loc) {
         trackingData[0].currentLocation = trackingData[0].loc;
     }
 
@@ -246,10 +260,10 @@ export function selectLocation(location) {
 
     // Display levels for the selected location
     filteredLevels.forEach(level => {
-
         let level_title = document.createElement('span');
         levelsContainer.appendChild(level_title);
-        if (level.lvl === 1) {
+        const init_level = 0;
+        if (level.lvl === init_level) {
             level_title.innerHTML = `&nbsp;<b>CHOOSE LEVEL:</b><br>&nbsp;`;
         }
 
@@ -263,9 +277,10 @@ export function selectLocation(location) {
         } else {
             levelButton.addEventListener('click', () => {
                 // Set all colors to white initialy
-                for (let i = 1; i <= filteredLevels.length; i++) {
+                const first_index = 0;
+                for (let i = first_index; i <= filteredLevels.length; i++) {
                     let DOM_levelButton = document.getElementById('levelButton_' + i);
-                    DOM_levelButton.style.backgroundColor = 'white';
+                    if (DOM_levelButton) { DOM_levelButton.style.backgroundColor = 'white'; }
                 }
                 // Set selected level yellow
                 levelButton.style.backgroundColor = 'yellow';
@@ -813,7 +828,7 @@ export function calculate_weapon_damage(itemLevel, statPower, minDmg, maxDmg) {
 }
 
 // Swap equipment as equipped/unequipped after clicking 'EQUIP'/'REMOVE'
-export function swap_equipment(item, slot, action) {
+export function swap_equipment(item, action) {
 
     let d_itemData = itemData.find(i => i.id === item);
     let saveDataEquipAll = saveData[3].equippedData;
@@ -877,23 +892,15 @@ export function start_battle_button(elementId) {
     // Main battle container
     let battle_section_container = document.getElementById('battle_section_container');
     
-    // Parent for ui
+    // Clear all Elements
+    let e_battle_ui_container = document.getElementById('battle_ui_container');
+    if (e_battle_ui_container) {
+        e_battle_ui_container.innerHTML = '';
+    }
+
+    // Parent for ui, resets each update
     create_el('battle_ui_container', 'div', battle_section_container);
     battle_ui_container.classList.add('location_box_style');
-
-    create_el('player_name_level', 'div', 'battle_ui_container');
-    player_name_level.style.width = '100%';
-
-    create_el('player_name', 'span', 'player_name_level');
-    player_name.innerHTML = d_player_character.char_name;
-    player_name.style.display = 'inline-block';
-    player_name.style.width = '50%';
-
-    create_el('player_level', 'span', 'player_name_level');
-    player_level.innerHTML = 'Level: ' + d_player_character.char_level;
-    player_level.style.display = 'inline-block';
-    player_level.style.width = '50%';
-    player_level.style.textAlign = 'right';
 
     // Create the experience container
     create_el('experience_container', 'div', 'battle_ui_container');
@@ -967,6 +974,25 @@ export function start_battle_button(elementId) {
     // Toggle combat on
     //player_battle_status_bars.style.border = 'solid 5px red';
 
+    // Player labels
+    // Add to group player_battle_status_bars
+    create_el('player_name_level', 'div', 'player_battle_status_bars');
+    player_name_level.style.backgroundColor = '#333';
+    player_name_level.style.fontSize = '18px';
+    player_name_level.style.color = '#00FFFF';
+    player_name_level.style.padding = '5px';
+
+    create_el('player_name', 'span', 'player_name_level');
+    player_name.innerHTML = d_player_character.char_name;
+    player_name.style.display = 'inline-block';
+    player_name.style.width = '50%';
+
+    create_el('player_level', 'span', 'player_name_level');
+    player_level.innerHTML = 'Level: ' + d_player_character.char_level;
+    player_level.style.display = 'inline-block';
+    player_level.style.width = '50%';
+    player_level.style.textAlign = 'right';
+
     // Player health
     // Add to group player_battle_status_bars
     create_el('battle_ui_container2', 'div', 'player_battle_status_bars');
@@ -1038,9 +1064,14 @@ playerStats.cur_resource = 88;
 // Need update_resource
 
     // Setup battle encounter
+    create_el('battle_verses_box', 'div', battle_section_container);
+    battle_verses_box.innerHTML = '<p style="text-align:center;font-size:16px;color:red;">[VERSES]</p>';
 
-
-
+//// WIP Enemy elemwnta
+    // Place enemy_ui_containers here
+    create_el('enemy_battle_status_bars', 'div', battle_section_container);
+    enemy_battle_status_bars.style.width = "100%";
+    enemy_battle_status_bars.style.border = 'solid 5px #333';
 
 
 
@@ -1328,6 +1359,11 @@ export function update_inventory() {
         inventory_section.innerHTML = '';
     }
     
+    let inventory_title = document.createElement('div');
+    inventory_section.appendChild(inventory_title);
+    inventory_title.classList.add('h1_yellow_font');
+    inventory_title.innerHTML = 'Inventory Section';
+    
     // Clear all previous event listeners first
     Object.keys(inventorySlotListeners).forEach(slot_id => {
         removeInventorySlotListener(slot_id);  // Remove old listeners
@@ -1387,6 +1423,13 @@ export function update_inventory() {
         inventorySlotListeners[slot_data.slot_id] = inventorySlotClicks;
 
     });
+
+    let currency_area = document.createElement('div');
+    inv_parent.appendChild(currency_area);
+    currency_area.id = 'currency_area';
+    currency_area.style.padding = '5px';
+
+    handle_gold();
 
     // insert test items
     if (!savedInventory[0].setup) {
@@ -1693,6 +1736,10 @@ function createItemElements(slot_container, slot_data, elements, type) {
 // Setup each tooltip box
 function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
 
+    // Clear all elements
+    let e_tooltip_container_div = document.getElementById(tooltip_container_div);
+    if (e_tooltip_container_div) { e_tooltip_container_div.innerHTML = ''; }
+
     create_el('item_tooltip_div', 'div', tooltip_container_div);
     item_tooltip_div.classList.add('item_tooltip');
     
@@ -1815,10 +1862,56 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
     } else {
         gold_div.style.display = 'none';
         sell_price_amt.innerHTML = '[ None ]';
+        
+        // Destroy item option
+        // Only available if not clicked from equipment slot and has no sell price
+        let saveDataEquip = saveData[3].equippedData;
+        let equipped_item = saveDataEquip.find(i => i.equipped === item.id);
+        let e_equipment_id = document.getElementById('equipment_tooltip_container_' + item.id);
+        let nosell_inventory_item = e_equipment_id && equipped_item ? false : true;
+        // console.log(item.id + ' is inventory item (no sell price) / is_inventory_item = ' + nosell_inventory_item);
+
+        if (nosell_inventory_item) {
+            create_el('hr4', 'hr', 'item_tooltip_div');
+            create_el('destroy_sect', 'div', 'item_tooltip_div');
+            destroy_sect.classList.add('light_small');
+            destroy_sect.innerHTML = '<b>Item Actions:</b> ';
+            create_el('destroy_btn', 'button', 'destroy_sect');
+            destroy_btn.innerHTML = 'DESTROY';
+            destroy_btn.addEventListener('click', () => {
+                
+                // Clear text and button for warning
+                destroy_sect.removeChild(destroy_btn);
+                destroy_sect.innerHTML = '';
+                
+                // Clear inventory event listener to prevent item movement on click after swap
+                const slot_container = document.getElementById('inventory_slot_container_' + slot_data.slot_id);
+                if (slot_container && inventorySlotListeners[slot_data.slot_id]) {
+                    // Remove the event listener using the stored function reference
+                    slot_container.removeEventListener('click', inventorySlotListeners[slot_data.slot_id]);
+                    delete inventorySlotListeners[slot_data.slot_id];  // Optionally remove the reference
+                }
+
+                create_el('destroy_confirm_div', 'div', 'destroy_sect');
+                destroy_confirm_div.innerHTML = '<b>(DESTROY ITEM)</b> Are you sure? Action cannot be undone!';
+                create_el('confirm_yes', 'button', 'destroy_sect');
+                confirm_yes.innerHTML = ' YES ';
+                confirm_yes.addEventListener('click', () => {
+                    slot_data.contents = '[ EMPTY ]';
+                    slot_data.cnt = 0;
+                    update_inventory();
+                });
+                create_el('confirm_no', 'button', 'destroy_sect');
+                confirm_no.innerHTML = ' NO ';
+                confirm_no.addEventListener('click', () => {
+                    update_inventory();
+                    return;
+                });
+            });
+        }
     }
 
-//// Setup equip buttons here
-
+    // Setup equip buttons
     if (tt_type === 'equipment') {
         // Get equipped items
         let saveDataEquip = saveData[3].equippedData;
@@ -1839,7 +1932,7 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                 create_el('unequip_btn', 'button', 'equip_actions');
                 unequip_btn.innerHTML = 'REMOVE';
                 unequip_btn.addEventListener('click', () => {
-                    swap_equipment(item.id, item.slot, 'remove');
+                    swap_equipment(item.id, 'remove');
                 });
             }
         });
@@ -1855,10 +1948,14 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
 
             if (d_EquipItemData) {
                 if (d_EquipItemData.id === item.id) {
-                    create_el('tt_hr3', 'hr', 'item_tooltip_div');
+                    // Prevent duplicates of tt_hr3 HR
+                    let e_tt_hr3 = document.getElementById('tt_hr3');
+                    if (!e_tt_hr3) {
+                        create_el('tt_hr3', 'hr', 'item_tooltip_div');
+                    }
                     create_el('equip_actions2', 'div', 'item_tooltip_div');
                     equip_actions2.classList.add('light_small');
-                    equip_actions2.innerHTML = '<b>Equipment Actions:</b>';
+                    equip_actions2.innerHTML = '<b>Equipment Actions:</b> ';
                     create_el('equip_btn', 'button', 'equip_actions2');
                     equip_btn.innerHTML = 'EQUIP';
                     equip_btn.addEventListener('click', () => {
@@ -1978,20 +2075,24 @@ function applyTransparencyToEmptySlots() {
 // Setup gold elements, purchases, etc
 export function handle_gold() {
     let inventory_section = document.getElementById('inventory_section');
-    let d_gold = inventoryElements.find(inv => inv.id === 'GOLD');
+    let d_gold = saveData[4].currencyData[0];
 
-    if (!d_gold.setup && inventory_section) {
-        let gold_container = document.createElement('div');
-        gold_container.id = 'gold_container';
-        inventory_section.appendChild(gold_container);
-        gold_container.classList.add('gold_div');
+    let e_gold_container = document.getElementById('gold_container');
 
-        let gold_span_lbl = document.createElement('span');
-        gold_span_lbl.id = 'gold_span';
-        gold_container.appendChild(gold_span_lbl);
-        gold_span_lbl.classList.add('gold_span');
-        gold_span_lbl.innerHTML = '<b>GOLD:</b>&nbsp;' + d_gold.cnt;
-
-        d_gold.setup = true;
+    if (e_gold_container) {
+        e_gold_container.innerHTML = '';
+    } else {
+        e_gold_container = document.createElement('div');
+        e_gold_container.id = 'gold_container';
+        let currency_area = document.getElementById('currency_area');
+        currency_area.appendChild(e_gold_container);
+        e_gold_container.classList.add('gold_div');
     }
+
+    let gold_span_lbl = document.createElement('span');
+    gold_span_lbl.id = 'gold_span';
+    gold_container.appendChild(gold_span_lbl);
+    gold_span_lbl.classList.add('gold_span');
+    gold_span_lbl.innerHTML = '<b>GOLD:</b>&nbsp;' + d_gold.cnt;
+
 }

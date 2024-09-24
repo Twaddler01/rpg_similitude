@@ -3,6 +3,10 @@
 // variables needed
 import { elementsData } from './data.js';
 
+// functions needed
+// for add_allElements (battle buttons)
+import { start_battle_button, attack_box_button } from './functions.js';
+
 // Override console.log for exporting into a file
 export function logExport() {
     var logs = [];

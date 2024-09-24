@@ -465,15 +465,15 @@ export function init_equipmentElements() {
     return equipmentElements;
 }
 
+const inventoryMaxSlots = 20;
 export function init_inventoryElements() {
 
     var inventoryElements = [
         { id: 'inventory',
-        size: 10,
+        /* size: see inventoryMaxSlots above */
         lbl: 'Inventory',
         },
-        // Element ids
-        { type: 'slot', id: 1 }, 
+        { type: 'slot', id: 1 },
         { type: 'slot', id: 2 },
         { type: 'slot', id: 3 },
         { type: 'slot', id: 4 },
@@ -483,10 +483,16 @@ export function init_inventoryElements() {
         { type: 'slot', id: 8 },
         { type: 'slot', id: 9 },
         { type: 'slot', id: 10 },
-        { id: 'GOLD',
-        cnt: 0,
-        name: 'Gold',
-        },
+        { type: 'slot', id: 11 },
+        { type: 'slot', id: 12 },
+        { type: 'slot', id: 13 },
+        { type: 'slot', id: 14 },
+        { type: 'slot', id: 15 },
+        { type: 'slot', id: 16 },
+        { type: 'slot', id: 17 },
+        { type: 'slot', id: 18 },
+        { type: 'slot', id: 19 },
+        { type: 'slot', id: 20 },
     ];
 
     return inventoryElements;
@@ -645,13 +651,16 @@ export function init_itemData() {
     return itemData;
 }
 
+// Shpuld match indexes with saveData[0].killsData
 export function init_locationsData() {
 
     const locationsData = [
         // locationsData[i].kill_req_met: true/false
-    
+        
+        { loc: 0, lbl: 'Starting Zone', lvl: 1, kills_req: 3,
+        img: 'media/img_loc_0.jpg', }, // l = 0 ////
         { loc: 1, lbl: 'Dark Plains', lvl: 1, kills_req: 3,
-        img: 'media/img_loc_1.jpg', }, // l = 0
+        img: 'media/img_loc_1.jpg', }, // l = 0 +,1
         { loc: 1, lbl: 'Dark Plains', lvl: 2, kills_req: 3 },
         { loc: 1, lbl: 'Dark Plains', lvl: 3, kills_req: 3 },
         { loc: 1, lbl: 'Dark Plains', lvl: 4, kills_req: 3 },
@@ -663,13 +672,13 @@ export function init_locationsData() {
         { loc: 2, lbl: 'Dark Highlands', lvl: 1, kills_req: 3,
         img: 'media/img_loc_2.jpg', },
         { loc: 2, lbl: 'Dark Highlands', lvl: 2, kills_req: 3 },
-        { loc: 2, lbl: 'Dark Highlands', lvl: 3, kills_req: 3 }, // l = 10
+        { loc: 2, lbl: 'Dark Highlands', lvl: 3, kills_req: 3 }, // l = 10 + 1
         { loc: 2, lbl: 'Dark Highlands', lvl: 4, kills_req: 3 },
     
         { loc: 3, lbl: 'Dark Forest', lvl: 1, kills_req: 3,
         img: 'media/img_loc_3.jpg', },
         { loc: 3, lbl: 'Dark Forest', lvl: 2, kills_req: 3 },
-        { loc: 3, lbl: 'Dark Forest', lvl: 3, kills_req: 3 }, // max = 14
+        { loc: 3, lbl: 'Dark Forest', lvl: 3, kills_req: 3 }, // max = 14 + 1
     
         { loc: 4, lbl: 'END', lvl: 3, kills_req: 99 }, // placeholder
     ];
@@ -717,12 +726,34 @@ export function init_characterData() {
     return characterData;
 }
 
+export function init_EncounterData() {
+    
+    const EncounterData = [
+        
+        { id: 'beginner_0', loc: 0, lvl: 1,
+            // EncounterData[1]
+            enemy_list: [
+                { cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: { 'SLIME_BALL': 0.8, 'SLIME_CHUNK': 0.2 } },
+                { cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: { 'SMALL_SCALE': 0.8, 'LIZARD_CLAW': 0.6, 'LIZARD_TAIL': 0.5 } },
+                { cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: { 'BONE_FRAGMENT': 0.8, 'GOLD': 0.8, 'SMALL_SKULL': 0.2, 'CLOTH_BASIC': 0.2 } },
+                // any enemy can drop
+                { cat: 'global', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1, 'BETTER_BOOTS': 0.08 } },
+            ] }, 
+        { id: 'group1' },
+        { id: 'group2' },
+
+    ];
+
+    return EncounterData;
+}
+
 export function init_saveData() {
 
     const saveData = [
     // saveData[0]
     { killsData: [ // added to locationsData array
         { kills: 3 }, // l = 0
+        { kills: 3 }, // l = 0 + 1
         { kills: 3 },
         { kills: 3 },
         { kills: 3 },
@@ -732,11 +763,11 @@ export function init_saveData() {
         { kills: 7 },
         { kills: 8 },
         { kills: 9 },
-        { kills: 10 }, // l = 10
+        { kills: 10 }, // l = 10 + 1
         { kills: 11 },
         { kills: 12 },
         { kills: 13 },
-        { kills: 14 }, // max = 14
+        { kills: 14 }, // max = 14 + 1
         { kills: 15 }, // placeholder
         ] },
     // saveData[1]
@@ -753,11 +784,30 @@ export function init_saveData() {
         ] },
     // saveData[2]
     { inventoryData: [ // slots added below
-        { size: 10, // manually input for trackimg max
-          created: false, // before slots added
+        { /* size: see inventoryMaxSlots above */ 
           setup: false,
           full: false,
-        }, 
+        },
+        { type: 'slot', slot_id: 1, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 2, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 3, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 4, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 5, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 6, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 7, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 8, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 9, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 10, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 11, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 12, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 13, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 14, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 15, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 16, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 17, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 18, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 19, contents: '[ EMPTY ]', cnt: 0 },
+        { type: 'slot', slot_id: 20, contents: '[ EMPTY ]', cnt: 0 },
     ] },
     // saveData[3]
     { equippedData: [ // to be added to static array?
@@ -775,20 +825,12 @@ export function init_saveData() {
         { id: 'mh', equipped: 'MH_BASIC_DAGGER' },
         { id: 'oh', equipped: null },
         ] },
+    // saveData[4].currencyData[0]
+    { currencyData: [
+        { id: 'GOLD', cnt: 28, name: 'Gold' },
+        ] },
     ];
 
-    if (!saveData[2].inventoryData[0].created) {
-        // Dynamically create the inventory slots (1-10 initially)
-        for (let i = 1; i <= 10; i++) {
-            saveData[2].inventoryData.push({
-                type: 'slot',
-                slot_id: i,
-                contents: '[ EMPTY ]',
-                cnt: 0
-            });
-        }
-        saveData[2].inventoryData[0].created = true;
-    }
     //console.log(saveData[0]); // with 'killsData'
     //console.log(saveData[1]); // with 'characterData'
     //console.log(saveData[2]); // with 'inventoryData'

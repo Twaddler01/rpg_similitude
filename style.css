@@ -188,38 +188,37 @@ body {
     padding-bottom: 20px;
 }
 
-/* NEW */
-
 .gold_div {
     background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
+    font-size: 16px;
     padding: 5px;
-    margin: 5px;
     border: 1px solid #ccc;
     display: inline-block;
-    width: 200px;
-    line-height: 16px;
+    width: 318px;
 }
 .gold_span {
-    text-align: center;
+    background-color: black;
+    text-align: left;
+    padding-left: 5px;
     font-size: 16px;
     color: yellow;
-    padding: 5px;
     display: inline-block;
-    line-height: 16px;
-    width: 190px;
-    background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
+    width: 313px;
 }
 
 .inv_parent {
     border: 1px solid #ccc;
-    width: 368px;
+    width: 340px;
+    font-size: 16px;
 }
 
 .inv_slot_container {
     /* Default background color for non-empty slots */
     background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
     padding: 5px;
-    margin: 5px;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: -5px;
     border: 1px solid #ccc;
     display: inline-block;
     width: 50px;
@@ -229,13 +228,8 @@ body {
 
 .inv_slot {
     background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
-    /*padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 2px;*/
-    text-align: center;
     height: 50px;
     position: relative;
-    font-size: 6px;
 }
 
 .inv_slot_counter {
@@ -246,29 +240,6 @@ body {
     padding-right: 7px;
     right: 0;
 }
-
-/*
-// OLD
-
-.inv_slot_container {
-    border-style: solid;
-    border-color: black;
-    float: left;
-    line-height: 76px;
-    width: 100px;
-    background-color: gray;
-    /* EMPTY color #3B3B3B light #7C7C7C */
-/*
-// OLD
-}
-
-.inv_slot_counter {
-    text-align: right;
-    padding-right: 5px;
-    padding-bottom: 5px;
-    line-height: 16px;
-    background-color: gray;
-} */
 
 /* BUTTONS */
 .button {

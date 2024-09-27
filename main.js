@@ -1,6 +1,6 @@
 // main.js
 
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, saveData, trackingData } from './data.js';
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
 
 import * as f from  './functions.js';
 import * as gf from './general_functions.js';

@@ -1,7 +1,7 @@
 // functions.js
 
 // import arrays
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, saveData, trackingData } from './data.js';
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
 
 // general functions needed
 import * as gf from './general_functions.js';
@@ -94,10 +94,6 @@ export function first_run() {
         handle_gold();
     });
 
-// FOR BATTLE TESTING
-    //let e_start_battle_button = document.getElementById('start_battle_button');
-    //start_battle_button(e_start_battle_button.id);
-
 // Add expwrience x200
     //let e_char_exp = document.getElementById('e_char_exp');
     let add_xp = document.createElement('button');
@@ -127,9 +123,9 @@ export function update_locations() {
     // Clear any existing elements
     // Add title
     if (location_container) {
-        location_container.innerHTML = '&nbsp;<b>CHOOSE BATTLE LOCATION:<p></p></b>';
+        location_container.innerHTML = '<b>CHOOSE BATTLE LOCATION:<p></p></b>';
     }
-    
+
     // Update array data
     for (let i = 0; i < locationsData.length; i++) {
         // Insert the kills data from saveData into the corresponding location in locationsData
@@ -149,6 +145,11 @@ export function update_locations() {
         }
     }
 
+    // Location image (used im battle)
+    let battle_location_image = document.createElement('div');
+    location_container.appendChild(battle_location_image);
+    battle_location_image.id = 'battle_location_image';
+
     // Create locations container
     let locations = document.createElement('div');
     location_container.appendChild(locations);
@@ -166,6 +167,10 @@ export function update_locations() {
     let locations_status = document.createElement('div');
     location_container.appendChild(locations_status);
     locations_status.id = 'locations_status';
+
+    // Attack (turn by turn) used once in combat
+    create_el('player_turn_attack', 'button', location_container);
+    player_turn_attack.style.display = 'none';
 
     const message = document.createElement('div');
     test_section.appendChild(message);
@@ -195,6 +200,7 @@ export function update_locations() {
             locations.appendChild(loc);
             loc.innerHTML = loc_lvl1.lbl;
             let loc_img = document.createElement('img');
+            loc_img.id = 'loc_img_' + loc_lvl1.loc;
             loc.appendChild(loc_img);
             loc_img.style.width = '150px';
             loc_img.style.height = 'auto';
@@ -264,7 +270,7 @@ export function selectLocation(location) {
         levelsContainer.appendChild(level_title);
         const init_level = 0;
         if (level.lvl === init_level) {
-            level_title.innerHTML = `&nbsp;<b>CHOOSE LEVEL:</b><br>&nbsp;`;
+            level_title.innerHTML = `<b>CHOOSE LEVEL:</b><br>&nbsp;`;
         }
 
         const levelButton = document.createElement('button');
@@ -296,17 +302,20 @@ export function selectLevel(loc, location, lvl, kills) {
     const message = document.getElementById('message');
 
     message.innerHTML = '';
-    locations_status.innerHTML = `&nbsp;You selected <b>${location}</b> Level <b>${lvl}</b>`;
-    locations_status.innerHTML += `<br>&nbsp;<b>Enemies Killed:</b> ${kills}`;
-    let start_battle_button = document.getElementById('start_battle_button');
-    if (start_battle_button) {
-        start_battle_button.style.display = 'block';
-    }
+    locations_status.innerHTML = `You selected <b>${location}</b> Level <b>${lvl}</b>`;
+    locations_status.innerHTML += `<br><b>Enemies Killed:</b> ${kills}`;
+
     // add to tracking array
     trackingData[0].loc = loc;
     trackingData[0].location = location;
     trackingData[0].lvl = lvl;
     trackingData[0].kills = kills;
+
+//// WIP Getting rid of new_battle_button here 
+// to run a new_battle() function automatically,
+// then run attack button here
+
+    start_battle();
 }
 
 export function getMaxLevelsByLocation(locationsData) {
@@ -754,6 +763,7 @@ create_el('char_equipment_container', 'div', char_equipment);
                     // Assign to array
                     stat.amt += playerStats.total_dexterity_effect;
                     let stat_display = stat.amt + '%';
+                    playerStats.total_hit_chance = stat.amt;
                     playerStats.hit_chance_display = stat_display;
                     playerStats.hit_flat = 90;
                     playerStats.hit_plus_1 = 87;
@@ -771,6 +781,7 @@ create_el('char_equipment_container', 'div', char_equipment);
                     // 0 unless a +_% Meleee Citical Strike Rating stat
                     playerStats.base_crit_strike_rating = base_crit_strike_rating;
                     playerStats.crit_strike_rating = crit_strike_rating;
+                    playerStats.total_crit_chance = base_crit_strike_rating + crit_strike_rating;
                     stats_effect = `<br><span style="color:lightgreen">Combined equipment and base bonus: +${base_crit_strike_rating}%, increases the probability any successful attack is critical by <b>${base_crit_strike_rating}%</b></span>`;
                     stats_effect += `<br><span style="color:lightgreen">- Melee equipment bonus: +${playerStats.agility_equip} Agility, increases the probability a successful melee attack is critical by <b>${playerStats.total_agility_effect}%</b></span>`;
                     stats_effect += `<br><span style="color:lightgreen">- Magic equipment bonus: +${playerStats.wisdom_equip} Wisdom, increases the probability a successful magic attack is critical by <b>${playerStats.total_wisdom_effect}%</b></span>`;
@@ -842,7 +853,7 @@ export function swap_equipment(item, action) {
 
         // Remember item
         let item_to_remove = item;
-let d_itemData_item_to_remove = itemData.find(i => i.id === item_to_remove);
+        let d_itemData_item_to_remove = itemData.find(i => i.id === item_to_remove);
         // Clear item from equippes
         equipped_item.equipped = null;
 
@@ -882,8 +893,192 @@ export function update_equipment() {
     });
 }
 
+// Test
+// Quick DOM modifications
+function gel(id, css = null, inner = null, ...styles) {
+    try {
+        const element = document.getElementById(id);
+        
+        // If element is not found, throw an error
+        if (!element) {
+            throw new Error(`Element with ID '${id}' not found`);
+        }
+
+        // Apply CSS class if provided
+        if (css) {
+            element.classList.add(css);
+        }
+        
+        // Apply innerHTML if provided
+        if (inner) {
+            element.innerHTML = inner;
+        }
+        
+        // Apply styles if any are provided
+        styles.forEach(style => {
+            let [property, value] = style.split(':').map(s => s.trim()); // Split and trim the style string
+            if (property && value) {
+                element.style[property] = value;
+            }
+        });
+
+        return element;
+    } catch (error) {
+        // Log the error, ID, and stack trace for easy tracking
+        console.error(`Error in manipulating element with ID '${id}':`, error.message);
+        console.error(`Error occurred at:`, error.stack);
+    }
+}
+
+// Example usage:
+// let e_my_element = gel('my_element', 'css_class', 'Text', 'display: block', 'padding: 5px');
+// e_my_element.innerHTML = 'Change to this text';
+/* WIP: let mods = [
+{ id: 'my_element',
+{ css: 'css_class',
+{ inner: 'Text',
+{ styles: 'display: block',
+{ styles: 'padding: 5px'
+];*/
+
+export function update_health() {
+
+// PLAYER
+
+    // Data needed
+    let playerStats = characterData.find(d => d.id === 'player_stats');
+    // Elements to update
+    let e_char_health = document.getElementById('e_char_health');
+    let e_player_health_bar_fill = document.getElementById('player_health_bar_fill');
+    let e_player_current_health_percent = document.getElementById('player_current_health_percent');
+    // If death occurs
+    let e_player_current_health_text = document.getElementById('player_current_health_text');
+    let e_player_maximum_health = document.getElementById('player_maximum_health');
+
+    // Update elements
+    e_char_health.innerHTML = playerStats.cur_health;
+    e_player_health_bar_fill.style.width = Math.round(((playerStats.cur_health / playerStats.max_health) * 100)) + '%';
+    let d_player_current_health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
+    d_player_current_health_percent = Math.round(d_player_current_health_percent * 10) / 10;
+    e_player_current_health_percent.innerHTML = d_player_current_health_percent + '%';
+    
+    // Player death
+    if (playerStats.cur_health <= 0) {
+        playerStats.cur_health = 0;
+        e_player_health_bar_fill.style.width = '0%';
+        e_player_current_health_percent.innerHTML = '';
+        e_player_current_health_text.innerHTML = '[ PLAYER HAS DIED ]';
+        e_player_maximum_health.innerHTML = '';
+    }
+    
+// ENEMY ////
+
+    let encounter = encounterData.find(e => e.id === 'beginner_0');
+
+    // First encounter
+    if (encounter.in_combat && trackingData[0].loc === 0 && trackingData[0].lvl === 1) {
+// Encounters need to be set up with loc, lvl linked
+
+        let e_enemy_health = document.getElementById('e_enemy_health');
+        let e_enemy_current_health_percent = document.getElementById('enemy_current_health_percent');
+        let e_enemy_health_bar_fill = document.getElementById('enemy_health_bar_fill');
+        let e_enemy_current_health_text = document.getElementById('enemy_current_health_text');
+        let e_enemy_maximum_health = document.getElementById('enemy_maximum_health');
+
+        let d_enemy_health_percent = (encounter.cur_health / encounter.max_health) * 100;
+        d_enemy_health_percent = Math.round(d_enemy_health_percent * 10) / 10;
+        
+        // Update elements
+        e_enemy_health.innerHTML = Math.round(encounter.cur_health * 10) / 10;
+        e_enemy_current_health_percent.innerHTML = d_enemy_health_percent + '%';
+        e_enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
+        
+        // Enemy death
+        if (encounter.cur_health <= 0) {
+            encounter.cur_health;
+            e_enemy_health_bar_fill.style.width = '0%';
+            e_enemy_current_health_percent.innerHTML = '';
+            e_enemy_current_health_text.innerHTML = '[ DEAD ]';
+            e_enemy_maximum_health.innerHTML = '';
+            toggle_combat_status();
+            let e_player_to_enemy_btn = document.getElementById('player_to_enemy_btn');
+            e_player_to_enemy_btn.innerHTML = '[ DEFEATED ]';
+
+        }
+    }
+
+}
+
+export function toggle_combat_status() {
+
+    let playerCombat = characterData.find(c => c.id === 'player_combat_status');
+    // playerCombat.in_combat = true/false
+    
+    let spacer_player_combat_status = document.getElementById('spacer_player_combat_status');
+    let player_combat_status = document.getElementById('player_combat_status');
+    let player_battle_status_bars = document.getElementById('player_battle_status_bars');
+    let enemy_battle_status_bars = document.getElementById('enemy_battle_status_bars');
+
+    // Toggle combat off
+    if (playerCombat.in_combat === true) {
+        spacer_player_combat_status.style.height = '17px';
+        player_combat_status.style.display = 'none';
+        player_battle_status_bars.style.border = 'solid 5px #333';
+        enemy_battle_status_bars.style.border = 'solid 5px #333';
+        playerCombat.in_combat = false;
+        return;
+    }
+
+    // Toggle combat on
+    if (playerCombat.in_combat === false) {
+        spacer_player_combat_status.style.height = '5px';
+        player_combat_status.style.display = 'block';
+        player_battle_status_bars.style.border = 'solid 5px red';
+        enemy_battle_status_bars.style.border = 'solid 5px red';
+        playerCombat.in_combat = true;
+        return;
+    }
+}
+
+export function update_xp() {
+    
+    // Data needed
+    let d_player_character = saveData[1].savedCharacterData[0];
+    // Update xp progress
+    let e_char_exp = document.getElementById('e_char_exp');
+    let e_experience_bar_fill = document.getElementById('experience_bar_fill');
+    let e_experience_percent = document.getElementById('experience_percent');
+    let e_player_level = document.getElementById('player_level');
+    let e_experience_to_level = document.getElementById('experience_to_level');
+    let fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
+    // Experience values
+    let d_exp_filter = characterData.filter(c => c.type === 'exp');
+    let d_exp = d_exp_filter[0];
+    e_char_exp.innerHTML = d_player_character.char_exp;
+
+    // Calculate fill
+    fill_amt = Math.round(fill_amt * 10) / 10 + '%';
+    e_experience_bar_fill.style.width = fill_amt;
+    e_experience_percent.innerHTML = fill_amt;
+    if (d_player_character.char_exp >= d_player_character.char_exp_to_level) {
+        d_player_character.char_level += 1;
+        e_player_level.innerHTML = 'Level: ' + d_player_character.char_level;
+        let char_exp_level = d_exp.experienceValues.find(l => l.level === d_player_character.char_level);
+        let NEW_xp = char_exp_level.exp_to_level;
+        let leftover_xp = d_player_character.char_exp - d_player_character.char_exp_to_level;
+        d_player_character.char_exp = leftover_xp;
+        d_player_character.char_exp_to_level = NEW_xp;
+        fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
+        fill_amt = Math.round(fill_amt * 10) / 10 + '%';
+        e_char_exp.innerHTML = d_player_character.char_exp;
+        e_experience_bar_fill.style.width = fill_amt;
+        e_experience_percent.innerHTML = fill_amt;
+        e_experience_to_level.innerHTML = d_player_character.char_exp_to_level;
+    }
+}
+
 // WIP2
-export function start_battle_button(elementId) {
+export function start_battle() {
 
     // Data
     let d_player_character = saveData[1].savedCharacterData[0];
@@ -891,7 +1086,10 @@ export function start_battle_button(elementId) {
 
     // Main battle container
     let battle_section_container = document.getElementById('battle_section_container');
-    
+
+    // All battle specific elements
+    create_el('all_battle_ui_elements', 'div', battle_section_container);
+
     // Clear all Elements
     let e_battle_ui_container = document.getElementById('battle_ui_container');
     if (e_battle_ui_container) {
@@ -899,58 +1097,11 @@ export function start_battle_button(elementId) {
     }
 
     // Parent for ui, resets each update
-    create_el('battle_ui_container', 'div', battle_section_container);
+    create_el('battle_ui_container', 'div', all_battle_ui_elements);
     battle_ui_container.classList.add('location_box_style');
 
-    // Create the experience container
-    create_el('experience_container', 'div', 'battle_ui_container');
-    experience_container.classList.add('bar_with_border_container');
-
-    // Create the experience bar fill (blue bar)
-    create_el('experience_bar_fill', 'div', 'experience_container');
-    experience_bar_fill.classList.add('bar_with_border_fill');
-
-    create_el('experience_text', 'span', 'experience_container');
-    experience_text.classList.add('bar_with_border_text');
-    experience_text.innerHTML = 'Experience: <span id="e_char_exp">' + d_player_character.char_exp + '</span>&nbsp;/&nbsp;';
-    // Inserts e_char_exp
-
-    create_el('experience_percent', 'span', 'experience_container');
-    experience_percent.classList.add('bar_with_border_percent');
-
-    // Calculate experience values
-    let d_exp_filter = characterData.filter(c => c.type === 'exp');
-    let d_exp = d_exp_filter[0];
-    
-    // Store experience values for each level
-    d_exp.experienceValues = [];
-    
-    for (let i = 1; i <= d_exp.level_cap; i++) {
-        let expToLevel = Math.round((d_exp.starting_val * (i**1.5 + d_exp.level_rate)) / 10) * 10;
-        d_exp.experienceValues.push({
-            level: i,
-            exp_to_level: expToLevel,
-            //diff: expToLevel - Math.round((d_exp.starting_val * ((i - 1)**1.5 + d_exp.level_rate)) / 10) * 10 // Uncomment if you need the diff
-        });
-    }
-    
-    // Log experience values for each level
-    d_exp.experienceValues.forEach(xp => {
-        //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}`);
-        //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}, Diff: ${xp.diff}`);
-        if (d_player_character.char_level === xp.level) {
-            d_player_character.char_exp_to_level = xp.exp_to_level;
-        }
-    });
-
-    create_el('experience_to_level', 'span', 'experience_text');
-    experience_to_level.innerHTML = d_player_character.char_exp_to_level;
-
-    // Initial display
-    update_xp();
-
     // Spacer
-    create_el('spacer_player_combat_status', 'div', battle_section_container);
+    create_el('spacer_player_combat_status', 'div', all_battle_ui_elements);
     spacer_player_combat_status.style.height = '17px';
     spacer_player_combat_status.style.backgroundColor = 'black';
     spacer_player_combat_status.style.height = '17px';
@@ -958,7 +1109,7 @@ export function start_battle_button(elementId) {
     //spacer_player_combat_status.style.height = '5px';
 
     // Spacer
-    create_el('player_combat_status', 'span', battle_section_container);
+    create_el('player_combat_status', 'span', all_battle_ui_elements);
     player_combat_status.style.textAlign = 'center';
     player_combat_status.style.fontSize = '12px';
     player_combat_status.style.width = '100%';
@@ -968,7 +1119,7 @@ export function start_battle_button(elementId) {
     player_combat_status.innerHTML = '<b><span style="background-color:red;">&nbsp;&nbsp; IN COMBAT &nbsp;&nbsp;</span></b>';
 
     // Place battle_ui_container2/3 here
-    create_el('player_battle_status_bars', 'div', battle_section_container);
+    create_el('player_battle_status_bars', 'div', all_battle_ui_elements);
     player_battle_status_bars.style.width = "100%";
     player_battle_status_bars.style.border = 'solid 5px #333';
     // Toggle combat on
@@ -1041,9 +1192,6 @@ export function start_battle_button(elementId) {
     player_resource_bar_fill.style.backgroundColor = '#6E6800';
     // Fill calculated below
 
-// Test
-playerStats.cur_resource = 88;
-
     create_el('player_current_resource_text', 'span', 'player_resource_container');
     player_current_resource_text.classList.add('bar_with_border_text');
     player_current_resource_text.innerHTML = 'Player Resource: <span id="e_char_resource">' + playerStats.cur_resource + '</span>&nbsp;/&nbsp;';
@@ -1061,25 +1209,218 @@ playerStats.cur_resource = 88;
     // Display bar width fill
     player_resource_bar_fill.style.width = d_player_resource_percent + '%';
 
+    // Create the experience container
+    create_el('experience_container', 'div', 'player_battle_status_bars');
+    experience_container.classList.add('bar_with_border_container');
+
+    // Create the experience bar fill (blue bar)
+    create_el('experience_bar_fill', 'div', 'experience_container');
+    experience_bar_fill.classList.add('bar_with_border_fill');
+
+    create_el('experience_text', 'span', 'experience_container');
+    experience_text.classList.add('bar_with_border_text');
+    experience_text.innerHTML = 'Experience: <span id="e_char_exp">' + d_player_character.char_exp + '</span>&nbsp;/&nbsp;';
+    // Inserts e_char_exp
+
+    create_el('experience_percent', 'span', 'experience_container');
+    experience_percent.classList.add('bar_with_border_percent');
+
+    // Calculate experience values
+    let d_exp_filter = characterData.filter(c => c.type === 'exp');
+    let d_exp = d_exp_filter[0];
+    
+    // Store experience values for each level
+    d_exp.experienceValues = [];
+    
+    for (let i = 1; i <= d_exp.level_cap; i++) {
+        let expToLevel = Math.round((d_exp.starting_val * (i**1.5 + d_exp.level_rate)) / 10) * 10;
+        d_exp.experienceValues.push({
+            level: i,
+            exp_to_level: expToLevel,
+            //diff: expToLevel - Math.round((d_exp.starting_val * ((i - 1)**1.5 + d_exp.level_rate)) / 10) * 10 // Uncomment if you need the diff
+        });
+    }
+    
+    // Log experience values for each level
+    d_exp.experienceValues.forEach(xp => {
+        //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}`);
+        //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}, Diff: ${xp.diff}`);
+        if (d_player_character.char_level === xp.level) {
+            d_player_character.char_exp_to_level = xp.exp_to_level;
+        }
+    });
+
+    create_el('experience_to_level', 'span', 'experience_text');
+    experience_to_level.innerHTML = d_player_character.char_exp_to_level;
+
+    // Initial display
+    update_xp();
+
+
+
+
+
+
+
+
+
 // Need update_resource
 
     // Setup battle encounter
-    create_el('battle_verses_box', 'div', battle_section_container);
-    battle_verses_box.innerHTML = '<p style="text-align:center;font-size:16px;color:red;">[VERSES]</p>';
+    create_el('battle_verses_box', 'div', all_battle_ui_elements);
+    battle_verses_box.innerHTML = '<p style="text-align:center;font-size:16px;color:red;" id="player_to_enemy_btn">[ TARGETING ]</p>';
 
-//// WIP Enemy elemwnta
+//// WIP Enemy battle elemwnta
+// WIP need multiple enemies
+
     // Place enemy_ui_containers here
-    create_el('enemy_battle_status_bars', 'div', battle_section_container);
+    create_el('enemy_battle_status_bars', 'div', all_battle_ui_elements);
     enemy_battle_status_bars.style.width = "100%";
     enemy_battle_status_bars.style.border = 'solid 5px #333';
 
+    // Enemy labels
+    // Add to group enemy_battle_status_bars
+    create_el('enemy_name_level', 'div', 'enemy_battle_status_bars');
+    enemy_name_level.style.backgroundColor = '#333';
+    enemy_name_level.style.fontSize = '18px';
+    enemy_name_level.style.color = '#00FFFF';
+    enemy_name_level.style.padding = '5px';
 
+    // Enemy data
+    let encounter = null;
+    let random_enemy = null;
 
-    let combat_log = document.getElementById('combat_log');
-    combat_log.innerHTML = '';
-    gf.toggleElement('h', 'start_battle_button');
-    gf.toggleElement('s', 'attack_box_button');
+    // Choose encounter & enemy
+    // First encounter
+    if (trackingData[0].loc === 0 && trackingData[0].lvl === 1) {
+        // Encounters need to be set up with loc, lvl linked
+        // 
+        encounter = encounterData.find(e => e.id === 'beginner_0');
+        // Choose random array index of enemyList;
+        let enemyList = encounter.enemy_list;
+        random_enemy = choose_enemy(enemyList);
+    } else {
+        // All other encounters
+        let enemy_loc = trackingData[0].loc;
+        let enemy_lvl = trackingData[0].lvl;
+        // Get matching loc/lvl encounter
+        encounter = encounterData.find(e => e.loc === enemy_loc && e.lvl === enemy_lvl);
+        // Choose random array index of enemyList;
+        let enemyList = encounter.enemy_list;
+        random_enemy = choose_enemy(enemyList);
+        //// WIP more array data needed
+    }
+
+    if (encounter && random_enemy) {
+        create_el('enemy_name', 'span', 'enemy_name_level');
+        enemy_name.innerHTML = random_enemy.lbl;
+        enemy_name.style.display = 'inline-block';
+        enemy_name.style.width = '50%';
     
+        create_el('enemy_level', 'span', 'enemy_name_level');
+        enemy_level.innerHTML = 'Level: ' + random_enemy.lvl;
+        enemy_level.style.display = 'inline-block';
+        enemy_level.style.width = '50%';
+        enemy_level.style.textAlign = 'right';
+
+        // Enemy health
+        // Add to group player_battle_status_bars
+        create_el('battle_ui_enemy_container', 'div', 'enemy_battle_status_bars');
+    
+        // Create player health container
+        create_el('enemy_health_container', 'div', 'battle_ui_enemy_container');
+        enemy_health_container.classList.add('bar_with_border_container');
+    
+        // Create the player_health bar fill (blue bar)
+        create_el('enemy_health_bar_fill', 'div', 'enemy_health_container');
+        enemy_health_bar_fill.classList.add('bar_with_border_fill');
+        enemy_health_bar_fill.style.backgroundColor = 'green';
+        // Fill calculated below
+
+        // Get random enemy max health value
+        encounter.max_health = randomize(encounter.hp_min, encounter.hp_max, 1);
+        encounter.cur_health = encounter.max_health;
+
+        create_el('enemy_current_health_text', 'span', 'enemy_health_container');
+        enemy_current_health_text.classList.add('bar_with_border_text');
+        enemy_current_health_text.innerHTML = 'Enemy Health: <span id="e_enemy_health">' + encounter.cur_health + '</span>&nbsp;/&nbsp;';
+        // Inserts e_enemy_health
+    
+        create_el('enemy_maximum_health', 'span', 'enemy_current_health_text');
+        enemy_maximum_health.innerHTML = encounter.max_health;
+    
+        create_el('enemy_current_health_percent', 'span', 'enemy_health_container');
+        enemy_current_health_percent.classList.add('bar_with_border_percent');
+        let d_enemy_health_percent = (encounter.cur_health / encounter.max_health) * 100;
+        d_enemy_health_percent = Math.round(d_enemy_health_percent * 10) / 10;
+        enemy_current_health_percent.innerHTML = d_enemy_health_percent + '%';
+    
+        // Display bar width fill
+        enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
+
+        // Insert combat log
+        create_el('combat_log_title', 'div', 'all_battle_ui_elements');
+        combat_log_title.innerHTML = '';
+        create_el('combat_log', 'div', 'all_battle_ui_elements');
+        combat_log.classList.add('normal');
+
+
+    }
+
+
+// need option to go back to select diffetent location
+
+    gf.toggleElement('h', 'new_battle_button');
+    gf.toggleElement('s', 'attack_box_button');
+
+    let e_attack_box_button = document.getElementById('attack_box_button');
+    if (e_attack_box_button) {
+        e_attack_box_button.addEventListener('click', () => {
+            gf.toggleElement('s', 'change_location_button');
+            attack_box_button(e_attack_box_button, random_enemy, encounter);
+            trackingData[0].level_selected = false;
+        });
+    } else if (!trackingData[0].level_selected) {
+        e_attack_box_button = document.createElement('button');
+        let e_location_container = document.getElementById('location_container');
+        e_location_container.appendChild(e_attack_box_button);
+        e_attack_box_button.innerHTML = '<b><font style="font-size: 24px;"> ATTACK </font></b>';
+        e_attack_box_button.classList.add('location_box_style');
+        e_attack_box_button.classList.add('center');
+        trackingData[0].level_selected = true;
+// function needed
+        e_attack_box_button.addEventListener('click', () => {
+            gf.toggleElement('s', 'change_location_button');
+            attack_box_button(e_attack_box_button, random_enemy, encounter);
+        });
+    }
+////
+    let e_change_location = document.getElementById('change_location_button');
+    e_change_location.addEventListener('click', () => {
+        gf.toggleElement('h', 'change_location_button');
+        // Reset battle ui elements
+        let e_all_battle_ui_elements = document.getElementById('all_battle_ui_elements');
+        if (e_all_battle_ui_elements) {
+            e_all_battle_ui_elements.innerHTML = '';
+        }
+        // Reset locations
+        trackingData[0].loc = 0;
+        trackingData[0].lvl = 0;
+        trackingData[0].level_selected = false;
+        update_locations();
+
+        // Clear ememy
+        //
+        //gf.toggleElement('s', 'attack_box_button');
+
+    });
+
+    //let 
+    //new_battle_container
+
+
+
+
     /*gf.toggleElement('sf', 'verses_box');
     gf.toggleElement('sf', 'health_bars');
 
@@ -1097,153 +1438,70 @@ playerStats.cur_resource = 88;
     enemy_battle_name.innerHTML = enemy.char_name;*/
 }
 
-// Test
-// Quick DOM modifications
-function gel(id, css = null, inner = null, ...styles) {
-    try {
-        const element = document.getElementById(id);
-        
-        // If element is not found, throw an error
-        if (!element) {
-            throw new Error(`Element with ID '${id}' not found`);
-        }
+export function attack_box_button(elementId, enemy, encounter) {
 
-        // Apply CSS class if provided
-        if (css) {
-            element.classList.add(css);
+    let newBattleButton = document.getElementById('new_battle_button');
+    if (newBattleButton) {
+        newBattleButton.parentNode.removeChild(newBattleButton);
+    }
+    
+    let e_player_to_enemy_btn = document.getElementById('player_to_enemy_btn');
+    if (e_player_to_enemy_btn) {
+        e_player_to_enemy_btn.innerHTML = '[ READY TO USE ATTACK ]';
+    }
+
+    //// Disable locations, only show current loc image until battle completes
+    let locations = document.getElementById('locations');
+    let levels = document.getElementById('levels');
+    locations.innerHTML = '';
+    levels.innerHTML = '';
+    let d_curr_loc = locationsData.find(l => l.loc === trackingData[0].loc && l.lvl === 1);
+
+    // Place image in location area
+    let battle_location_image = document.getElementById('battle_location_image');
+    let loc_img = document.createElement('img');
+    battle_location_image.appendChild(loc_img);
+    loc_img.style.width = '150px';
+    loc_img.style.height = 'auto';
+    loc_img.src = d_curr_loc.img;
+
+    let e_locations_status = document.getElementById('locations_status');
+    if (enemy) {
+        if (elementId.parentNode) {
+            elementId.parentNode.removeChild(elementId);
         }
-        
-        // Apply innerHTML if provided
-        if (inner) {
-            element.innerHTML = inner;
-        }
-        
-        // Apply styles if any are provided
-        styles.forEach(style => {
-            let [property, value] = style.split(':').map(s => s.trim()); // Split and trim the style string
-            if (property && value) {
-                element.style[property] = value;
+        e_locations_status.innerHTML = `You are attacking <b>${enemy.lbl}</b> in <b>${trackingData[0].location}</b> Level <b>${trackingData[0].lvl}</b>`;
+        let e_player_turn_attack = document.getElementById('player_turn_attack');
+        e_player_turn_attack.classList.add('location_box_style');
+        e_player_turn_attack.style.textAlign = 'center';
+        e_player_turn_attack.style.display = 'block';
+        e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> USE ATTACK </font></b>';
+        // Combat flag
+        encounter.in_combat = false;
+        e_player_turn_attack.addEventListener('click', () => {
+            //// Start combat
+            if (!encounter.in_combat) {
+                console.log('Combat started...');
+                encounter.in_combat = true;
+                toggle_combat_status();
+                let e_player_to_enemy_btn = document.getElementById('player_to_enemy_btn');
+                e_player_to_enemy_btn.innerHTML = '[ ATTACKING ]';
+                // Hide change_location_button 
+                let change_location_button = document.getElementById('change_location_button');
+                if (change_location_button) { change_location_button.parentNode.removeChild(change_location_button); }
+            } else {
+                // In combat clicks (e_player_turn_attack)
+                player_attack(enemy, encounter);
+                
             }
         });
-
-        return element;
-    } catch (error) {
-        // Log the error, ID, and stack trace for easy tracking
-        console.error(`Error in manipulating element with ID '${id}':`, error.message);
-        console.error(`Error occurred at:`, error.stack);
-    }
-}
-
-// Example usage:
-// let e_my_element = gel('my_element', 'css_class', 'Text', 'display: block', 'padding: 5px');
-// e_my_element.innerHTML = 'Change to this text';
-/* WIP: let mods = [
-{ id: 'my_element',
-{ css: 'css_class',
-{ inner: 'Text',
-{ styles: 'display: block',
-{ styles: 'padding: 5px'
-];*/
-
-export function update_health() {
-    
-    // Data needed
-    let playerStats = characterData.find(d => d.id === 'player_stats');
-    // Elements to update
-    let e_char_health = document.getElementById('e_char_health');
-    let e_player_health_bar_fill = document.getElementById('player_health_bar_fill');
-    let e_player_current_health_percent = document.getElementById('player_current_health_percent');
-    // If death occurs
-    let e_player_current_health_text = document.getElementById('player_current_health_text');
-    let e_player_maximum_health = document.getElementById('player_maximum_health');
-
-// Test
-playerStats.cur_health = 180;
-
-    // Update elements
-    e_char_health.innerHTML = playerStats.cur_health;
-    e_player_health_bar_fill.style.width = Math.round(((playerStats.cur_health / playerStats.max_health) * 100)) + '%';
-    let d_player_current_health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
-    d_player_current_health_percent = Math.round(d_player_current_health_percent * 10) / 10;
-    e_player_current_health_percent.innerHTML = d_player_current_health_percent + '%';
-    
-    // Player death
-    if (playerStats.cur_health <= 0) {
-        playerStats.cur_health = 0;
-        e_player_health_bar_fill.style.width = '0%';
-        e_player_current_health_percent.innerHTML = '';
-        e_player_current_health_text.innerHTML = '[ PLAYER HAS DIED ]';
-        e_player_maximum_health.innerHTML = '';
-    }
-}
-
-export function toggle_combat_status() {
-
-    let playerCombat = characterData.find(c => c.id === 'player_combat_status');
-    // playerCombat.in_combat = true/false
-    
-    let spacer_player_combat_status = document.getElementById('spacer_player_combat_status');
-    let player_combat_status = document.getElementById('player_combat_status');
-    let player_battle_status_bars = document.getElementById('player_battle_status_bars');
-
-    // Toggle combat off
-    if (playerCombat.in_combat === true) {
-        spacer_player_combat_status.style.height = '17px';
-        player_combat_status.style.display = 'none';
-        player_battle_status_bars.style.border = 'solid 5px #333';
-        playerCombat.in_combat = false;
-        return;
     }
 
-    // Toggle combat on
-    if (playerCombat.in_combat === false) {
-        spacer_player_combat_status.style.height = '5px';
-        player_combat_status.style.display = 'block';
-        player_battle_status_bars.style.border = 'solid 5px red';
-        playerCombat.in_combat = true;
-        return;
-    }
-}
 
-export function update_xp() {
-    
-    // Data needed
-    let d_player_character = saveData[1].savedCharacterData[0];
-    // Update xp progress
-    let e_char_exp = document.getElementById('e_char_exp');
-    let e_experience_bar_fill = document.getElementById('experience_bar_fill');
-    let e_experience_percent = document.getElementById('experience_percent');
-    let e_player_level = document.getElementById('player_level');
-    let e_experience_to_level = document.getElementById('experience_to_level');
-    let fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
-    // Experience values
-    let d_exp_filter = characterData.filter(c => c.type === 'exp');
-    let d_exp = d_exp_filter[0];
-    e_char_exp.innerHTML = d_player_character.char_exp;
 
-    // Calculate fill
-    fill_amt = Math.round(fill_amt * 10) / 10 + '%';
-    e_experience_bar_fill.style.width = fill_amt;
-    e_experience_percent.innerHTML = fill_amt;
-    if (d_player_character.char_exp >= d_player_character.char_exp_to_level) {
-        d_player_character.char_level += 1;
-        e_player_level.innerHTML = 'Level: ' + d_player_character.char_level;
-        let char_exp_level = d_exp.experienceValues.find(l => l.level === d_player_character.char_level);
-        let NEW_xp = char_exp_level.exp_to_level;
-        let leftover_xp = d_player_character.char_exp - d_player_character.char_exp_to_level;
-        d_player_character.char_exp = leftover_xp;
-        d_player_character.char_exp_to_level = NEW_xp;
-        fill_amt = (d_player_character.char_exp / d_player_character.char_exp_to_level) * 100;
-        fill_amt = Math.round(fill_amt * 10) / 10 + '%';
-        e_char_exp.innerHTML = d_player_character.char_exp;
-        e_experience_bar_fill.style.width = fill_amt;
-        e_experience_percent.innerHTML = fill_amt;
-        e_experience_to_level.innerHTML = d_player_character.char_exp_to_level;
-    }
-}
-
-export function attack_box_button(elementId) {
-
+////
+// revamping....
+/*
     let d_enemy_health_cnt = elementsData.find(char => char.id === 'enemy_health_cnt');
     // player character
     let character = characterData.find(char => char.id === 'my_character');
@@ -1330,7 +1588,7 @@ export function attack_box_button(elementId) {
                 let e_verses_box = document.getElementById('verses_box');
 
                 gf.toggleElement('h', 'health_bars');
-                gf.toggleElement('s', 'start_battle_button');
+                gf.toggleElement('s', 'new_battle_button');
                 gf.toggleElement('s', 'enemy_levels');
                 enemy.dead = false;
                 enemy.enemy_health = enemy.enemy_health_total;
@@ -1345,7 +1603,169 @@ export function attack_box_button(elementId) {
                 d_combat_div.capped = true;
             }
         }
-    }
+    }*/
+}
+
+//// ATTACKING WIP
+export function player_attack(enemy, encounter) {
+    
+    //console.log('CLICK: player_attack(enemy)');
+
+    let playerStats = characterData.find(d => d.id === 'player_stats');
+    //playerStats.cur_health = 180;
+    //playerStats.cur_resource = 88;
+    let enemyStats = [];
+    
+    //console.log(playerStats);
+    //console.log(enemy);
+    //console.log(encounter);
+
+// PLAYER TURN
+
+    // While enemy is alive
+    if (!enemy.dead && encounter.cur_health > 0) {
+
+// STAT: Hit chance
+        
+        // Generate a random number to determine if the attack misses (10% chance)
+        let randomMissChance = Math.random();
+        let player_miss_chance = 1 - (playerStats.total_hit_chance / 100);
+        let turn_player_damage = 0;
+        let turn_player_critical = false;
+
+// STAT: turn_player_damage
+        if (randomMissChance < player_miss_chance) {
+        // Attack missed
+            console.log('Attack missed...');
+            turn_player_damage = 0;
+        } else {
+        // Attack hit
+            turn_player_damage = randomize(playerStats.pwr_weapon_min, playerStats.pwr_weapon_max, 0.1);
+
+// STAT: critical strike
+            let player_attack_no_crit = 1 - (playerStats.total_crit_chance / 100);
+            let randomCritChance = Math.random();
+            if (randomCritChance < player_attack_no_crit) {
+                turn_player_critical = false;
+            } else {
+            // Critical hit
+                turn_player_critical = true;
+                turn_player_damage *= 2;
+            }
+            
+// Deduct enemy health
+encounter.cur_health -= turn_player_damage;
+update_health();
+
+    
+            let display_critical = turn_player_critical ? ' (Critical)' : ' (Regular)';
+            console.log('Damage caused: ' + turn_player_damage + display_critical);
+            
+// ENEMY TURN
+
+
+
+
+
+
+
+
+
+
+// COMBAT LOG
+
+        // Show combat log
+        let e_combat_log_title = document.getElementById('combat_log_title');
+        e_combat_log_title.innerHTML = '<p style="font-size: 24px; color: white;">COMBAT LOG</p>';
+
+        // Append combat log entries
+        encounter.log_cnt++;
+        
+        let e_combat_log = document.getElementById('combat_log');
+        let new_div = document.createElement('div');
+        e_combat_log.insertBefore(new_div, combat_log.firstChild);
+        new_div.id = 'combat_log_div_' + encounter.log_cnt;
+        new_div.innerHTML += 'TURN #' + encounter.log_cnt;
+
+        if (turn_player_damage === 0) {
+            new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;Your attack against ' + enemy.lbl + ' missed!</span></p>';
+        } else {
+            new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;You dealt ' + turn_player_damage + ' physical damage to ' + enemy.lbl + '.</span></p>';
+        }
+
+
+
+/*
+
+
+            let enemy_health_cnt = document.getElementById('enemy_health_cnt');
+            enemy_health_cnt.innerHTML = Math.round(enemy.enemy_health * 10) / 10;
+            // enemy death
+            if (enemy.enemy_health <= 0 && !enemy.dead) {
+                enemy.enemy_health = 0;
+                enemy.dead = true;
+                // add to enemy defeated_count
+                current_level.defeated_count += 1;
+            } else {
+                new_div.innerHTML += '<p><span class="material-symbols-outlined">heart_minus</span><span style="color:#FF9393;">&nbsp;' + enemy.char_name + '&nbsp;physical attack inflicts 10 damage to you.</span></p>';
+            }
+            if (enemy.dead) {
+                new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated ' + enemy.char_name + '.</span></p>';
+                // get loot from battle
+                update_inventory();
+
+                //d_inventory.current_loot.push({ id: lootItem.name, cnt: quantity });
+                let d_inventory = inventoryElements.find(inv => inv.id === 'inventory');
+
+                if (d_inventory && d_inventory.current_loot) {
+                    // Iterate over each item in current_loot
+                    d_inventory.current_loot.forEach(item => {
+                        // Append each item as a new <p> element
+                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${item.id} x${item.cnt}</span></p>`;
+                    });
+                }
+
+                // reset div count
+                d_combat_div.cnt = 0;
+                d_inventory.current_loot = [];
+
+                // setup new battle
+                gf.toggleElement('h', 'attack_box_button');
+                gf.toggleElement('h', 'verses_box');
+                let e_verses_box = document.getElementById('verses_box');
+
+                gf.toggleElement('h', 'health_bars');
+                gf.toggleElement('s', 'new_battle_button');
+                gf.toggleElement('s', 'enemy_levels');
+                enemy.dead = false;
+                enemy.enemy_health = enemy.enemy_health_total;
+                d_enemy_health_total.cnt = enemy.enemy_health;
+                healthPercentage = (enemy.enemy_health / enemy.enemy_health_total) * 100;
+                enemy_health_fill.style.width = healthPercentage + '%';
+                enemy_health_cnt.innerHTML = enemy.enemy_health;
+                enemy_health_total.innerHTML = enemy.enemy_health_total;
+            }
+
+            if (d_combat_div.cnt >= d_combat_div.cap) {
+                d_combat_div.capped = true;
+            }
+        }
+*/
+
+
+
+
+
+
+
+
+
+
+            
+        }
+    
+    } // if (!enemy.dead && encounter.cur_health > 0) {
+
 }
 
 let selectedSlot = null;
@@ -2096,3 +2516,25 @@ export function handle_gold() {
     gold_span_lbl.innerHTML = '<b>GOLD:</b>&nbsp;' + d_gold.cnt;
 
 }
+
+export function choose_enemy(enemyList) {
+    
+    let enemyListEnemy = enemyList.filter(e => e.cat === 'enemy');
+    if (enemyListEnemy && enemyListEnemy.length > 0) {
+        let randomIndex = Math.floor(Math.random() * enemyListEnemy.length);
+        let random_enemy = enemyListEnemy[randomIndex];
+        
+        return random_enemy;
+    }
+}
+
+function randomize(min, max, step) {
+    // Calculate the range in terms of the step size
+    let range = (max - min) / step;
+
+    // Get a random integer based on the range
+    let randomStep = Math.floor(Math.random() * (range + 1));
+
+    // Scale the random step back to the original range
+    return min + randomStep * step;
+        }

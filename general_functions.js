@@ -3,10 +3,6 @@
 // variables needed
 import { elementsData } from './data.js';
 
-// functions needed
-// for add_allElements (battle buttons)
-import { start_battle_button, attack_box_button } from './functions.js';
-
 // Override console.log for exporting into a file
 export function logExport() {
     var logs = [];
@@ -372,8 +368,6 @@ export function toggleElement(method, elementId) {
         } else {
             console.error('Invalid method specified: "' + method + ', ' + elementId + '"');
         }
-    } else {
-        console.error('toggleElement(), element "' + elementId + '" not found. ');
     }
 }
 
@@ -422,31 +416,7 @@ export function add_allElements() {
             if (element.hidden) {
                 element_id.style.display = 'none';
             }
-
-            // add click event
-            if (element.on_click) {
-                let element_click_DOM = document.getElementById(element.id);
-                if (element_click_DOM) {
-                    element_click_DOM.addEventListener('click', function() {
-                        if (element.id === 'start_battle_button') {
-                            start_battle_button(element.id);
-                        }
-                        if (element.id === 'attack_box_button') {
-                            attack_box_button(element.id);
-                        }
-                    });
-                } else {
-                    console.error('element_click_DOM NULL for: ' + element.id);
-                }
-            }
-            //
         }
-        // battle elements
-        //
-
-
-
-
 /*
         // tables
         if (element.table_cat === true) {
@@ -502,4 +472,3 @@ export function add_allElements() {
         }*/
     });
 }
-

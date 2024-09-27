@@ -4,7 +4,6 @@ https://twaddler01.github.io/rpg_similitude/
 # Issues
 - May be issues loading code from URL. For best results, download .zip and use localhost server. (For Android, I use Simple HTTP server):
 https://play.google.com/store/apps/details?id=com.phlox.simpleserver
-- Added proper image files, but occasionally may receive a Github error. Pull request will be made next update to see if it resolves and to clean up unnecessary code/files.
 
 # Updates
 
@@ -13,7 +12,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Basic attacks, hit, and crit are functional for player, but no enemy actions yet. Need to integrate loot as well.
 - Will sort combat functions and shorten functions.js likely next update.
 - Possible correction needed for how player selects locations and chooses battles for simplicity.
-- Working on using WebApp integration with Android Studio to eventually get code into an APK for mobile use.
+- Working on using WebView integration with Android Studio to eventually get code into an APK for mobile use.
 
 09-24-2024
 - Updated with some visual enhancements and working on getting first battle created.

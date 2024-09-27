@@ -94,19 +94,19 @@ export function init_elementsData() {
                 css_class: 'location_box_style',
                 },
             // attach (battle_section_container)
-            { id: 'start_battle_container',
+            { id: 'new_battle_container',
             section_cat: true,
             fetch_cat: true,
             type: 'div',
             parent_el: 'battle_section_container',
             },
-                // attach (start_battle_container)
-                { id: 'start_battle_button',
+                // attach (new_battle_container)
+                { id: 'new_battle_button',
                 section_cat: true,
                 fetch_cat: true,
                 type: 'div',
-                parent_el: 'start_battle_container',
-                content: '<b><font style="font-size: 24px;">[ START BATTLE ]</font></b>',
+                parent_el: 'new_battle_container',
+                content: '<b><font style="font-size: 24px;">[ NEW BATTLE ]</font></b>',
                 css_class: 'location_box_style',
                 css_class2: 'center',
                 hidden: 'true',
@@ -116,17 +116,27 @@ export function init_elementsData() {
                 section_cat: true,
                 fetch_cat: true,
                 type: 'div',
-                parent_el: 'start_battle_container',
+                parent_el: 'new_battle_container',
                 css_class: 'normal',
                 },
-                
             // attach (battle_section_container)
-            { id: 'attack_box_button', // replaced by start_battle_button below
+            { id: 'change_location_button', // replaced by new_battle_button below
             section_cat: true,
             fetch_cat: true,
-            type: 'div',
+            type: 'button',
             parent_el: 'battle_section_container',
-            content: '<b><font style="font-size: 24px;">[ ATTACK ]</font></b>',
+            content: '<b><font style="font-size: 24px;"> CHANGE LOCATION </font></b>',
+            css_class: 'location_box_style',
+            css_class2: 'center',
+            hidden: true,
+            },
+            // attach (battle_section_container)
+            { id: 'attack_box_button', // replaced by new_battle_button below
+            section_cat: true,
+            fetch_cat: true,
+            type: 'button',
+            parent_el: 'battle_section_container',
+            content: '<b><font style="font-size: 24px;"> ATTACK </font></b>',
             css_class: 'location_box_style',
             css_class2: 'center',
             hidden: true,
@@ -139,17 +149,6 @@ export function init_elementsData() {
             type: 'div',
             parent_el: 'battle_section_container',
             },
-            // attach (battle_section_container)
-            { id: 'combat_log',
-            section_cat: true,
-            fetch_cat: true,
-            type: 'div',
-            parent_el: 'battle_section_container',
-            content: '<p style="font-size: 24px;">COMBAT LOG</p>',
-            css_class: 'normal',
-            hidden: true,
-            },
-
         // section
         { id: 'inventory_section',
         section_cat: true,
@@ -726,16 +725,16 @@ export function init_characterData() {
     return characterData;
 }
 
-export function init_EncounterData() {
+export function init_encounterData() {
     
-    const EncounterData = [
-        
-        { id: 'beginner_0', loc: 0, lvl: 1,
-            // EncounterData[1]
+    const encounterData = [
+
+        { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0,
+            // encounterData[0]
             enemy_list: [
-                { cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: { 'SLIME_BALL': 0.8, 'SLIME_CHUNK': 0.2 } },
-                { cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: { 'SMALL_SCALE': 0.8, 'LIZARD_CLAW': 0.6, 'LIZARD_TAIL': 0.5 } },
-                { cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: { 'BONE_FRAGMENT': 0.8, 'GOLD': 0.8, 'SMALL_SKULL': 0.2, 'CLOTH_BASIC': 0.2 } },
+                { en: 'beginner_0', cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: { 'SLIME_BALL': 0.8, 'SLIME_CHUNK': 0.2 } },
+                { en: 'beginner_0', cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: { 'SMALL_SCALE': 0.8, 'LIZARD_CLAW': 0.6, 'LIZARD_TAIL': 0.5 } },
+                { en: 'beginner_0', cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: { 'BONE_FRAGMENT': 0.8, 'GOLD': 0.8, 'SMALL_SKULL': 0.2, 'CLOTH_BASIC': 0.2 } },
                 // any enemy can drop
                 { cat: 'global', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1, 'BETTER_BOOTS': 0.08 } },
             ] }, 
@@ -744,7 +743,7 @@ export function init_EncounterData() {
 
     ];
 
-    return EncounterData;
+    return encounterData;
 }
 
 export function init_saveData() {
@@ -779,7 +778,7 @@ export function init_saveData() {
         char_level: 1,
         char_exp: 0, 
         // Others: see playerStats = characterData.find(d => d.id === 'player_stats')
-        // char_exp_to_level -> see start_battle_button()
+        // char_exp_to_level -> see new_battle_button()
         },
         ] },
     // saveData[2]
@@ -882,5 +881,6 @@ export const itemData = init_itemData();
 //export const locationData = init_locationData();
 export const locationsData = init_locationsData();
 export const characterData = init_characterData();
+export const encounterData = init_encounterData();
 export const saveData = init_saveData();
 export const trackingData = init_trackingData();

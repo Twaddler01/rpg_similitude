@@ -8,6 +8,13 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+09-27-2024
+- Combat is being worked on statically with a starting zone and will eventually be dynamic.
+- Basic attacks, hit, and crit are functional for player, but no enemy actions yet. Need to integrate loot as well.
+- Will sort combat functions and shorten functions.js likely next update.
+- Possible correction needed for how player selects locations and chooses battles for simplicity.
+- Working on using WebApp integration with Android Studio to eventually get code into an APK for mobile use.
+
 09-24-2024
 - Updated with some visual enhancements and working on getting first battle created.
 - Ensured saveData array is ready for saving/loading. Will likely use an encrypted array so game data can be saved to a file or copy/pasted.

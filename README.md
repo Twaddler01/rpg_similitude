@@ -9,7 +9,8 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 10-12-2024
 - Updated sections with option to hide or show each on toggle.
-- Battles are more complete, with option to continue fighting or choose a different location. Still only testing Starting Location but working on random and more dynamic options to integrate for other locations. 
+- Battles are more complete, with option to continue fighting or choose a different location. Still only testing Starting Location but working on random and more dynamic options to integrate for other locations.
+- Combat log and loot are now integrated in battles.
 - Player death has a REVIVE option (10 second wait). No penalty yet.
 
 09-27-2024

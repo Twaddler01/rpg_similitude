@@ -91,7 +91,7 @@ export function first_run() {
         let d_gold = saveData[4].currencyData[0];
         d_gold.cnt += 1;
         gold_span_lbl.innerHTML = '<b>GOLD:</b>&nbsp;' + d_gold.cnt;
-        handle_gold();
+        update_gold();
     });
 
 // Add expwrience x200
@@ -113,17 +113,55 @@ export function first_run() {
     toggle_combat.addEventListener('click', () => {
         toggle_combat_status();
     });
+    
+// Add loot test
+    let e_add_loot = document.createElement('button');
+    test_section.appendChild(e_add_loot);
+    e_add_loot.innerHTML = 'add_loot()';
+
+    // To track each loot cycle
+    let counter = 0;
+    e_add_loot.addEventListener('click', () => {
+        let encounter = encounterData.find(e => e.id === 'beginner_0');
+        let enemy = encounter.enemy_list;
+        //console.log(counter + ': ');
+        let loot_min = 2;
+        // testing
+        let gold_min = 1;
+        let gold_max = 2;
+        add_loot(enemy[1], loot_min, gold_min, gold_max);
+        counter++;
+    });
+
+/*trackingData[0].loc = 0;
+trackingData[0].lvl = 1;
+let enemy_list = encounterData.find(e => e.loc === trackingData[0].loc && e.lvl === trackingData[0].lvl);
+let enemy = enemy_list.enemy_list;
+console.log(enemy);*/
+
 }
 
 export function update_locations() {
 
     // Main containers
     const location_container = document.getElementById('location_container');
+    let e_battle_section = document.getElementById('battle_section');
 
     // Clear any existing elements
     // Add title
     if (location_container) {
         location_container.innerHTML = '<b>CHOOSE BATTLE LOCATION:<p></p></b>';
+    }
+
+    if (!trackingData[0].t_battle_section) {
+        // Event listener
+        location_container.style.display = 'none';
+        if (!e_battle_section.listenerAdded) {
+            e_battle_section.addEventListener('click', () => {
+                toggle_section('battle');
+                e_battle_section.listenerAdded = true;
+            });
+        }
     }
 
     // Update array data
@@ -169,7 +207,8 @@ export function update_locations() {
     locations_status.id = 'locations_status';
 
     // Attack (turn by turn) used once in combat
-    create_el('player_turn_attack', 'button', location_container);
+    create_el('player_turn_attack_container', 'div', location_container);
+    create_el('player_turn_attack', 'button', 'player_turn_attack_container');
     player_turn_attack.style.display = 'none';
 
     const message = document.createElement('div');
@@ -298,6 +337,7 @@ export function selectLocation(location) {
 }
 
 export function selectLevel(loc, location, lvl, kills) {
+    
     const locations_status = document.getElementById('locations_status');
     const message = document.getElementById('message');
 
@@ -310,10 +350,6 @@ export function selectLevel(loc, location, lvl, kills) {
     trackingData[0].location = location;
     trackingData[0].lvl = lvl;
     trackingData[0].kills = kills;
-
-//// WIP Getting rid of new_battle_button here 
-// to run a new_battle() function automatically,
-// then run attack button here
 
     start_battle();
 }
@@ -381,7 +417,16 @@ export function reset_game(elid) {
 
 export function update_character() {
 
-    // Clear character_container elements
+    // Flag to avoid double toggle_section() function calls
+    if (!trackingData[0].t_character_section) {
+        let e_character_section = document.getElementById('character_section');
+            e_character_section.addEventListener('click', () => {
+                toggle_section('character');
+            });
+    } else {
+    // trackingData[0].t_character_section = true
+
+    // Reset character_container elements
     let character_container = document.getElementById('character_container');
     character_container.innerHTML = '';
 
@@ -519,14 +564,7 @@ create_el('char_equipment_container', 'div', char_equipment);
 
         let equippedItems = saveData[3].equippedData;
 
-        // add to array only once
-        if (!trackingData[0].update_equip_array) {
-            equippedItems.forEach(equip_slot => {
-                equip_slot.slot = equip_slot.id;
-            });
-            trackingData[0].update_equip_array = true;
-        }
-        
+        // Update from character equipment array
         equippedItems.forEach(slot_data => {
             const d_itemData = itemData.find(i => i.id === slot_data.equipped);
             if (d_itemData) {
@@ -537,8 +575,6 @@ create_el('char_equipment_container', 'div', char_equipment);
                 slot_data.id = empty_slot;
                 equipmentElements.e_slot_container = slot_data.id;
             }
-            //console.log('renamed array ids [MORE]:');
-            //console.log(slot_data);
 
             let slot_container = document.getElementById(equipmentElements.e_slot_container);
             if (slot_container) {
@@ -573,18 +609,35 @@ create_el('char_equipment_container', 'div', char_equipment);
             }
         });
 
-        // Reset stats
-        let stat_data_reset = characterData.filter(d => d.type === 'stat');
-
-        stat_data_reset.forEach(reset => {
-            reset.amt = reset.base;
-        });
-
         // Add stats for equipmemt from equipped items
         update_equipment();
+        update_character_stats(false);
+    }
+} // END trackingData[0].t_character_section = true
 
-        create_el('stats_info', 'div', character_container);
-        stats_info.innerHTML += '<p><b>STATS:</b></p>';
+}
+
+export function update_character_stats(updateElements) {
+
+    if (updateElements) {
+        let e_character_stats_section = document.getElementById('character_stats_section');
+        let e_character_stats_container = document.getElementById('character_stats_container');
+    
+        // Hide character_container elements since calculations are still needed
+        if (!trackingData[0].t_character_stats_section) {
+            e_character_stats_container.style.display = 'none';
+            e_character_stats_section.addEventListener('click', () => {
+                toggle_section('stats');
+            });
+        }
+        
+        let e_stats_info = document.getElementById('stats_info');
+        if (e_stats_info) {
+            e_stats_info.innerHTML = '';
+        }
+    
+        create_el('stats_info', 'div', e_character_stats_container);
+        stats_info.innerHTML += '<p><b>CURRENT STATS:</b></p>';
 
         // Character stat information
         // Calculates ALL stat effects
@@ -797,14 +850,179 @@ create_el('char_equipment_container', 'div', char_equipment);
         });
 
         // Stat descriptions
-        create_el('stats_desc_lbl', 'div', character_container);
+        create_el('stats_desc_lbl', 'div', character_stats_container);
         stats_desc_lbl.innerHTML = '<br><b>STAT DEFINITIONS:</b<br>';
-        create_el('stats_desc', 'div', character_container);
+        create_el('stats_desc', 'div', character_stats_container);
         stats_desc.innerHTML = '<p>';
         let stat_data_desc = characterData.filter(d => d.type === 'desc');
         stat_data_desc.forEach(stat => {
             let line_item = '<b>' + stat.label + ':</b> ' + stat.def + '<br>';
             stats_desc.innerHTML += line_item;
+        });
+
+    // Update only stats
+    } else {
+        const stat_data = characterData.filter(d => d.type === 'stat');
+        stat_data.forEach(stat => {
+
+            // Cwrtain base stats (lvl_mod: true) are increased by player level
+            let base_level_stat = 0;
+            let equip_stat_amt = 0;
+            let d_player_character = saveData[1].savedCharacterData[0];
+            let player_level = d_player_character.char_level;
+            
+            // Main array to store calculations
+            let playerStats = characterData.find(d => d.id === 'player_stats');
+
+            if (stat.lvl_mod) {
+                // Adjust to equipment amount 
+                equip_stat_amt = stat.amt - (stat.id === 'armor' ? 100 : 10);
+                // Based on player 
+                base_level_stat = stat.lvl_amt;
+                base_level_stat *= d_player_character.char_level;
+            }
+            
+            let equipped_items = saveData[3].equippedData;
+            let current_weapon = equipped_items.find(i => i.id === 'mh');
+
+            switch (stat.id) {
+                case 'armor': 
+                    let total_armor = base_level_stat + equip_stat_amt;
+                    let total_armor_effect = total_armor * 0.1;
+                    playerStats.total_armor = total_armor;
+                    playerStats.total_armor_effect = total_armor_effect;
+                    stat.amt = total_armor;
+                    break;
+                case 'strength':
+                    let total_strength = base_level_stat + equip_stat_amt;
+                    let total_strength_effect_dmg = total_strength * 0.1;
+                    let total_strength_effect_res = (base_level_stat*0.1) + equip_stat_amt;
+                    playerStats.total_strength = total_strength;
+                    playerStats.total_strength_effect_dmg = total_strength_effect_dmg;
+                    playerStats.total_strength_effect_res = total_strength_effect_res;
+                    stat.amt = total_strength;
+                    // Assign max resource to array
+                    // Default: 100 (for melee classes)
+                    let default_max_resource = 100;
+                    playerStats.max_resource = default_max_resource + total_strength_effect_res;
+                    playerStats.cur_resource = default_max_resource + total_strength_effect_res;
+                    break;
+                case 'intelligence':
+                    let total_intelligence = base_level_stat + equip_stat_amt;
+                    let total_intelligence_effect_dmg = total_intelligence * 0.1;
+                    let total_intelligence_effect_res = (base_level_stat + equip_stat_amt) * 10;
+                    // Assign to array
+                    playerStats.total_intelligence = total_intelligence;
+                    playerStats.total_intelligence_effect_dmg = total_intelligence_effect_dmg;
+                    playerStats.total_intelligence_effect_res = total_intelligence_effect_res;
+                    stat.amt = total_intelligence;
+                    break;
+                case 'dexterity':
+                    let default_hit = 90;
+                    let total_dexterity = base_level_stat + equip_stat_amt;
+                    let total_dexterity_effect = default_hit+(equip_stat_amt*0.1);
+                    // Assign to array
+                    playerStats.total_dexterity_effect = total_dexterity_effect;
+                    stat.amt = total_dexterity;
+                    break;
+                case 'constitution':
+                    let total_constitution = base_level_stat + equip_stat_amt;
+                    let total_constitution_effect = total_constitution*10;
+                    let max_health = total_constitution_effect; // Default 100 at level 1
+                    let health_difference = (equip_stat_amt*10)/(base_level_stat*10)*100;
+                    // Assign to array
+                    playerStats.max_health = max_health;
+                    playerStats.cur_health = max_health;
+                    stat.amt = total_constitution;
+                    break;
+                case 'agility':
+                    let base_crit = 5;
+                    let total_agility = base_level_stat + equip_stat_amt;
+                    let total_agility_effect = base_crit + (equip_stat_amt*0.1);
+                    // Assign to array
+                    playerStats.total_agility = total_agility;
+                    playerStats.total_agility_effect = total_agility_effect;
+                    playerStats.agility_equip = equip_stat_amt;
+                    stat.amt = total_agility;
+                    break;
+                case 'wisdom':
+                    let base_crit_wis = 5;
+                    let total_wisdom = base_level_stat + equip_stat_amt;
+                    let total_wisdom_effect = base_crit_wis + (equip_stat_amt*0.1);
+                    // Add starting amt
+                    playerStats.total_wisdom = total_wisdom;
+                    playerStats.total_wisdom_effect = total_wisdom_effect;
+                    playerStats.wisdom_equip = equip_stat_amt;
+                    stat.amt = total_wisdom;
+                    break;
+                case 'power':
+                    if (current_weapon && current_weapon.equipped) {
+                        let item_info = itemData.find(i => i.id === current_weapon.equipped);
+                        let current_weapon_item_info = item_info.gains;
+                        let current_weapon_dmg_min = current_weapon_item_info.find(w => w.stat === 'dmg_min');
+                        let current_weapon_dmg_max = current_weapon_item_info.find(w => w.stat === 'dmg_max');
+                        let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt, current_weapon_dmg_min.amt, current_weapon_dmg_max.amt);
+                        trackingData[0].current_weapon_dmg_min = current_weapon_dmg_min.amt;
+                        trackingData[0].current_weapon_dmg_max = current_weapon_dmg_max.amt;
+                        let incr_dmg_min = Math.round((((pwr_weapon_min / current_weapon_dmg_min.amt) - 1) * 100) * 10) / 10;
+                        let incr_dmg_max = Math.round((((pwr_weapon_max / current_weapon_dmg_max.amt) - 1) * 100) * 10) / 10;
+                        // Store calculations for tooltip display
+                        trackingData[0].pwr_weapon_min = pwr_weapon_min;
+                        trackingData[0].pwr_weapon_max = pwr_weapon_max;
+                        // Assign to array
+                        playerStats.pwr_weapon_min = pwr_weapon_min;
+                        playerStats.pwr_weapon_max = pwr_weapon_max;
+                    } else {
+                        trackingData[0].current_weapon_dmg_min = 1;
+                        trackingData[0].current_weapon_dmg_max = 1.2;
+                        let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt, trackingData[0].current_weapon_dmg_min, trackingData[0].current_weapon_dmg_max);
+                        trackingData[0].pwr_weapon_min = pwr_weapon_min;
+                        trackingData[0].pwr_weapon_max = pwr_weapon_max;
+                        let incr_dmg_min = Math.round((((pwr_weapon_min / trackingData[0].current_weapon_dmg_min) - 1) * 100) * 10) / 10;
+                        let incr_dmg_max = Math.round((((pwr_weapon_max / trackingData[0].current_weapon_dmg_max) - 1) * 100) * 10) / 10;
+                    }
+                    break;
+                case 'attackMinimum':
+                    if (current_weapon && current_weapon.equipped) {
+                        let differ_dmg_min = Math.round((trackingData[0].pwr_weapon_min - trackingData[0].current_weapon_dmg_min) * 10) / 10;
+                        stat.amt = trackingData[0].pwr_weapon_min;
+                    } else {
+                        let base_attack_min = 1;
+                        let differ_dmg_min = Math.round((trackingData[0].pwr_weapon_min - base_attack_min) * 10) / 10;
+                        stat.amt = trackingData[0].pwr_weapon_min;
+                    }
+                    break;
+                case 'attackMaximum':
+                    if (current_weapon && current_weapon.equipped) {
+                        let differ_dmg_max = Math.round((trackingData[0].pwr_weapon_max - trackingData[0].current_weapon_dmg_max) * 10) / 10;
+                        stat.amt = trackingData[0].pwr_weapon_max;
+                    } else {
+                        let base_attack_max = 1.2;
+                        let differ_dmg_max = Math.round((trackingData[0].pwr_weapon_max - base_attack_max) * 10) / 10;
+                        stat.amt = trackingData[0].pwr_weapon_max;
+                    }
+                    break;
+                case 'hitChance':
+                    // Assign to array
+                    stat.amt += playerStats.total_dexterity_effect;
+                    let stat_display = stat.amt + '%';
+                    playerStats.total_hit_chance = stat.amt;
+                    playerStats.hit_chance_display = stat_display;
+                    playerStats.hit_flat = 90;
+                    playerStats.hit_plus_1 = 87;
+                    playerStats.hit_plus_2 = 85;
+                    playerStats.hit_plus_3on = 50;
+                    break;
+                case 'criticalStrikeChance':
+                    let base_crit_strike_rating = 5;
+                    let crit_strike_rating = stat.amt;
+                    // 0 unless a +_% Meleee Citical Strike Rating stat
+                    playerStats.base_crit_strike_rating = base_crit_strike_rating;
+                    playerStats.crit_strike_rating = crit_strike_rating;
+                    playerStats.total_crit_chance = base_crit_strike_rating + crit_strike_rating;
+                    stat.amt = playerStats.base_crit_strike_rating + playerStats.crit_strike_rating + '%';
+                    break;
+            }
         });
     }
 }
@@ -865,14 +1083,17 @@ export function swap_equipment(item, action) {
         // Reload character equipment & stats
         update_character();
     }
-//// WIP
-    // Equip: Add item from inventory if empty slot
-
-    // Swap: Add new item as equipped, move old item to inventory
-
 }
 
 export function update_equipment() {
+    
+    // Reset stats
+    let stat_data_reset = characterData.filter(d => d.type === 'stat');
+
+    stat_data_reset.forEach(reset => {
+        reset.amt = reset.base;
+    });
+    
     // Match saveData with items
     let d_equippedData = saveData[3].equippedData;
     d_equippedData.forEach(item => {
@@ -967,8 +1188,21 @@ export function update_health() {
         playerStats.cur_health = 0;
         e_player_health_bar_fill.style.width = '0%';
         e_player_current_health_percent.innerHTML = '';
-        e_player_current_health_text.innerHTML = '[ PLAYER HAS DIED ]';
+        e_player_current_health_text.innerHTML = '[ DEAD ]';
         e_player_maximum_health.innerHTML = '';
+        // clear resource and experience bars
+        let e_player_resource_bar = document.getElementById('battle_ui_container3');
+        let e_experience_bar = document.getElementById('experience_container');
+        e_experience_bar.classList.remove('bar_with_border_container');
+        e_player_resource_bar.innerHTML = '';
+        e_experience_bar.innerHTML = '';
+        // remove combat
+        toggle_combat_status();
+        // reset encounter
+        let encounter = encounterData.find(e => e.loc === trackingData[0].loc && e.lvl === trackingData[0].lvl);
+        encounter.in_combat = false;
+        playerStats.dead = true;
+        return;
     }
     
 // ENEMY ////
@@ -1075,6 +1309,27 @@ export function update_xp() {
         e_experience_percent.innerHTML = fill_amt;
         e_experience_to_level.innerHTML = d_player_character.char_exp_to_level;
     }
+}
+
+function reset_battle() {
+    // Clear attack flag
+    trackingData[0].next_attack = false;
+    // Clear combat_log flag
+    trackingData[0].combat_log_created = false;
+    // Clear attack_again_btn
+    let e_attack_again_btn = document.getElementById('attack_again_btn');
+    if (e_attack_again_btn) { e_attack_again_btn.parentNode.removeChild(e_attack_again_btn); }
+    // Clear battle elements
+    let e_all_battle_ui_elements = document.getElementById('all_battle_ui_elements');
+    if (e_all_battle_ui_elements) {
+        e_all_battle_ui_elements.innerHTML = '';
+    }
+    // Reset location tracking
+    trackingData[0].loc = 0;
+    trackingData[0].lvl = 0;
+    trackingData[0].level_selected = false;
+    // Clear location elements
+    update_locations();
 }
 
 // WIP2
@@ -1292,6 +1547,7 @@ export function start_battle() {
 
     // Choose encounter & enemy
     // First encounter
+    console.log('first encounter loc/lvl? ' + trackingData[0].loc + ' / ' + trackingData[0].lvl);
     if (trackingData[0].loc === 0 && trackingData[0].lvl === 1) {
         // Encounters need to be set up with loc, lvl linked
         // 
@@ -1299,6 +1555,9 @@ export function start_battle() {
         // Choose random array index of enemyList;
         let enemyList = encounter.enemy_list;
         random_enemy = choose_enemy(enemyList);
+        // Mark enemy alive
+        random_enemy.dead = false;
+        trackingData[0].current_enemy = random_enemy.id;
     } else {
         // All other encounters
         let enemy_loc = trackingData[0].loc;
@@ -1308,9 +1567,16 @@ export function start_battle() {
         // Choose random array index of enemyList;
         let enemyList = encounter.enemy_list;
         random_enemy = choose_enemy(enemyList);
+        // Mark enemy alive
+        random_enemy.dead = false;
+        trackingData[0].current_enemy = random_enemy.id;
         //// WIP more array data needed
     }
-
+    
+    
+    console.log('encounter/enemy?\n');
+    console.log(encounter);
+    console.log(random_enemy);
     if (encounter && random_enemy) {
         create_el('enemy_name', 'span', 'enemy_name_level');
         enemy_name.innerHTML = random_enemy.lbl;
@@ -1354,25 +1620,18 @@ export function start_battle() {
         let d_enemy_health_percent = (encounter.cur_health / encounter.max_health) * 100;
         d_enemy_health_percent = Math.round(d_enemy_health_percent * 10) / 10;
         enemy_current_health_percent.innerHTML = d_enemy_health_percent + '%';
-    
+
         // Display bar width fill
         enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
 
         // Insert combat log
-        create_el('combat_log_title', 'div', 'all_battle_ui_elements');
-        combat_log_title.innerHTML = '';
-        create_el('combat_log', 'div', 'all_battle_ui_elements');
-        combat_log.classList.add('normal');
-
-
+        create_el('combat_log_container', 'div', 'all_battle_ui_elements');
     }
-
-
-// need option to go back to select diffetent location
 
     gf.toggleElement('h', 'new_battle_button');
     gf.toggleElement('s', 'attack_box_button');
 
+    // Fetch or create attack button
     let e_attack_box_button = document.getElementById('attack_box_button');
     if (e_attack_box_button) {
         e_attack_box_button.addEventListener('click', () => {
@@ -1388,56 +1647,53 @@ export function start_battle() {
         e_attack_box_button.classList.add('location_box_style');
         e_attack_box_button.classList.add('center');
         trackingData[0].level_selected = true;
-// function needed
         e_attack_box_button.addEventListener('click', () => {
             gf.toggleElement('s', 'change_location_button');
             attack_box_button(e_attack_box_button, random_enemy, encounter);
         });
     }
-////
+
     let e_change_location = document.getElementById('change_location_button');
     e_change_location.addEventListener('click', () => {
         gf.toggleElement('h', 'change_location_button');
         // Reset battle ui elements
-        let e_all_battle_ui_elements = document.getElementById('all_battle_ui_elements');
-        if (e_all_battle_ui_elements) {
-            e_all_battle_ui_elements.innerHTML = '';
-        }
-        // Reset locations
-        trackingData[0].loc = 0;
-        trackingData[0].lvl = 0;
-        trackingData[0].level_selected = false;
-        update_locations();
-
-        // Clear ememy
-        //
-        //gf.toggleElement('s', 'attack_box_button');
-
+        reset_battle();
     });
 
+    if (trackingData[0].next_attack) {
+        gf.toggleElement('s', 'change_location_button');
+        attack_box_button(e_attack_box_button, random_enemy, encounter);
+    }
     //let 
     //new_battle_container
 
-
-
-
-    /*gf.toggleElement('sf', 'verses_box');
-    gf.toggleElement('sf', 'health_bars');
-
-    let character = characterData.find(char => char.id === 'my_character');
-    let d_char_battle_name = document.getElementById('char_name');
-    d_char_battle_name.innerHTML = character.name;
-
-    // randomize enemy names
-    let enemy = characterData.find(char => char.id === 'enemy_group_1');
-    let enemy_battle_name = document.getElementById('enemy_name');
-    let random_race = enemy.char_race[Math.floor(Math.random() * enemy.char_race.length)];
-    let random_class = enemy.char_class[Math.floor(Math.random() * enemy.char_class.length)];
-    // store name in array
-    enemy.char_name = random_race + '&nbsp;' + random_class;
-    enemy_battle_name.innerHTML = enemy.char_name;*/
 }
 
+// Clicks for attack_box_button
+function EL_player_turn_attack(encounter, enemy) {
+    // Start combat
+    if (!encounter.in_combat) {
+        // DEBUG
+        console.log('Combat started...');
+        console.log(trackingData[0]);
+        console.log('encounter.in_combat?\n');
+        console.log(encounter.in_combat);
+        encounter.in_combat = true;
+        toggle_combat_status();
+        console.log(encounter.in_combat);
+        let e_player_to_enemy_btn = document.getElementById('player_to_enemy_btn');
+        e_player_to_enemy_btn.innerHTML = '[ ATTACKING ]';
+        // Hide change_location_button 
+        let change_location_button = document.getElementById('change_location_button');
+        if (change_location_button) { change_location_button.style.display = 'none'; }
+        player_attack(enemy, encounter);
+    } else {
+        // In combat clicks (e_player_turn_attack)
+        player_attack(enemy, encounter);
+    }
+}
+
+let ELHandler_player_turn_attack = null;
 export function attack_box_button(elementId, enemy, encounter) {
 
     let newBattleButton = document.getElementById('new_battle_button');
@@ -1450,7 +1706,7 @@ export function attack_box_button(elementId, enemy, encounter) {
         e_player_to_enemy_btn.innerHTML = '[ READY TO USE ATTACK ]';
     }
 
-    //// Disable locations, only show current loc image until battle completes
+    // Disable locations, only show current loc image until battle completes
     let locations = document.getElementById('locations');
     let levels = document.getElementById('levels');
     locations.innerHTML = '';
@@ -1467,7 +1723,7 @@ export function attack_box_button(elementId, enemy, encounter) {
 
     let e_locations_status = document.getElementById('locations_status');
     if (enemy) {
-        if (elementId.parentNode) {
+        if (elementId && elementId.parentNode) {
             elementId.parentNode.removeChild(elementId);
         }
         e_locations_status.innerHTML = `You are attacking <b>${enemy.lbl}</b> in <b>${trackingData[0].location}</b> Level <b>${trackingData[0].lvl}</b>`;
@@ -1478,143 +1734,21 @@ export function attack_box_button(elementId, enemy, encounter) {
         e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> USE ATTACK </font></b>';
         // Combat flag
         encounter.in_combat = false;
-        e_player_turn_attack.addEventListener('click', () => {
-            //// Start combat
-            if (!encounter.in_combat) {
-                console.log('Combat started...');
-                encounter.in_combat = true;
-                toggle_combat_status();
-                let e_player_to_enemy_btn = document.getElementById('player_to_enemy_btn');
-                e_player_to_enemy_btn.innerHTML = '[ ATTACKING ]';
-                // Hide change_location_button 
-                let change_location_button = document.getElementById('change_location_button');
-                if (change_location_button) { change_location_button.parentNode.removeChild(change_location_button); }
-            } else {
-                // In combat clicks (e_player_turn_attack)
-                player_attack(enemy, encounter);
-                
-            }
-        });
+
+        ELHandler_player_turn_attack = function() {
+            EL_player_turn_attack(encounter, enemy);
+        };
+        e_player_turn_attack.addEventListener('click', ELHandler_player_turn_attack);
+
     }
-
-
-
-////
-// revamping....
-/*
-    let d_enemy_health_cnt = elementsData.find(char => char.id === 'enemy_health_cnt');
-    // player character
-    let character = characterData.find(char => char.id === 'my_character');
-
-    let d_enemy_health_total = elementsData.find(char => char.id === 'enemy_health_total');
-
-    let enemy = characterData.find(char => char.id === 'enemy_group_1');
-    let enemy_health_total = document.getElementById('enemy_health_total');
-    enemy_health_total.innerHTML = enemy.enemy_health_total;
-    let combat_log = document.getElementById('combat_log');
-
-    // start battle
-    if (enemy.enemy_health > 0 && !enemy.dead) {
-        gf.toggleElement('s', 'combat_log');
-
-        // Generate a random number to determine if the attack misses (10% chance)
-        let missChance = Math.random();
-
-        // Check if the attack misses
-        if (missChance < 0.1) {  // 10% chance to miss
-            character.stat_damage_caused = 0;
-        } else {
-            let increments = Math.floor((character.stat_attack_max - character.stat_attack_min) * 10) + 1;
-            let randomIncrement = Math.floor(Math.random() * increments);
-            character.stat_damage_caused = (character.stat_attack_min + randomIncrement * 0.1).toFixed(1);
-        }
-
-        // Deduct damage caused
-        enemy.enemy_health -= parseFloat(character.stat_damage_caused) + 100; // test: +100
-
-        let enemy_health_fill = document.getElementById('enemy_health_fill');
-        let healthPercentage = (enemy.enemy_health / enemy.enemy_health_total) * 100;
-        enemy_health_fill.style.width = healthPercentage + '%';
-
-        // add to combat log
-        let d_combat_div = battleData.find(battle => battle.id === 'combat_div_');
-        if (!d_combat_div.capped && d_combat_div.cnt <= d_combat_div.cap) {
-            d_combat_div.cnt++;
-            let new_div = document.createElement('div');
-            combat_log.insertBefore(new_div, combat_log.firstChild);
-
-            new_div.id = d_combat_div.id + d_combat_div.cnt;
-            new_div.innerHTML += 'TURN #' + d_combat_div.cnt;
-            if (character.stat_damage_caused === 0) {
-                new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;Your attack against ' + enemy.char_name + ' missed!</span></p>';
-            } else {
-                new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;You dealt ' + character.stat_damage_caused + ' physical damage to ' + enemy.char_name + '.</span></p>';
-            }
-
-            let enemy_health_cnt = document.getElementById('enemy_health_cnt');
-            enemy_health_cnt.innerHTML = Math.round(enemy.enemy_health * 10) / 10;
-            // enemy death
-            if (enemy.enemy_health <= 0 && !enemy.dead) {
-                enemy.enemy_health = 0;
-                enemy.dead = true;
-                // add to enemy defeated_count
-                current_level.defeated_count += 1;
-            } else {
-                new_div.innerHTML += '<p><span class="material-symbols-outlined">heart_minus</span><span style="color:#FF9393;">&nbsp;' + enemy.char_name + '&nbsp;physical attack inflicts 10 damage to you.</span></p>';
-            }
-            if (enemy.dead) {
-                new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated ' + enemy.char_name + '.</span></p>';
-                // get loot from battle
-                update_inventory();
-
-                //d_inventory.current_loot.push({ id: lootItem.name, cnt: quantity });
-                let d_inventory = inventoryElements.find(inv => inv.id === 'inventory');
-
-                if (d_inventory && d_inventory.current_loot) {
-                    // Iterate over each item in current_loot
-                    d_inventory.current_loot.forEach(item => {
-                        // Append each item as a new <p> element
-                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${item.id} x${item.cnt}</span></p>`;
-                    });
-                }
-
-                // reset div count
-                d_combat_div.cnt = 0;
-                d_inventory.current_loot = [];
-
-                // setup new battle
-                gf.toggleElement('h', 'attack_box_button');
-                gf.toggleElement('h', 'verses_box');
-                let e_verses_box = document.getElementById('verses_box');
-
-                gf.toggleElement('h', 'health_bars');
-                gf.toggleElement('s', 'new_battle_button');
-                gf.toggleElement('s', 'enemy_levels');
-                enemy.dead = false;
-                enemy.enemy_health = enemy.enemy_health_total;
-                d_enemy_health_total.cnt = enemy.enemy_health;
-                healthPercentage = (enemy.enemy_health / enemy.enemy_health_total) * 100;
-                enemy_health_fill.style.width = healthPercentage + '%';
-                enemy_health_cnt.innerHTML = enemy.enemy_health;
-                enemy_health_total.innerHTML = enemy.enemy_health_total;
-            }
-
-            if (d_combat_div.cnt >= d_combat_div.cap) {
-                d_combat_div.capped = true;
-            }
-        }
-    }*/
 }
 
 //// ATTACKING WIP
 export function player_attack(enemy, encounter) {
-    
-    //console.log('CLICK: player_attack(enemy)');
 
     let playerStats = characterData.find(d => d.id === 'player_stats');
-    //playerStats.cur_health = 180;
-    //playerStats.cur_resource = 88;
-    let enemyStats = [];
+    
+    //let enemyStats = [];
     
     //console.log(playerStats);
     //console.log(enemy);
@@ -1623,7 +1757,7 @@ export function player_attack(enemy, encounter) {
 // PLAYER TURN
 
     // While enemy is alive
-    if (!enemy.dead && encounter.cur_health > 0) {
+    if (!enemy.dead) {
 
 // STAT: Hit chance
         
@@ -1636,51 +1770,75 @@ export function player_attack(enemy, encounter) {
 // STAT: turn_player_damage
         if (randomMissChance < player_miss_chance) {
         // Attack missed
-            console.log('Attack missed...');
+            //console.log('Attack missed...');
             turn_player_damage = 0;
         } else {
         // Attack hit
             turn_player_damage = randomize(playerStats.pwr_weapon_min, playerStats.pwr_weapon_max, 0.1);
 
-// STAT: critical strike
+// STAT: turn_player_critical
             let player_attack_no_crit = 1 - (playerStats.total_crit_chance / 100);
             let randomCritChance = Math.random();
             if (randomCritChance < player_attack_no_crit) {
                 turn_player_critical = false;
             } else {
             // Critical hit
-                turn_player_critical = true;
                 turn_player_damage *= 2;
+                turn_player_critical = true;
             }
             
-// Deduct enemy health
-encounter.cur_health -= turn_player_damage;
-update_health();
+            // Deduct enemy health
+            encounter.cur_health -= turn_player_damage;
 
-    
-            let display_critical = turn_player_critical ? ' (Critical)' : ' (Regular)';
-            console.log('Damage caused: ' + turn_player_damage + display_critical);
-            
+            //let display_critical = turn_player_critical ? ' (Critical)' : ' (Regular)';
+            //console.log('Damage caused: ' + turn_player_damage + display_critical);
+        }
+
 // ENEMY TURN
-
-
-
-
-
-
-
-
-
+        
+        let turn_enemy_damage = 0;
+        randomMissChance = Math.random();
+        let enemy_miss_chance = encounter.enemyNoCrit;
+        if (randomMissChance < enemy_miss_chance) {
+            turn_enemy_damage = 0;
+        } else {
+            turn_enemy_damage = randomize(encounter.enemyDmg_min, encounter.enemyDmg_max, 0.1);
+            turn_enemy_damage = Math.round(turn_enemy_damage * 10) / 10;
+        }
+        
+        if (!enemy.dead) {
+            playerStats.cur_health -= turn_enemy_damage;
+            playerStats.cur_health = Math.round(playerStats.cur_health * 10) / 10;
+            //console.log('Enemy Damage: ' + turn_enemy_damage);
+        }
+        
+        update_health();
+        
+        if (encounter.cur_health <= 0) {
+            encounter.cur_health = 0;
+            enemy.dead = true;
+            locationsData.forEach((item, index) => {
+                if (locationsData[index].loc === trackingData[0].loc && locationsData[index].lvl === trackingData[0].lvl) {
+                    saveData[0].killsData[index].kills += 1;
+                }
+            });
+        }
 
 // COMBAT LOG
 
-        // Show combat log
-        let e_combat_log_title = document.getElementById('combat_log_title');
-        e_combat_log_title.innerHTML = '<p style="font-size: 24px; color: white;">COMBAT LOG</p>';
-
         // Append combat log entries
         encounter.log_cnt++;
-        
+
+        if (!trackingData[0].combat_log_created) {
+            let e_combat_log_container = document.getElementById('combat_log_container');
+            if (e_combat_log_container) { e_combat_log_container.innerHTML = ''; }
+            create_el('combat_log_title', 'div', 'combat_log_container');
+            combat_log_title.innerHTML = '<p style="font-size: 24px; color: white;">COMBAT LOG</p>';
+            create_el('combat_log', 'div', 'combat_log_container');
+            combat_log.classList.add('normal');
+            trackingData[0].combat_log_created = true;
+        }
+
         let e_combat_log = document.getElementById('combat_log');
         let new_div = document.createElement('div');
         e_combat_log.insertBefore(new_div, combat_log.firstChild);
@@ -1690,82 +1848,139 @@ update_health();
         if (turn_player_damage === 0) {
             new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;Your attack against ' + enemy.lbl + ' missed!</span></p>';
         } else {
-            new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;You dealt ' + turn_player_damage + ' physical damage to ' + enemy.lbl + '.</span></p>';
-        }
-
-
-
-/*
-
-
-            let enemy_health_cnt = document.getElementById('enemy_health_cnt');
-            enemy_health_cnt.innerHTML = Math.round(enemy.enemy_health * 10) / 10;
-            // enemy death
-            if (enemy.enemy_health <= 0 && !enemy.dead) {
-                enemy.enemy_health = 0;
-                enemy.dead = true;
-                // add to enemy defeated_count
-                current_level.defeated_count += 1;
+            if (turn_player_critical) {
+                new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;You dealt ' + turn_player_damage + ' physical damage (CRITICAL HIT) to ' + enemy.lbl + '.</span></p>';
             } else {
-                new_div.innerHTML += '<p><span class="material-symbols-outlined">heart_minus</span><span style="color:#FF9393;">&nbsp;' + enemy.char_name + '&nbsp;physical attack inflicts 10 damage to you.</span></p>';
-            }
-            if (enemy.dead) {
-                new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated ' + enemy.char_name + '.</span></p>';
-                // get loot from battle
-                update_inventory();
-
-                //d_inventory.current_loot.push({ id: lootItem.name, cnt: quantity });
-                let d_inventory = inventoryElements.find(inv => inv.id === 'inventory');
-
-                if (d_inventory && d_inventory.current_loot) {
-                    // Iterate over each item in current_loot
-                    d_inventory.current_loot.forEach(item => {
-                        // Append each item as a new <p> element
-                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${item.id} x${item.cnt}</span></p>`;
-                    });
-                }
-
-                // reset div count
-                d_combat_div.cnt = 0;
-                d_inventory.current_loot = [];
-
-                // setup new battle
-                gf.toggleElement('h', 'attack_box_button');
-                gf.toggleElement('h', 'verses_box');
-                let e_verses_box = document.getElementById('verses_box');
-
-                gf.toggleElement('h', 'health_bars');
-                gf.toggleElement('s', 'new_battle_button');
-                gf.toggleElement('s', 'enemy_levels');
-                enemy.dead = false;
-                enemy.enemy_health = enemy.enemy_health_total;
-                d_enemy_health_total.cnt = enemy.enemy_health;
-                healthPercentage = (enemy.enemy_health / enemy.enemy_health_total) * 100;
-                enemy_health_fill.style.width = healthPercentage + '%';
-                enemy_health_cnt.innerHTML = enemy.enemy_health;
-                enemy_health_total.innerHTML = enemy.enemy_health_total;
-            }
-
-            if (d_combat_div.cnt >= d_combat_div.cap) {
-                d_combat_div.capped = true;
+                new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;You dealt ' + turn_player_damage + ' physical damage to ' + enemy.lbl + '.</span></p>';
             }
         }
-*/
-
-
-
-
-
-
-
-
-
-
-            
+        
+        if (turn_enemy_damage === 0 && !enemy.dead) {
+            new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#F7EB00;">&nbsp;Level ' + enemy.lvl + ' enemy ' + enemy.lbl + '\'s attack against you missed!</span></p>';
+        } else if (!enemy.dead) {
+// need enemy crit, special abilities
+            new_div.innerHTML += '<p><span class="material-symbols-outlined">heart_minus</span><span style="color:#FF9393;">&nbsp;Level ' + enemy.lvl + ' enemy ' + enemy.lbl + '\'s physical attack inflicts ' + turn_enemy_damage + ' damage to you.</span></p>';
         }
+
+        if (enemy.dead) {
+            new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated a level ' + enemy.lvl + '&nbsp;' + enemy.lbl + '.</span></p>';
+
+            let loot_dropped = add_loot(enemy, 1, 1, 2);
+            if (loot_dropped) {
+                loot_dropped.forEach(loot => {
+                    let d_itemData = itemData.find(i => i.id === loot.id);
+
+                    new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${d_itemData.name} x${loot.cnt}</span></p>`;
+                    
+                    updateLootCount(loot.id, loot.cnt);
+                });
+            }
+
+// reset combat log
+encounter.log_cnt = 0;
+
+// xp gained
+
+
+// AUTO PREPARE NEXT ATTACK
+// Other resets are performed in reset_battle()
+encounter.in_combat = false;
+update_locations();
+gf.toggleElement('s', 'change_location_button');
+trackingData[0].next_attack = true;
+trackingData[0].combat_log_created = false;
+selectLevel(trackingData[0].loc, trackingData[0].location, trackingData[0].lvl, trackingData[0].kills);
+
+
+
+        } // end if (enemy.dead)
+
+// WIP on player death element, reset
+if (playerStats.dead) {
+    new_div.innerHTML += `<p><span class="material-symbols-outlined">skull</span><span style="color:yellow;font-weight:bold;">&nbsp;You have died.</span></p>`;
+    let e_player_turn_attack = document.getElementById('player_turn_attack');
+    e_player_turn_attack.removeEventListener('click', ELHandler_player_turn_attack);
+    e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> REVIVE </font></b>';
+
+    let do_revive = function() {
+        e_player_turn_attack.removeEventListener('click', do_revive);
+        let wait_time = 10;
+        
+        // Countdown to revive
+        let countdown = setInterval(function() {
+            if (wait_time > 0) {
+                e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> REVIVE in ' + wait_time + ' seconds. </font></b>';
+                wait_time--;
+            } else {
+                clearInterval(countdown);
+                // Reset player & elements
+                playerStats.dead = false;
+                playerStats.cur_health = playerStats.max_health;
+                // Reset battle/location elements
+                reset_battle();
+                console.log('Revived!');
+            }
+        }, 1000); // 1000ms = 1 second
+    };
     
-    } // if (!enemy.dead && encounter.cur_health > 0) {
+    e_player_turn_attack.addEventListener('click', do_revive);
+}
 
+
+
+    } // end if (!enemy.dead && encounter.cur_health > 0) {
+
+}
+
+export function add_loot(enemy, count, gold_min, gold_max) {
+    let random_loot;
+    let loot_dropped = 0;  // Counter for loot drops
+    let dropped_items = [];  // Array to store dropped items and their counts
+    let enemyDrops = enemy.drops;
+
+    // Helper function to add item to the dropped items array
+    function add_item_to_dropped(id) {
+        let existingItem = dropped_items.find(item => item.id === id);
+        if (existingItem) {
+            existingItem.cnt++;  // Increment count if item already dropped
+        } else {
+            dropped_items.push({ id: id, cnt: 1 });  // Add new item with count 1
+        }
+    }
+
+    // Ensure at least one item drops
+    let guaranteed_drop = enemyDrops.find(drop => Math.random() < drop.p);
+    if (guaranteed_drop) {
+        add_item_to_dropped(guaranteed_drop.id);
+        loot_dropped++;
+        //console.log('Guaranteed loot dropped: ' + guaranteed_drop.id);
+    }
+
+    // Calculate additional drops based on count
+    while (loot_dropped < count) {
+        enemyDrops.forEach(drop => {
+            if (loot_dropped >= count) return;  // Stop once we've dropped the required number
+
+            random_loot = Math.random();  // Generate random chance for each drop
+            let loot_chance = drop.p;
+
+            // If the drop chance is higher than the random number, drop the loot
+            if (loot_chance > random_loot) {
+                add_item_to_dropped(drop.id);
+                loot_dropped++;  // Increment the loot counter
+                //console.log('Additional loot dropped: ' + drop.id);
+            }
+        });
+    }
+
+    if (gold_min > 0 && gold_max > 0) {
+        // needs to eventually be based on enemy level
+        let gold_roll = randomize(gold_min, gold_max, 1);
+        dropped_items.push({ id: 'GOLD', cnt: gold_roll });
+    }
+
+    // Return dropped items with their counts
+    return dropped_items;
 }
 
 let selectedSlot = null;
@@ -1773,17 +1988,23 @@ let selectedSlot = null;
 const inventorySlotListeners = {};
 export function update_inventory() {
 
-    // Clear section data
     let inventory_section = document.getElementById('inventory_section');
-    if (inventory_section) {
-        inventory_section.innerHTML = '';
+
+let inventory_section_container = document.getElementById('inventory_section_container');
+
+if (!trackingData[0].t_inventory_section) {
+
+    inventory_section.addEventListener('click', () => {
+        toggle_section('inventory');
+    });
+
+} else {
+
+    // Clear section data
+    if (inventory_section_container) {
+        inventory_section_container.innerHTML = '';
     }
-    
-    let inventory_title = document.createElement('div');
-    inventory_section.appendChild(inventory_title);
-    inventory_title.classList.add('h1_yellow_font');
-    inventory_title.innerHTML = 'Inventory Section';
-    
+
     // Clear all previous event listeners first
     Object.keys(inventorySlotListeners).forEach(slot_id => {
         removeInventorySlotListener(slot_id);  // Remove old listeners
@@ -1801,7 +2022,7 @@ export function update_inventory() {
     let inv_parent = document.createElement('div');
     inv_parent.classList.add('inv_parent');
     inv_parent.id = 'inventory_parent';
-    inventory_section.appendChild(inv_parent);
+    inventory_section_container.appendChild(inv_parent);
     
     savedInventorySlots.forEach((slot_data, index)  => {
     
@@ -1849,7 +2070,7 @@ export function update_inventory() {
     currency_area.id = 'currency_area';
     currency_area.style.padding = '5px';
 
-    handle_gold();
+    update_gold();
 
     // insert test items
     if (!savedInventory[0].setup) {
@@ -1861,39 +2082,10 @@ export function update_inventory() {
         updateLootCount('CLOTH_BASIC', 2);
         updateLootCount('CLOTH_BASIC', 1);
         updateLootCount('BASIC_GLOVES', 1);
-    
         savedInventory[0].setup = true;
     }
 
-    // setup drop rates
-    characterData.forEach(char => {
-        if (char.drops) {
-            char.drops.forEach(drop => {
-                if (drop.item) {
-                    if (Math.random() < drop.rate) {
-                        let quantity = Math.floor(Math.random() * (drop.max - drop.min + 1)) + drop.min;
-                        //console.log(`${drop.item}: ${quantity}`);
-                        // Setup gold storage
-                        handle_gold();
-                        // update loot
-                        updateLootCount(drop.item, quantity);
-
-                    }
-                }
-            });
-        }
-    });
-
-    /*
-    // insert test items
-    updateLootCount('TOOTH', 1);
-    updateLootCount('TOOTH', 1);
-    updateLootCount('BASIC_HELMET', 1);
-    updateLootCount('BASIC_BOOTS', 1);
-    updateLootCount('CLOTH_BASIC', 2);
-    updateLootCount('CLOTH_BASIC', 1);
-    */
-
+} // END t_inventory_section
 }
 
 // Function to remove the event listener by slot_id
@@ -1913,8 +2105,8 @@ export function updateLootCount(itemId, quantity, requestedSlot) {
     let d_inventoryElements = inventoryElements.filter(i => i.type === 'slot'); // For updating element ids
     let lootItem = itemData.find(i => i.id === itemId);
 
-    // If the loot item exists, add it
-    if (lootItem) {
+    // If the loot item is not gold, add it here
+    if (lootItem && lootItem.id !== 'GOLD') {
         let itemFound = false; // Track if the stackable item was found
 
         // First, check if the stackable item already exists in any slot
@@ -1938,7 +2130,9 @@ export function updateLootCount(itemId, quantity, requestedSlot) {
                 slot_data.cnt += quantity;
                 // Update the corresponding inventory element using the index
                 let e_slot_counter = document.getElementById(d_inventoryElements[i].e_slot_counter);
-                e_slot_counter.innerHTML = slot_data.cnt;
+                if (e_slot_counter) {
+                    e_slot_counter.innerHTML = slot_data.cnt;
+                }
                 itemFound = true;
                 break;
             }
@@ -1957,35 +2151,50 @@ export function updateLootCount(itemId, quantity, requestedSlot) {
                     slot_data.cnt = quantity;
                     // Update the corresponding inventory element using the index
                     let e_slot_img = document.getElementById(d_inventoryElements[i].e_slot_img);
-                    e_slot_img.style.display = 'block';
-                    e_slot_img.src = lootItem.img;
+                    if (e_slot_img) {
+                        e_slot_img.style.display = 'block';
+                        e_slot_img.src = lootItem.img;
+                    }
                     // (e_slot_counter is hidden for single items)
                     break;
                 }
             }
         }
-    }
 
-    // Check if inventory is full
-    let max_inventory = savedInventorySlots.length;
-    let inventory_full = false;  // Assume inventory is not full unless we find no empty slots
-    trackingData[0].inventory_full = false;
-
-    for (let i = 0; i < max_inventory; i++) {  // Loop starts at 0
-        if (savedInventorySlots[i].contents === '[ EMPTY ]') {
-            inventory_full = false;  // Found empty slot, inventory not full
-            break;
-        } else {
-            inventory_full = true;
-            trackingData[0].inventory_full = true;
+        // Check if inventory is full
+        let max_inventory = savedInventorySlots.length;
+        let inventory_full = false;  // Assume inventory is not full unless we find no empty slots
+        trackingData[0].inventory_full = false;
+    
+        for (let i = 0; i < max_inventory; i++) {  // Loop starts at 0
+            if (savedInventorySlots[i].contents === '[ EMPTY ]') {
+                inventory_full = false;  // Found empty slot, inventory not full
+                break;
+            } else {
+                inventory_full = true;
+                trackingData[0].inventory_full = true;
+            }
+        }
+        
+        if (inventory_full) {
+            let messages_section_container = document.getElementById('messages_section_container');
+            let currentDateTime = new Date().toLocaleString();
+            messages_section_container.innerHTML = '' ? '<br>' : '';
+            messages_section_container.innerHTML += `<span style="color: gray;">(${currentDateTime})</span><br><span style="color: red;">Inventory is full.</span>`;
         }
     }
     
-    if (inventory_full) {
-        let messages_section_container = document.getElementById('messages_section_container');
-        let currentDateTime = new Date().toLocaleString();
-        messages_section_container.innerHTML = '' ? '<br>' : '';
-        messages_section_container.innerHTML += `<span style="color: gray;">(${currentDateTime})</span><br><span style="color: red;">Inventory is full.</span>`;
+    if (lootItem && lootItem.id === 'GOLD') {
+    // If the loot item is gold, add it here
+        //// t
+        let d_gold = saveData[4].currencyData[0];
+        if (d_gold) {
+            d_gold.cnt += quantity;
+            let e_check = document.getElementById('gold_container');
+            if (e_check) {
+                update_gold();
+            }
+        }
     }
 }
 
@@ -2390,11 +2599,13 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                             slot_container.removeEventListener('click', inventorySlotListeners[ei.slot_id]);
                             delete inventorySlotListeners[ei.slot_id];  // Optionally remove the reference
                         }
+
                         // If an item is already equipped in the same slot
-                        let current_equipped = saveDataEquip.find(e => e.id === item.slot);
-                        if (current_equipped && current_equipped.equipped) {
+                        let equip_slot = saveDataEquip.find(e => e.id === item.slot);
+                        if (equip_slot && equip_slot.equipped) {
                             //console.log('(existing item) e: ' + current_equipped.equipped + ' / i: ' + item_clicked.id);
-                            if (current_equipped.equipped === item_clicked.id) {
+                            // If duplicate item is already equipped, do nothing (return)
+                            if (equip_slot.equipped === item_clicked.id) {
                                 //console.log(current_equipped.equipped + '...is already equipped, skipping');
                                 update_inventory();
                                 update_character();
@@ -2402,25 +2613,26 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                             }
                             //console.log('adding to equipped: ' + item.id);
                             ei.contents = '[ EMPTY ]';
-                            updateLootCount(current_equipped.equipped, 1, item_slot_clicked);
+                            updateLootCount(equip_slot.equipped, 1, item_slot_clicked);
                             // Swap new iten with equipment slot item
-                            current_equipped.equipped = item.id;
+                            equip_slot.equipped = item.id;
                             update_inventory();
                             update_character();
                             return;
                         }
+
                         // If no items in current equipment slot
-                        let current_empty = saveDataEquip.find(e => e.id === 'equip_slot_EMPTY_' + item.slot);
-                        if (current_empty && current_empty.id === 'equip_slot_EMPTY_' + item.slot) {
-                            //console.log('no existing equipped item found in item slot, addimg... (new item) e(null): ' + current_empty.equipped + ' / i: ' + item_clicked.id);
+                        let empty_equip_slot = saveDataEquip.find(e => e.id === 'equip_slot_EMPTY_' + item.slot);
+                        if (empty_equip_slot && !empty_equip_slot.equipped) {
                             // Leave inventory slot empty
                             // Add new iten to empty equipment slot
                             ei.contents = '[ EMPTY ]';
-                            current_empty.equipped = item.id;
-                            current_empty.id = current_empty.slot;
+                            empty_equip_slot.equipped = item.id;
+                            empty_equip_slot.id = item.slot;
                             //console.log('check ids: ... equipped: ' + current_empty.equipped + '/ id: ' + current_empty.id)
                             update_inventory();
                             update_character();
+                            //console.log(equip_slot);
                             return;
                         }
                     });
@@ -2493,8 +2705,8 @@ function applyTransparencyToEmptySlots() {
 // applyTransparencyToEmptySlots();
 
 // Setup gold elements, purchases, etc
-export function handle_gold() {
-    let inventory_section = document.getElementById('inventory_section');
+export function update_gold() {
+    let inventory_section = document.getElementById('inventory_section_container');
     let d_gold = saveData[4].currencyData[0];
 
     let e_gold_container = document.getElementById('gold_container');
@@ -2537,4 +2749,186 @@ function randomize(min, max, step) {
 
     // Scale the random step back to the original range
     return min + randomStep * step;
+}
+
+//// 
+function start_encounter(loc, group) {
+
+    let hp_min = 25;
+    let hp_max = 30;
+    let cur_health = 0;
+    let max_health = 0;
+    let log_cnt = 0;
+    let enemyDmg_min = 3;
+    let enemyDmg_max = 5;
+    let enemyNoCrit = 0.06;
+
+    // Starts at 1, with above values
+    let incr_rate = 0.1;
+
+    let d_level_data = locationsData.filter(l => l.loc && l.loc > 0 && l.lvl > 0 && l.lbl !== 'END');
+    
+    d_level_data.forEach((level, index) => {
+
+        let d_encounter = encounterData.find(e => e.id === group);
+        let d_enemy_list = d_encounter.enemy_list;
+
+        if (level.loc === loc) {
+            let stat_mult = (1 - incr_rate) + (incr_rate * (index + 1));
+            stat_mult = Math.round(stat_mult * 10) / 10;
+
+            hp_min *= stat_mult;
+            hp_min = Math.round(hp_min);
+            hp_max *= stat_mult;
+            hp_max = Math.round(hp_max);
+            enemyDmg_min *= stat_mult;
+            enemyDmg_min = Math.round(enemyDmg_min * 10) / 10;
+            enemyDmg_max *= stat_mult;
+            enemyDmg_max = Math.round(enemyDmg_max * 10) / 10;
+
+            encounterData.push({
+                id: 'group_lvl_' + (index + 1),
+                loc: loc,
+                lvl: index + 1,
+                hp_min: hp_min, 
+                hp_max: hp_max, 
+                cur_health: 0, 
+                max_health: 0, 
+                log_cnt: 0, 
+                enemyDmg_min: enemyDmg_min, 
+                enemyDmg_max: enemyDmg_max, 
+                enemyNoCrit: enemyNoCrit,
+                enemy_list: []
+            });
+            
+            let new_loc = encounterData.find(e => e.id === 'group_lvl_' + (index + 1));
+            let new_enemy_list = new_loc.enemy_list;
+
+            // Add 3 random enemies per level
+            for (let i = 0; i < 3; i++) {
+                let enemy_name = pickRandomName();  // Pick 1 random name at a time
+
+                // Generate id in uppercase and replace spaces with _
+                let entry_id = enemy_name.toUpperCase().replace(/ /g, "_");
+
+                new_enemy_list.push({
+                    //loc: loc,
+                    id: entry_id,
+                    lbl: enemy_name,   // Include the random name in the enemy list
+                    lvl: index + 1, 
+                    drops: []
+                });
+            }
         }
+    });
+
+
+    // Function to pick a single random unused name and mark it as used
+    function pickRandomName() {
+        
+    // Get random names
+    let enemy_names = encounterData.find(e => e.id === 'enemyNames');
+    let names = enemy_names.names;
+    
+    // Filter out names that haven't been used yet (u: false)
+    let unused_names = names.filter(n => !n.u);
+    
+        
+        if (unused_names.length === 0) {
+            console.log("No unused names left.");
+            return null;
+        }
+    
+        // Shuffle and pick 1 random name
+        let random_name = unused_names
+            .sort(() => 0.5 - Math.random())[0];  // Pick only the first random name
+    
+        // Mark the chosen name as used (u: true)
+        random_name.u = true;
+    
+        // Update the unused names list
+        unused_names = names.filter(n => !n.u);
+    
+        // Return the chosen name
+        return random_name.n;
+    }
+
+    // check array
+    encounterData.forEach(e => {
+        console.log(e);
+    });
+
+} // End function
+
+// Location 1+ only
+//start_encounter(1, 'group_loc1');
+
+// Show or hide sections (clear/create or hide/show)
+trackingData[0].t_character_section = false;
+trackingData[0].t_character_stats_section = false;
+trackingData[0].t_battle_section = false;
+trackingData[0].t_inventory_section = false;
+export function toggle_section(section) {
+
+    if (section === 'stats') {
+        let e_character_stats_section = document.getElementById('character_stats_section');
+        let e_character_stats_container = document.getElementById('character_stats_container');
+
+        if (trackingData[0].t_character_stats_section) {
+            trackingData[0].t_character_stats_section = false;
+            e_character_stats_container.style.display = 'none';
+            e_character_stats_container.style.overflow = 'auto';
+            e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+        } else {
+            trackingData[0].t_character_stats_section = true;
+            update_equipment();
+            update_character_stats(true);
+            e_character_stats_container.style.display = 'block';
+            e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ HIDE ]</span>';
+        }
+    }
+
+    if (section === 'character') {
+        let e_character_section = document.getElementById('character_section');
+        let e_character_container = document.getElementById('character_container');
+        if (trackingData[0].t_character_section) {
+            e_character_container.innerHTML = '';
+            e_character_section.innerHTML = 'Character Section <span class="normal">[ SHOW ]</span>';
+            trackingData[0].t_character_section = false;
+        } else {
+            //character_container.style.display = 'block';
+            trackingData[0].t_character_section = true;
+            //update_character('no_toggle');
+            update_character();
+            e_character_section.innerHTML = 'Character Section <span class="normal">[ HIDE ]</span>';
+        }
+    }
+
+    if (section === 'battle') {
+        let e_battle_section = document.getElementById('battle_section');
+        let location_container = document.getElementById('location_container');
+        if (trackingData[0].t_battle_section) {
+            location_container.style.display = 'none';
+            e_battle_section.innerHTML = 'Battle Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+            trackingData[0].t_battle_section = false;
+        } else {
+            location_container.style.display = 'block';
+            e_battle_section.innerHTML = 'Battle Section <span class="normal">[ HIDE ]</span>';
+            trackingData[0].t_battle_section = true;
+        }
+    }
+
+    if (section === 'inventory') {
+        let e_inventory_section = document.getElementById('inventory_section');
+        let e_inventory_section_container = document.getElementById('inventory_section_container');
+        if (trackingData[0].t_inventory_section) {
+            e_inventory_section_container.innerHTML = '';
+            e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+            trackingData[0].t_inventory_section = false;
+        } else {
+            trackingData[0].t_inventory_section = true;
+            update_inventory();
+            e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ HIDE ]</span>';
+        }
+    }
+}

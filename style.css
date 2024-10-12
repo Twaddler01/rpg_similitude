@@ -6,6 +6,8 @@ body {
     -ms-user-select: none;       /* Internet Explorer/Edge */
     user-select: none;           /* Non-prefixed version, currently supported by Chrome, Opera, and many mobile browsers */
     touch-action: manipulation;  /* Improve touch behavior on some mobile devices */
+    background-color: black;
+    color: white;
 }
 .h1 {
     font-size: 32px;
@@ -280,7 +282,13 @@ body {
     padding-bottom: 10px;
     padding-left: 0px;
 }
-/* char equipment (new) */
+#combat_log {
+    height: 400px;
+    overflow-y: scroll; /* Enables scrolling if content exceeds height */
+    border: 1px solid white; /* Optional, just for visibility */
+    padding: 10px; /* Optional, for spacing inside the element */
+}
+/* char equipment */
 #char_equipment_container {
     display: grid;
     grid-template-columns: auto auto auto;

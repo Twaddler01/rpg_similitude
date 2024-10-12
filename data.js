@@ -19,18 +19,6 @@ export function init_elementsData() {
         content: 'RPG Similitude: Just another RPG.',
         css_class: 'h1',
         },
-
-// **** section *****
-
-        /* ELEMENT STRUCTURE:
-            #character_section
-                #character_container
-                    #character_entry
-                        #name
-                        #race
-                        #class
-        */
-
         // section
         { id: 'messages_section',
         section_cat: true,
@@ -47,52 +35,57 @@ export function init_elementsData() {
             parent_el: 'messages_section',
             css_class: 'location_box_style',
             },
+        // character equipment section
         { id: 'character_section',
         section_cat: true,
         type: 'div',
         parent_el: 'body',
-        content: 'Character Section',
+        content: 'Character Section <span class="normal">[ SHOW ]</span>',
         css_class: 'h1_yellow_font',
+        on_click: true,
         },
         { id: 'character_container',
         section_cat: true,
-        fetch_cat: true,
         type: 'div',
-        parent_el: 'character_section',
+        parent_el: 'body',
         css_class: 'location_box_style',
         },
-
-// **** section *****
+        // character stats section
+        { id: 'character_stats_section',
+        section_cat: true,
+        type: 'div',
+        parent_el: 'body',
+        content: 'Character Stats <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>',
+        css_class: 'h1_yellow_font',
+        on_click: true,
+        },
+        { id: 'character_stats_container',
+        section_cat: true,
+        type: 'div',
+        parent_el: 'body',
+        css_class: 'location_box_style',
+        },
+        // battle section
         { id: 'battle_section',
         section_cat: true,
         type: 'div',
         parent_el: 'body',
-        content: 'Battle Section',
+        content: 'Battle Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>',
         css_class: 'h1_yellow_font',
         }, 
-            // attach (battle_section)
-            { id: 'battle_section_container',
+        { id: 'battle_section_container',
+        section_cat: true,
+        type: 'div',
+        parent_el: 'body',
+        },
+            // attach (battle_section_container)
+            { id: 'location_container',
             section_cat: true,
             fetch_cat: true,
             type: 'div',
-            parent_el: 'battle_section',
+            parent_el: 'battle_section_container',
+            css_class: 'location_box_style',
             },
-                // attach (battle_section_container)
-                { id: 'location_container',
-                section_cat: true,
-                fetch_cat: true,
-                type: 'div',
-                parent_el: 'battle_section_container',
-                css_class: 'location_box_style',
-                },
-                // attach (battle_section_container)
-                { id: 'location_title',
-                section_cat: true,
-                fetch_cat: true,
-                type: 'div',
-                parent_el: 'location_container',
-                css_class: 'location_box_style',
-                },
             // attach (battle_section_container)
             { id: 'new_battle_container',
             section_cat: true,
@@ -149,15 +142,19 @@ export function init_elementsData() {
             type: 'div',
             parent_el: 'battle_section_container',
             },
-        // section
+        // imventory section
         { id: 'inventory_section',
         section_cat: true,
         type: 'div',
         parent_el: 'body',
-        content: 'Inventory Section',
+        content: 'Inventory Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>',
         css_class: 'h1_yellow_font',
         },
-
+        { id: 'inventory_section_container',
+        section_cat: true,
+        type: 'div',
+        parent_el: 'body',
+        },
         // section
         { id: 'new_section',
         section_cat: true,
@@ -175,31 +172,6 @@ export function init_elementsData() {
         content: 'TEST Section',
         css_class: 'h1_yellow_font',
         },
-
-/*
-        // tables
-        { id: 'battle_table',
-        table_cat: true,
-        parent_el: 'battle_section',
-        cols: 4,
-        rows: 3,
-        // row header
-        content1_1: 'Location',
-        content1_2: 'Level',
-        content1_3: 'Name',
-        content1_4: '',
-        // row 2
-        content2_1: 'Plains',
-        content2_2: '1',
-        content2_3: 'Goblin Scout',
-        content2_4: 'ATTACK',
-        // row 3
-        content3_1: 'Plains',
-        content3_2: '1',
-        content3_3: 'Goblin Sorcerer',
-        content3_4: 'ATTACK',
-        css_class: 'normal' },
-*/
     ];
 
     // Iterate over the array and set other variables dynamically
@@ -213,235 +185,6 @@ export function init_elementsData() {
 
     return elementsData;
 }
-
-// **** OLD DATA ****
-/*
-export function init_locationData() {
-
-    const locationData = [
-        { id: '01_DARK_PLAINS',
-        loc_num: 1,
-        level_num: 1,
-        type: 'encounter',
-        label: 'Dark Plains',
-        kills_to_next_level: 3,
-        //total_levels: 8,
-        level_data: [
-          { id: 1, mult: 1.0, kills_to_next_level: 3 },
-          { id: 2, mult: 1.2, kills_to_next_level: 3 },
-          { id: 3, mult: 1.4, kills_to_next_level: 3 },
-          { id: 4, mult: 1.6, kills_to_next_level: 3 },
-          { id: 5, mult: 1.8, kills_to_next_level: 3 },
-          { id: 6, mult: 2.0, kills_to_next_level: 3 },
-          { id: 7, mult: 2.2, kills_to_next_level: 3 },
-        ],
-        level_mult: 1.2,
-        enemy: 'enemy_group_1', // characterData.id ('enemy_group_1')
-        hp_low: 20,
-        hp_high: 30,
-        dmg_low: 3,
-        dmg_high: 6,
-        top_loc: true,
-        },
-        { id: '02_DARK_HIGHLANDS',
-        loc_num: 2,
-        level_num: 0,
-        type: 'encounter',
-        label: 'Dark Highlands',
-        kills_to_next_level: 3,
-        //total_levels: 8,
-        level_data: [
-          { id: 1, mult: 2.4, kills_to_next_level: 3 },
-          { id: 2, mult: 2.6, kills_to_next_level: 3 },
-          { id: 3, mult: 2.8, kills_to_next_level: 3 },
-          { id: 4, mult: 3.0, kills_to_next_level: 3 },
-          { id: 5, mult: 3.2, kills_to_next_level: 3 },
-          { id: 6, mult: 3.4, kills_to_next_level: 3 },
-          { id: 7, mult: 3.6, kills_to_next_level: 3 },
-          { id: 8, mult: 3.8, kills_to_next_level: 3 },
-          { id: 9, mult: 4.0, kills_to_next_level: 3 },
-        ],
-        level_mult: 1.2,
-        hp_low: 20,
-        hp_high: 30,
-        dmg_low: 3,
-        dmg_high: 6,
-        },
-        { id: '03_DARK_FOREST',
-        loc_num: 3,
-        level_num: 0,
-        type: 'encounter',
-        label: 'Dark Forest',
-        kills_to_next_level: 3,
-        //total_levels: 8,
-        level_data: [
-          { id: 1, mult: 4.2, kills_to_next_level: 3 },
-          { id: 2, mult: 4.4, kills_to_next_level: 3 },
-          { id: 3, mult: 4.6, kills_to_next_level: 3 },
-          { id: 4, mult: 4.8, kills_to_next_level: 3 },
-          { id: 5, mult: 5.0, kills_to_next_level: 3 },
-          { id: 6, mult: 5.2, kills_to_next_level: 3 },
-          { id: 7, mult: 5.4, kills_to_next_level: 3 },
-          { id: 8, mult: 5.6, kills_to_next_level: 3 },
-        ],
-        level_mult: 1.2,
-        hp_low: 20,
-        hp_high: 30,
-        dmg_low: 3,
-        dmg_high: 6,
-        },
-    ];
-
-    let num = 1;
-    // Iterate over the array and set other variables dynamically
-    for (let i = 0; i < locationData.length; i++) {
-        const locationIndex = locationData[i];
-        const locationUpdates = {};
-
-        for (let level = 1; level <= locationIndex.total_levels; level++) {
-            //loc_01_DARK_PLAINS_level_1 ... 8
-            //loc_02_DARK_HIGHLANDS_level_1 ... 8
-            //loc_03_DARK_FOREST_level_1 ... 8
-            locationIndex.loc_levels = 'loc_' + locationIndex.id + '_level_' + level;
-            locationIndex.level_multiplier = 1 + Math.round((num * 0.1) * 10) / 10;
-            num++;
-            //console.log(locationIndex.loc_levels + ':' + locationIndex.level_multiplier);
-        }
-        // Assign updates to locationIndex properties
-        Object.assign(locationIndex, locationUpdates);
-    }
-
-    return locationData;
-}
-
-export function init_battleData() {
-
-    const battleData = [
-        { id: 'location',
-        // for tracking
-        loc_num_selected: 0, // temp??
-        lvl_num_selected: 0, // temp??
-        max_levels: 0, 
-        loc_unlocked: 1, // location
-        lvl_unlocked: 6, // level
-        /*kill_data: [
-          { id: 1.1, cnt: 0, unlocked: true },
-          { id: 1.2, cnt: 0 },
-          { id: 1.3, cnt: 0 },
-          { id: 1.4, cnt: 0 },
-          { id: 1.5, cnt: 0 },
-          { id: 1.6, cnt: 0 },
-          { id: 1.7, cnt: 0 },
-          { id: 1.8, cnt: 0 },
-          { id: 2.1, cnt: 0 },
-          { id: 2.2, cnt: 0 },
-          { id: 2.3, cnt: 0 },
-          { id: 2.4, cnt: 0 },
-          { id: 2.5, cnt: 0 },
-          { id: 2.6, cnt: 0 },
-          { id: 2.7, cnt: 0 },
-          { id: 2.8, cnt: 0 },
-          { id: 3.1, cnt: 0 },
-          { id: 3.2, cnt: 0 },
-          { id: 3.3, cnt: 0 },
-          { id: 3.4, cnt: 0 },
-          { id: 3.5, cnt: 0 },
-          { id: 3.6, cnt: 0 },
-          { id: 3.7, cnt: 0 },
-          { id: 3.8, cnt: 0 }, ],*/ /*
-        },
-        // names
-        { id: '01_names',
-        type: 'names',
-        difficulty: [ 'Normal', 'Elite', 'Master' ],
-        first: [ 'Goblin', 'Orc', 'Ogre' ],
-        last: [ 'Scout', 'Fighter', 'Archer', 'Wizard' ],
-        },
-        // combat divs
-        { id: 'combat_div_',
-        cnt: 0,
-        cap: 30,
-        },
-    ];
-
-    // Iterate over the array and set other variables dynamically
-    for (let i = 0; i < battleData.length; i++) {
-        const battleIndex = battleData[i];
-        const battleDataUpdates = {};
-        battleIndex.battle_div_id = battleIndex.id + '_battle_div_id';
-        // Assign updates to resourcesIndex properties
-        Object.assign(battleIndex, battleDataUpdates);
-    }
-
-    return battleData;
-}
-
-export function init_characterData() {
-
-    const characterData = [
-        { id: 'my_character',
-        char_img: '',
-        name: 'Legalos',
-        level: 1,
-        char_race: 'Human',
-        char_class: 'Fighter',
-        stat_base_armor: 100,
-        stat_armor_desc: 'Reduces damage taken by 0.1% per point above base amount.',
-        stat_base_str: 10,
-        stat_str_desc: 'Increases both melee damage dealt by 0.1% and total energy by 10 per point above base amount.',
-        stat_base_int: 10,
-        stat_int_desc: 'Increases both magic damage dealt by 0.1% and total mana by 10 per point above base amount.',
-        stat_base_dex: 10,
-        stat_dex_desc: 'Increses hit chance by 0.1% per point above base amount. Default hit chance is 90%, or 100% at 100+ dex',
-        stat_base_con: 10,
-        stat_con_desc: 'Increases health by 0.1% per point above base amount.',
-        stat_base_agi: 10,
-        stat_agi_desc: 'Increases melee critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.',
-        stat_base_wis: 10,
-        stat_wis_desc: 'Increases magic critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.',
-        stat_base_attack: 1.0,
-        stat_attack_min: 5.0,
-        stat_attack_max: 10.0, // stat_attack_min * 2
-        stat_power: 1.0,
-        stat_hit_chance: 0.9,
-        },
-        { id: 'enemy_group_1',
-        type: 'basic_enemy',
-        char_img: '',
-        enemy_health: 100,
-        enemy_health_total: 100,
-        cnt: 100, // moving from elementsData
-        enemy_round: 0, // moving from elementsData
-        defeated_count: 0, // moving from elementsData
-        dead: false, // moving from elementsData
-        level: 1,
-        level_power_increase: 1.2,
-        // kills_to_next_level: 3
-        //[{"enemy_group_1_def_count_level_1":0}]
-        enemy_defeated_count: [],
-        char_race: [ 'Goblin', 'Orc', 'Troll', 'Gnoll' ],
-        char_class: [ 'Scavenger', 'Roamer', 'Pillager', 'Warrior', 'Spellbinder' ],
-        stat_armor: 1, // physical damage reduction
-        stat_resist: 1, // spell damage reduction
-        stat_attack_min: 0.8,
-        stat_attack_max: 3.0,
-        stat_crit_chance: 5, // doubles damage
-
-        stat_power: 0.8,
-        drops: [
-            { item: 'GOLD', rate: 0.9, min: 1, max: 3 },
-            { item: 'CLOTH_LINEN', rate: 0.4, min: 1, max: 2 },
-            { item: 'BASIC_HELMET', rate: 0.2, min: 1, max: 1 },
-            { item: 'TOOTH', rate: 0.6, min: 1, max: 2 },
-            ]
-        },
-    ];
-
-    // (in main.js)
-    // Iterate over the array and set other variables dynamically
-
-    return characterData;
-}*/ // ****** OLD DATA
 
 export function init_equipmentElements() {
 
@@ -525,6 +268,7 @@ export function init_itemData() {
         value: 5,
         img: 'media/icons/cloth_basic_01.jpg',
         },
+// *** ENEMY LOOT
         { id: 'TOOTH',
         type: 'junk',
         name: 'Tooth',
@@ -534,6 +278,77 @@ export function init_itemData() {
         stackable: true,
         value: 1,
         img: 'media/icons/tooth_01.jpg',
+        },
+// NEW
+        { id: 'NPC_LOOT_LEPER_SMALL_SKULL',
+        type: 'junk',
+        name: 'Small Skull',
+        rarity: 0,
+        desc: 'Was a face once.',
+        cnt: 0,
+        stackable: true,
+        value: 3,
+        img: 'media/icons/NPC_LOOT_LEPER_SMALL_SKULL.png',
+        },
+        { id: 'NPC_LOOT_LEPER_BONE_FRAGMENT',
+        type: 'junk',
+        name: 'Bone Fragment',
+        rarity: 0,
+        desc: 'Bonish.',
+        cnt: 0,
+        stackable: true,
+        value: 1,
+        img: 'media/icons/NPC_LOOT_LEPER_BONE_FRAGMENT.png',
+        },
+        { id: 'NPC_LOOT_LIZARD_CLAW',
+        type: 'junk',
+        name: 'Lizard Claw',
+        rarity: 0,
+        desc: 'Scratchy.',
+        cnt: 0,
+        stackable: true,
+        value: 2,
+        img: 'media/icons/NPC_LOOT_LIZARD_CLAW.png',
+        },
+        { id: 'NPC_LOOT_LIZARD_TAIL',
+        type: 'junk',
+        name: 'Lizard Tail',
+        rarity: 0,
+        desc: 'Not as long as your beard.',
+        cnt: 0,
+        stackable: true,
+        value: 4,
+        img: 'media/icons/NPC_LOOT_LIZARD_TAIL.png',
+        },
+        { id: 'NPC_LOOT_LIZARD_SCALE',
+        type: 'junk',
+        name: 'Lizard Scale',
+        rarity: 0,
+        desc: 'Scaly.',
+        cnt: 0,
+        stackable: true,
+        value: 1,
+        img: 'media/icons/NPC_LOOT_LIZARD_SCALE.png',
+        },
+        { id: 'NPC_LOOT_SLIME',
+        type: 'junk',
+        name: 'Slime',
+        rarity: 0,
+        desc: 'It&apos;s sticky.',
+        cnt: 0,
+        stackable: true,
+        value: 1,
+        img: 'media/icons/NPC_LOOT_SLIME.png',
+        },
+        { id: 'NPC_LOOT_SLIME_CHUNK',
+        type: 'junk',
+        name: 'Slime Chunk',
+        rarity: 0,
+        desc: 'Mushy.',
+        cnt: 0,
+        stackable: true,
+        value: 3,
+        img: 'media/icons/NPC_LOOT_SLIME_CHUNK.png',
         },
 // *** STARTING EQUIPMENT
         { id: 'BASIC_HELMET',
@@ -637,7 +452,7 @@ export function init_itemData() {
         gains: [ 
             { stat: 'dmg_min', amt: 1.2 }, 
             { stat: 'dmg_max', amt: 1.6 }, 
-            { stat: 'constitution', lbl: 'Constitution', amt: 10 }, 
+            { stat: 'constitution', lbl: 'Constitution', amt: 1 }, 
             { stat: 'agility', lbl: 'Agility', amt: 5 }, 
         ],
         cnt: 0,
@@ -729,18 +544,53 @@ export function init_encounterData() {
     
     const encounterData = [
 
-        { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0,
+        { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0, enemyDmg_min: 1, enemyDmg_max: 2, enemyNoCrit: 0.06, 
             // encounterData[0]
             enemy_list: [
-                { en: 'beginner_0', cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: { 'SLIME_BALL': 0.8, 'SLIME_CHUNK': 0.2 } },
-                { en: 'beginner_0', cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: { 'SMALL_SCALE': 0.8, 'LIZARD_CLAW': 0.6, 'LIZARD_TAIL': 0.5 } },
-                { en: 'beginner_0', cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: { 'BONE_FRAGMENT': 0.8, 'GOLD': 0.8, 'SMALL_SKULL': 0.2, 'CLOTH_BASIC': 0.2 } },
+                { en: 'beginner_0', cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: [ { id: 'NPC_LOOT_SLIME', p: 0.8 }, { id: 'NPC_LOOT_SLIME_CHUNK', p: 0.2 }, ] },
+                { en: 'beginner_0', cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: [ { id: 'NPC_LOOT_LIZARD_SCALE', p: 0.6 }, { id: 'NPC_LOOT_LIZARD_CLAW', p: 0.5 }, { id: 'NPC_LOOT_LIZARD_TAIL', p: 0.3}, ] },
+                { en: 'beginner_0', cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: [ { id: 'NPC_LOOT_LEPER_BONE_FRAGMENT', p: 0.8 }, { id: 'GOLD', p: 0.8 }, { id: 'NPC_LOOT_LEPER_SMALL_SKULL', p: 0.2 }, { id: 'CLOTH_BASIC', p: 0.2 } ] },
                 // any enemy can drop
                 { cat: 'global', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1, 'BETTER_BOOTS': 0.08 } },
             ] }, 
-        { id: 'group1' },
+        // WIP dynamic entries
+        // start_encounter()
+        { id: 'group_loc1',
+            enemy_list: [
+                //
+            ] },
+        
         { id: 'group2' },
-
+        // for add_loot() function
+        { id: 'lootData', current_loot: [] },
+        { id: 'enemyNames', names: [ 
+            { n: 'Shadowfiend', l: 'SF', type: 'shadow', u: false }, 
+            { n: 'Flame Wraith', l: 'FW', type: 'elemental', u: false }, 
+            { n: 'Ice Revenant', l: 'IR', type: 'elemental', u: false }, 
+            { n: 'Void Stalker', l: 'VST', type: 'elemental', u: false }, 
+            { n: 'Doom Serpent', l: 'DS', type: 'beast', u: false }, 
+            { n: 'Storm Bringer', l: 'SB', type: 'elemental', u: false }, 
+            { n: 'Blood Harpy', l: 'BH', type: 'humanoid', u: false }, 
+            { n: 'Bone Golem', l: 'BG', type: 'undead', u: false }, 
+            { n: 'Iron Behemoth', l: 'IB', type: 'mech', u: false }, 
+            { n: 'Frost Lurker', l: 'FL', type: 'elemental', u: false }, 
+            { n: 'Soul Leech', l: 'SL', type: 'undead', u: false }, 
+            { n: 'Nightmare Hound', l: 'NH', type: 'beast', u: false }, 
+            { n: 'Crimson Specter', l: 'CS', type: 'undead', u: false }, 
+            { n: 'Ghoul King', l: 'GK', type: 'undead', u: false }, 
+            { n: 'Ash Demon', l: 'AD', type: 'elemental', u: false }, 
+            { n: 'Wraith Knight', l: 'WK', type: 'shadow', u: false }, 
+            { n: 'Venomous Slime', l: 'VSLIME', type: 'elemental', u: false }, 
+            { n: 'Blight Fiend', l: 'BF', type: 'shadow', u: false }, 
+            { n: 'Crystal Drake', l: 'CD', type: 'dragon', u: false }, 
+            { n: 'Necrotic Crawler', l: 'NC', type: 'shadow', u: false }, 
+            { n: 'Thunder Wyrm', l: 'TW', type: 'beast', u: false }, 
+            { n: 'Dark Harbinger', l: 'DH', type: 'shadow', u: false }, 
+            { n: 'Lava Elemental', l: 'LE', type: 'elemental', u: false }, 
+            { n: 'Obsidian Guardian', l: 'OG', type: 'elemental', u: false } 
+            ]
+        },
+        //
     ];
 
     return encounterData;
@@ -826,7 +676,7 @@ export function init_saveData() {
         ] },
     // saveData[4].currencyData[0]
     { currencyData: [
-        { id: 'GOLD', cnt: 28, name: 'Gold' },
+        { id: 'GOLD', cnt: 0, name: 'Gold' },
         ] },
     ];
 
@@ -837,7 +687,27 @@ export function init_saveData() {
     //console.log(saveData[1].savedCharacterData); // like a standalone array
     //console.log(saveData[2].inventoryData); // like a standalone array
     //console.log(saveData[0].killsData[0]); // for array lengths
-    
+////
+    // update equipment ids
+    let equippedItems = saveData[3].equippedData;
+
+    // add .slot to array
+    equippedItems.forEach(equip_slot => {
+        equip_slot.slot = equip_slot.id;
+    });
+
+    equippedItems.forEach(slot_data => {
+        const d_itemData = itemData.find(i => i.id === slot_data.equipped);
+        if (d_itemData) {
+            slot_data.equipped = d_itemData.id;
+            equipmentElements.e_slot_container = 'equip_slot_' + slot_data.id;
+        } else {
+            let empty_slot = 'equip_slot_EMPTY_' + slot_data.slot;
+            slot_data.id = empty_slot;
+            equipmentElements.e_slot_container = slot_data.id;
+        }
+    });
+////
     return saveData;
 }
 

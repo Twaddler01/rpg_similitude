@@ -2,46 +2,172 @@
 
 // variables needed
 import { elementsData } from './data.js';
+import { toggle_section } from './functions.js';
 
-// Override console.log for exporting into a file
+// Override console.log, console.warn, and console.error for exporting into a file
 export function logExport() {
     var logs = [];
     const originalConsoleLog = console.log;
+    const originalConsoleWarn = console.warn;
+    const originalConsoleError = console.error;
+
     console.log = function (message) {
         if (typeof message === 'object') {
-            // Convert objects to a string representation
             message = JSON.stringify(message);
         }
-    
-        logs.push(message);
-    
-        // You can still log to the console if needed
+        logs.push(`LOG: ${message}`);
         originalConsoleLog(message);
     };
-    
-    document.getElementById("exportButton").addEventListener("click", function () {
+
+    console.warn = function (message) {
+        if (typeof message === 'object') {
+            message = JSON.stringify(message);
+        }
+        logs.push(`WARNING: ${message}`);
+        originalConsoleWarn(message);
+    };
+
+    console.error = function (message) {
+        if (typeof message === 'object') {
+            message = JSON.stringify(message);
+        }
+        logs.push(`ERROR: ${message}`);
+        originalConsoleError(message);
+    };
+
+    let exportButton = document.createElement('button');
+    exportButton.id = 'exportButton';
+    exportButton.innerHTML = 'Export Logs';
+    document.body.appendChild(exportButton);
+
+    exportButton.addEventListener("click", function () {
         // Save logs to a file
         let logString = logs.join('\n');
-    
+
         // Create a Blob containing the text data
         const blob = new Blob([logString], { type: 'text/plain' });
-    
+
         // Create a download link
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.download = 'logs.txt';
-    
+
         // Append the link to the document
         document.body.appendChild(link);
-    
+
         // Trigger the download
         link.click();
-    
+
         // Remove the link from the document
         document.body.removeChild(link);
     });
 }
-// HTML USE: <button id="exportButton">Export Logs</button>
+
+/*
+// Initialize an array to store logs for exporting
+let logs = [];
+
+// Function to log messages to the custom console and store them for export
+function logToConsole(message, type = 'log') {
+    // Check if console element already exists
+    let consoleElement = document.getElementById('console');
+    if (!consoleElement) {
+        // Create console element if it doesn't exist
+        consoleElement = document.createElement('div');
+        consoleElement.id = 'console';
+        consoleElement.style.width = '100%';
+        consoleElement.style.height = '200px';
+        consoleElement.style.backgroundColor = '#333';
+        consoleElement.style.color = '#fff';
+        consoleElement.style.fontFamily = 'monospace';
+        consoleElement.style.overflowY = 'auto';
+        consoleElement.style.padding = '10px';
+        document.body.appendChild(consoleElement);
+    }
+
+    // Create and format the log entry
+    const logEntry = document.createElement('div');
+    logEntry.textContent = `${type.toUpperCase()}: ${message}`;
+
+    // Style the log entry based on message type
+    if (type === 'error') {
+        logEntry.style.color = 'red';
+    } else if (type === 'warn') {
+        logEntry.style.color = 'yellow';
+    }
+
+    // Append the log entry to the console element
+    consoleElement.appendChild(logEntry);
+    consoleElement.scrollTop = consoleElement.scrollHeight;  // Auto-scroll to the bottom
+}
+
+// Override the default console methods to both log to custom console and store logs
+const originalConsoleLog = console.log;
+console.log = function (message) {
+    if (typeof message === 'object') {
+        message = JSON.stringify(message);  // Convert objects to a string representation
+    }
+    
+    logs.push(message);  // Store the log for export
+    logToConsole(message, 'log');  // Log to the custom console
+    originalConsoleLog(message);   // Still log to the browser's console (optional)
+};
+
+const originalConsoleError = console.error;
+console.error = function (message) {
+    logs.push(`ERROR: ${message}`);  // Store the error log for export
+    logToConsole(message, 'error');  // Log to the custom console
+    originalConsoleError(message);   // Still log to the browser's console
+};
+
+const originalConsoleWarn = console.warn;
+console.warn = function (message) {
+    logs.push(`WARN: ${message}`);  // Store the warning log for export
+    logToConsole(message, 'warn');  // Log to the custom console
+    originalConsoleWarn(message);   // Still log to the browser's console
+};
+
+// Global error handler to catch uncaught errors
+window.onerror = function (message, source, lineno, colno, error) {
+    // Format the error message with additional details
+    const formattedMessage = `Uncaught error: ${message} at ${source}:${lineno}:${colno}`;
+    logs.push(`ERROR: ${formattedMessage}`);  // Store the error for export
+    logToConsole(formattedMessage, 'error');  // Log to the custom console
+
+    return true;  // Prevent the browser's default error handling
+};
+
+// Function to export logs to a text file
+export function logExport() {
+    // Create an "Export Logs" button if it doesn't exist
+    let exportButton = document.getElementById('exportButton');
+    if (!exportButton) {
+        exportButton = document.createElement('button');
+        exportButton.id = 'exportButton';
+        exportButton.innerHTML = 'Export Logs';
+        document.body.appendChild(exportButton);
+    }
+
+    // Add click event to the export button
+    exportButton.addEventListener('click', function () {
+        // Combine logs into a single string
+        let logString = logs.join('\n');
+        
+        // Create a Blob object containing the log data
+        const blob = new Blob([logString], { type: 'text/plain' });
+        
+        // Create a link to download the Blob as a file
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'logs.txt';
+        
+        // Append the link to the document, trigger download, and remove the link
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}
+*/
 
 // Allow exporting of HTML to inspect/debug elements
 export function htmlExport() {
@@ -415,6 +541,16 @@ export function add_allElements() {
             // 'hidden' flag (if set TRUE in array) to hide element
             if (element.hidden) {
                 element_id.style.display = 'none';
+            }
+            
+            if (element.on_click && element.id === 'character_section') {
+                let e_character_section = document.getElementById('character_section');
+                if (e_character_section) {
+                    e_character_section.addEventListener('click', () => {
+                        e_character_section.innerHTML = 'Character Section <span class="normal">[ HIDE ]</span>';
+                        toggle_section('character');
+                    });
+                }
             }
         }
 /*

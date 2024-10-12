@@ -7,12 +7,10 @@ import * as gf from './general_functions.js';
 
 //`
 
-// ******** DEBUGGING INFO
+// DEBUGGING INFO
 
-gf.logExport();
-gf.htmlExport();
-
-// ******** END DEBUGGING INFO
+//gf.logExport();
+//gf.htmlExport();
 
 // Iterate over the array and set other variables dynamically
 /*function outside_iteration() {
@@ -37,8 +35,7 @@ outside_iteration();*/
 
 // Add main elements
 gf.add_allElements();
-f.update_character();
-
+f.update_character_stats(true);
 
 // after DOM initialized
 document.addEventListener('DOMContentLoaded', () => {

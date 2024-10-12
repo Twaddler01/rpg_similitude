@@ -7,6 +7,11 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+10-12-2024
+- Updated sections with option to hide or show each on toggle.
+- Battles are more complete, with option to continue fighting or choose a different location. Still only testing Starting Location but working on random and more dynamic options to integrate for other locations. 
+- Player death has a REVIVE option (10 second wait). No penalty yet.
+
 09-27-2024
 - Combat is being worked on statically with a starting zone and will eventually be dynamic.
 - Basic attacks, hit, and crit are functional for player, but no enemy actions yet. Need to integrate loot as well.

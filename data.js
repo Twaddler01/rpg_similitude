@@ -549,7 +549,7 @@ export function init_encounterData() {
             enemy_list: [
                 { en: 'beginner_0', cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: [ { id: 'NPC_LOOT_SLIME', p: 0.8 }, { id: 'NPC_LOOT_SLIME_CHUNK', p: 0.2 }, ] },
                 { en: 'beginner_0', cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: [ { id: 'NPC_LOOT_LIZARD_SCALE', p: 0.6 }, { id: 'NPC_LOOT_LIZARD_CLAW', p: 0.5 }, { id: 'NPC_LOOT_LIZARD_TAIL', p: 0.3}, ] },
-                { en: 'beginner_0', cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: [ { id: 'NPC_LOOT_LEPER_BONE_FRAGMENT', p: 0.8 }, { id: 'GOLD', p: 0.8 }, { id: 'NPC_LOOT_LEPER_SMALL_SKULL', p: 0.2 }, { id: 'CLOTH_BASIC', p: 0.2 } ] },
+                { en: 'beginner_0', cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: [ { id: 'NPC_LOOT_LEPER_BONE_FRAGMENT', p: 0.5 }, { id: 'GOLD', p: 0.6 }, { id: 'NPC_LOOT_LEPER_SMALL_SKULL', p: 0.4 }, { id: 'CLOTH_BASIC', p: 0.3 } ] },
                 // any enemy can drop
                 { cat: 'global', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1, 'BETTER_BOOTS': 0.08 } },
             ] }, 
@@ -590,6 +590,7 @@ export function init_encounterData() {
             { n: 'Obsidian Guardian', l: 'OG', type: 'elemental', u: false } 
             ]
         },
+        { id: 'experience', experienceGains: [] },
         //
     ];
 

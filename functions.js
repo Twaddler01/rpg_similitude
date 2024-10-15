@@ -129,7 +129,7 @@ export function first_run() {
         // testing
         let gold_min = 1;
         let gold_max = 2;
-        add_loot(enemy[1], loot_min, gold_min, gold_max);
+        add_loot(enemy[2], loot_min, gold_min, gold_max);
         counter++;
     });
 
@@ -1274,6 +1274,24 @@ export function toggle_combat_status() {
     }
 }
 
+export function xp_gain(lvl) {
+    //let exp_array = encounterData.find(e => e.id === 'experience');
+    //let experienceGains = exp_array.experienceGains;
+    let random_exp = 0;
+
+    for (let i=1; i<=20; i++) {
+        if (lvl === i) {
+            random_exp = randomize(80, 99, 1) * i * 2;
+            //experienceGains.push({
+            //    lvl: i,
+            //    xp: random_exp,
+            //});
+        }
+    }
+    //console.log(experienceGains);
+    return random_exp;
+}
+
 export function update_xp() {
     
     // Data needed
@@ -1865,6 +1883,14 @@ export function player_attack(enemy, encounter) {
         if (enemy.dead) {
             new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated a level ' + enemy.lvl + '&nbsp;' + enemy.lbl + '.</span></p>';
 
+// xp gained
+let exp_to_add = xp_gain(enemy.lvl);
+let d_player_character = saveData[1].savedCharacterData[0];
+d_player_character.char_exp += exp_to_add;
+update_xp();
+
+            new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;You gained ' + exp_to_add + ' experience.';
+
             let loot_dropped = add_loot(enemy, 1, 1, 2);
             if (loot_dropped) {
                 loot_dropped.forEach(loot => {
@@ -1879,14 +1905,12 @@ export function player_attack(enemy, encounter) {
 // reset combat log
 encounter.log_cnt = 0;
 
-// xp gained
-
-
 // AUTO PREPARE NEXT ATTACK
 // Other resets are performed in reset_battle()
 encounter.in_combat = false;
 update_locations();
 gf.toggleElement('s', 'change_location_button');
+playerStats.cur_health = playerStats.max_health;
 trackingData[0].next_attack = true;
 trackingData[0].combat_log_created = false;
 selectLevel(trackingData[0].loc, trackingData[0].location, trackingData[0].lvl, trackingData[0].kills);
@@ -1958,17 +1982,17 @@ export function add_loot(enemy, count, gold_min, gold_max) {
 
     // Calculate additional drops based on count
     while (loot_dropped < count) {
-        enemyDrops.forEach(drop => {
-            if (loot_dropped >= count) return;  // Stop once we've dropped the required number
 
-            random_loot = Math.random();  // Generate random chance for each drop
-            let loot_chance = drop.p;
-
-            // If the drop chance is higher than the random number, drop the loot
-            if (loot_chance > random_loot) {
+        // Shuffle enemyDrops
+        let shuffledDrops = enemyDrops.sort(() => 0.5 - Math.random()); 
+        
+        shuffledDrops.forEach(drop => {
+            if (loot_dropped >= count) return;
+        
+            let random_loot = Math.random();
+            if (drop.p > random_loot) {
                 add_item_to_dropped(drop.id);
-                loot_dropped++;  // Increment the loot counter
-                //console.log('Additional loot dropped: ' + drop.id);
+                loot_dropped++;
             }
         });
     }
@@ -1979,6 +2003,7 @@ export function add_loot(enemy, count, gold_min, gold_max) {
         dropped_items.push({ id: 'GOLD', cnt: gold_roll });
     }
 
+console.log(dropped_items);
     // Return dropped items with their counts
     return dropped_items;
 }
@@ -2931,4 +2956,4 @@ export function toggle_section(section) {
             e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ HIDE ]</span>';
         }
     }
-}
+    }

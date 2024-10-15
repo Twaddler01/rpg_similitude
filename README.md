@@ -8,6 +8,9 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+10-14-2024
+- Minor changes made. Re-uploaded media items. There is a known server issue on the Chome browser (Mobile on Android) with CSS handling but Firefox Mobile (Android) still seems to work fine.
+
 10-12-2024
 - Updated sections with option to hide or show each on toggle.
 - Battles are more complete, with option to continue fighting or choose a different location. Still only testing Starting Location but working on random and more dynamic options to integrate for other locations.

@@ -4,6 +4,8 @@ import { elementsData, equipmentElements, inventoryElements, itemData, locations
 
 import * as f from  './functions.js';
 import * as gf from './general_functions.js';
+import * as ch from './character.js';
+import * as inv from './inventory.js';
 
 //`
 
@@ -12,36 +14,15 @@ import * as gf from './general_functions.js';
 //gf.logExport();
 //gf.htmlExport();
 
-// Iterate over the array and set other variables dynamically
-/*function outside_iteration() {
-    
-    // characterData
-    // global .enemy_defeated_count
-    for (let i = 0; i < characterData.length; i++) {
-        const characterIndex = characterData[i];
-        const characterDataUpdates = {};
-        let group_1 = locationData.find(loc => loc.enemy === 'enemy_group_1');
-        for (let level = 1; level <= group_1.total_levels; level++) {
-            if (characterIndex.id !== 'my_character') {
-                characterIndex.enemy_defeated_count.push({ [characterIndex.id + '_def_count_level_' + level]: 0 });
-            }
-        }
-        // Assign updates to resourcesIndex properties
-        Object.assign(characterIndex, characterDataUpdates);
-    }
-}
-// init certain array data
-outside_iteration();*/
-
 // Add main elements
 gf.add_allElements();
-f.update_character_stats(true);
+ch.update_character_stats(true);
 
 // after DOM initialized
 document.addEventListener('DOMContentLoaded', () => {
     f.first_run();
     f.update_locations();
-    f.update_inventory();
+    inv.update_inventory();
     //
 });
 
@@ -56,26 +37,7 @@ which is commonly used by JavaScript.
 //console.log(JSON.stringify(saveData).length * 2);
 //console.log(JSON.stringify(saveData));
 
-// TESTING FOR WEAPON DAMAGE VALUES
-/*
-let stat_power = 5;
-// ilvl is simply a damage multiplier for weapon dmg generation
-for (let ilvl = 1; ilvl <= 20; ilvl ++) {
-    let weap_min = 1 * ilvl;
-    // 20% difference in min/max does well
-    let weap_max = 1.2 * ilvl;
-    
-    let [damage_min, damage_max] = f.calculate_weapon_damage(ilvl, stat_power, weap_min, weap_max);
-
-    function roundValues(...values) {
-        return values.map(value => Math.round(value * 10) / 10);
-    }
-
-    [weap_min, weap_max, damage_min, damage_max] = roundValues(weap_min, weap_max, damage_min, damage_max);
-    console.log('ilvl: ' + ilvl + ' / Weapon: ' + weap_min + ' - ' + weap_max + ' / Pwr Dmg: ' + damage_min + ' - ' + damage_max);
-}
-*/
-
+// For testing elements
 function loaded_DOM() {
     locData.forEach(location => {
         for (let lvl = 1; lvl <= location.level_data.length; lvl++) {

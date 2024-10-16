@@ -1,8 +1,10 @@
 // general_functions.js
 
 // variables needed
-import { elementsData } from './data.js';
-import { toggle_section } from './functions.js';
+import { elementsData, trackingData } from './data.js';
+import { update_equipment } from './functions.js';
+import { update_inventory } from './inventory.js';
+import { update_character, update_character_stats } from './character.js';
 
 // Override console.log, console.warn, and console.error for exporting into a file
 export function logExport() {
@@ -62,112 +64,6 @@ export function logExport() {
         document.body.removeChild(link);
     });
 }
-
-/*
-// Initialize an array to store logs for exporting
-let logs = [];
-
-// Function to log messages to the custom console and store them for export
-function logToConsole(message, type = 'log') {
-    // Check if console element already exists
-    let consoleElement = document.getElementById('console');
-    if (!consoleElement) {
-        // Create console element if it doesn't exist
-        consoleElement = document.createElement('div');
-        consoleElement.id = 'console';
-        consoleElement.style.width = '100%';
-        consoleElement.style.height = '200px';
-        consoleElement.style.backgroundColor = '#333';
-        consoleElement.style.color = '#fff';
-        consoleElement.style.fontFamily = 'monospace';
-        consoleElement.style.overflowY = 'auto';
-        consoleElement.style.padding = '10px';
-        document.body.appendChild(consoleElement);
-    }
-
-    // Create and format the log entry
-    const logEntry = document.createElement('div');
-    logEntry.textContent = `${type.toUpperCase()}: ${message}`;
-
-    // Style the log entry based on message type
-    if (type === 'error') {
-        logEntry.style.color = 'red';
-    } else if (type === 'warn') {
-        logEntry.style.color = 'yellow';
-    }
-
-    // Append the log entry to the console element
-    consoleElement.appendChild(logEntry);
-    consoleElement.scrollTop = consoleElement.scrollHeight;  // Auto-scroll to the bottom
-}
-
-// Override the default console methods to both log to custom console and store logs
-const originalConsoleLog = console.log;
-console.log = function (message) {
-    if (typeof message === 'object') {
-        message = JSON.stringify(message);  // Convert objects to a string representation
-    }
-    
-    logs.push(message);  // Store the log for export
-    logToConsole(message, 'log');  // Log to the custom console
-    originalConsoleLog(message);   // Still log to the browser's console (optional)
-};
-
-const originalConsoleError = console.error;
-console.error = function (message) {
-    logs.push(`ERROR: ${message}`);  // Store the error log for export
-    logToConsole(message, 'error');  // Log to the custom console
-    originalConsoleError(message);   // Still log to the browser's console
-};
-
-const originalConsoleWarn = console.warn;
-console.warn = function (message) {
-    logs.push(`WARN: ${message}`);  // Store the warning log for export
-    logToConsole(message, 'warn');  // Log to the custom console
-    originalConsoleWarn(message);   // Still log to the browser's console
-};
-
-// Global error handler to catch uncaught errors
-window.onerror = function (message, source, lineno, colno, error) {
-    // Format the error message with additional details
-    const formattedMessage = `Uncaught error: ${message} at ${source}:${lineno}:${colno}`;
-    logs.push(`ERROR: ${formattedMessage}`);  // Store the error for export
-    logToConsole(formattedMessage, 'error');  // Log to the custom console
-
-    return true;  // Prevent the browser's default error handling
-};
-
-// Function to export logs to a text file
-export function logExport() {
-    // Create an "Export Logs" button if it doesn't exist
-    let exportButton = document.getElementById('exportButton');
-    if (!exportButton) {
-        exportButton = document.createElement('button');
-        exportButton.id = 'exportButton';
-        exportButton.innerHTML = 'Export Logs';
-        document.body.appendChild(exportButton);
-    }
-
-    // Add click event to the export button
-    exportButton.addEventListener('click', function () {
-        // Combine logs into a single string
-        let logString = logs.join('\n');
-        
-        // Create a Blob object containing the log data
-        const blob = new Blob([logString], { type: 'text/plain' });
-        
-        // Create a link to download the Blob as a file
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'logs.txt';
-        
-        // Append the link to the document, trigger download, and remove the link
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
-}
-*/
 
 // Allow exporting of HTML to inspect/debug elements
 export function htmlExport() {
@@ -607,4 +503,70 @@ export function add_allElements() {
             }
         }*/
     });
+}
+
+// Show or hide sections (clear/create or hide/show)
+export function toggle_section(section) {
+
+    if (section === 'stats') {
+        let e_character_stats_section = document.getElementById('character_stats_section');
+        let e_character_stats_container = document.getElementById('character_stats_container');
+
+        if (trackingData[0].t_character_stats_section) {
+            trackingData[0].t_character_stats_section = false;
+            e_character_stats_container.style.display = 'none';
+            e_character_stats_container.style.overflow = 'auto';
+            e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+        } else {
+            trackingData[0].t_character_stats_section = true;
+            update_equipment();
+            update_character_stats(true);
+            e_character_stats_container.style.display = 'block';
+            e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ HIDE ]</span>';
+        }
+    }
+
+    if (section === 'character') {
+        let e_character_section = document.getElementById('character_section');
+        let e_character_container = document.getElementById('character_container');
+        if (trackingData[0].t_character_section) {
+            e_character_container.innerHTML = '';
+            e_character_section.innerHTML = 'Character Section <span class="normal">[ SHOW ]</span>';
+            trackingData[0].t_character_section = false;
+        } else {
+            //character_container.style.display = 'block';
+            trackingData[0].t_character_section = true;
+            //update_character('no_toggle');
+            update_character();
+            e_character_section.innerHTML = 'Character Section <span class="normal">[ HIDE ]</span>';
+        }
+    }
+
+    if (section === 'battle') {
+        let e_battle_section = document.getElementById('battle_section');
+        let location_container = document.getElementById('location_container');
+        if (trackingData[0].t_battle_section) {
+            location_container.style.display = 'none';
+            e_battle_section.innerHTML = 'Battle Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+            trackingData[0].t_battle_section = false;
+        } else {
+            location_container.style.display = 'block';
+            e_battle_section.innerHTML = 'Battle Section <span class="normal">[ HIDE ]</span>';
+            trackingData[0].t_battle_section = true;
+        }
+    }
+
+    if (section === 'inventory') {
+        let e_inventory_section = document.getElementById('inventory_section');
+        let e_inventory_section_container = document.getElementById('inventory_section_container');
+        if (trackingData[0].t_inventory_section) {
+            e_inventory_section_container.innerHTML = '';
+            e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+            trackingData[0].t_inventory_section = false;
+        } else {
+            trackingData[0].t_inventory_section = true;
+            update_inventory();
+            e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ HIDE ]</span>';
+        }
+    }
 }

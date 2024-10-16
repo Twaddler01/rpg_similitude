@@ -123,6 +123,8 @@ export function init_elementsData() {
             css_class2: 'center',
             hidden: true,
             },
+            
+            /// TEST remove black line
             // attach (battle_section_container)
             { id: 'attack_box_button', // replaced by new_battle_button below
             section_cat: true,
@@ -135,6 +137,7 @@ export function init_elementsData() {
             hidden: true,
             on_click: true, // click event
             },
+            
             // attach (battle_section_container)
             { id: 'battle_ui_container',
             section_cat: true,
@@ -251,13 +254,12 @@ export function init_itemData() {
         // rarity: 5 = legendary (orange)
         // rarity: 6 = ancient (lightred)
 
-        /* inInventory = true -> item was processed in
-         * inventory array (inventoryData[0].current_loot) */
         { id: 'GOLD',
         type: 'currency',
         name: 'Gold',
         cnt: 0,
         },
+// *** TEST LOOT
         { id: 'CLOTH_BASIC',
         type: 'material',
         name: 'Basic Cloth',
@@ -268,7 +270,6 @@ export function init_itemData() {
         value: 5,
         img: 'media/icons/cloth_basic_01.jpg',
         },
-// *** ENEMY LOOT
         { id: 'TOOTH',
         type: 'junk',
         name: 'Tooth',
@@ -279,7 +280,7 @@ export function init_itemData() {
         value: 1,
         img: 'media/icons/tooth_01.jpg',
         },
-// NEW
+// *** ENEMY LOOT
         { id: 'NPC_LOOT_LEPER_SMALL_SKULL',
         type: 'junk',
         name: 'Small Skull',
@@ -356,7 +357,6 @@ export function init_itemData() {
         name: 'Basic Helm',
         slot: 'head',
         slot_name: 'Head',
-        player_equipped: true,
         rarity: 0,
         desc: 'Basic head protection, nothing extraordinary.',
         gains: [ 
@@ -364,10 +364,8 @@ export function init_itemData() {
             { stat: 'strength', lbl: 'Strength', amt: 1 },
             { stat: 'intelligence', lbl: 'Intelligence', amt: 1 },
         ],
-        //gains: [ {stat: 'Armor', amt: 10 }, { stat: 'Constitution', amt: 1 } ],
         cnt: 0,
         value: 0,
-        iSlot: 'eH',
         img: 'media/icons/head_01.jpg',
         },
         //
@@ -376,7 +374,6 @@ export function init_itemData() {
         name: 'Basic Chestpiece',
         slot: 'chest',
         slot_name: 'Chest',
-        player_equipped: true,
         rarity: 0,
         desc: 'Basic chest protection. Not very stylish.',
         gains: [ 
@@ -385,7 +382,6 @@ export function init_itemData() {
         ],
         cnt: 0,
         value: 0,
-        iSlot: 'eCh',
         img: 'media/icons/chest_01.jpg',
         },
         //
@@ -394,7 +390,6 @@ export function init_itemData() {
         name: 'Basic Gloves',
         slot: 'hands',
         slot_name: 'Hands',
-        player_equipped: true,
         rarity: 0,
         desc: 'Basic hand protection. Almost as good as junk...almost.',
         gains: [ 
@@ -403,7 +398,6 @@ export function init_itemData() {
         ],
         cnt: 0,
         value: 0,
-        iSlot: 'eGl',
         img: 'media/icons/gloves_01.jpg',
         },
         //
@@ -412,7 +406,6 @@ export function init_itemData() {
         name: 'Basic Boots',
         slot: 'feet',
         slot_name: 'Feet',
-        player_equipped: true,
         rarity: 0,
         desc: 'Basic feet protection. Not very comfortable.',
         gains: [ 
@@ -421,9 +414,9 @@ export function init_itemData() {
         ],
         cnt: 0,
         value: 0,
-        iSlot: 'eF',
         img: 'media/icons/boots_01.jpg',
         },
+// *** OTHER ITEMS
         { id: 'BETTER_BOOTS',
         type: 'armor',
         name: 'Better Boots',
@@ -437,7 +430,6 @@ export function init_itemData() {
         ],
         cnt: 0,
         value: 5,
-        iSlot: 'eF',
         img: 'media/icons/boots_01.jpg',
         },
         //
@@ -457,8 +449,24 @@ export function init_itemData() {
         ],
         cnt: 0,
         value: 0,
-        iSlot: 'eMH',
         img: 'media/icons/mh_01.jpg',
+        },
+        //
+        { id: 'BETTER_HELMET',
+        type: 'armor',
+        name: 'Better Helm',
+        slot: 'head',
+        slot_name: 'Head',
+        rarity: 1,
+        desc: 'Better head protection, still not extraordinary.',
+        gains: [ 
+            { stat: 'armor', lbl: 'Armor', amt: 30 },
+            { stat: 'strength', lbl: 'Strength', amt: 15 },
+            { stat: 'intelligence', lbl: 'Intelligence', amt: 15 },
+        ],
+        cnt: 0,
+        value: 0,
+        img: 'media/icons/head_01.jpg',
         },
     ];
 
@@ -550,8 +558,6 @@ export function init_encounterData() {
                 { en: 'beginner_0', cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: [ { id: 'NPC_LOOT_SLIME', p: 0.8 }, { id: 'NPC_LOOT_SLIME_CHUNK', p: 0.2 }, ] },
                 { en: 'beginner_0', cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: [ { id: 'NPC_LOOT_LIZARD_SCALE', p: 0.6 }, { id: 'NPC_LOOT_LIZARD_CLAW', p: 0.5 }, { id: 'NPC_LOOT_LIZARD_TAIL', p: 0.3}, ] },
                 { en: 'beginner_0', cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: [ { id: 'NPC_LOOT_LEPER_BONE_FRAGMENT', p: 0.5 }, { id: 'GOLD', p: 0.6 }, { id: 'NPC_LOOT_LEPER_SMALL_SKULL', p: 0.4 }, { id: 'CLOTH_BASIC', p: 0.3 } ] },
-                // any enemy can drop
-                { cat: 'global', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1, 'BETTER_BOOTS': 0.08 } },
             ] }, 
         // WIP dynamic entries
         // start_encounter()
@@ -563,6 +569,8 @@ export function init_encounterData() {
         { id: 'group2' },
         // for add_loot() function
         { id: 'lootData', current_loot: [] },
+        // any enemy can drop
+        { cat: 'global_drops', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1, 'BETTER_BOOTS': 0.08, 'BETTER_HELMET': 0.08 } },
         { id: 'enemyNames', names: [ 
             { n: 'Shadowfiend', l: 'SF', type: 'shadow', u: false }, 
             { n: 'Flame Wraith', l: 'FW', type: 'elemental', u: false }, 
@@ -688,27 +696,7 @@ export function init_saveData() {
     //console.log(saveData[1].savedCharacterData); // like a standalone array
     //console.log(saveData[2].inventoryData); // like a standalone array
     //console.log(saveData[0].killsData[0]); // for array lengths
-////
-    // update equipment ids
-    let equippedItems = saveData[3].equippedData;
 
-    // add .slot to array
-    equippedItems.forEach(equip_slot => {
-        equip_slot.slot = equip_slot.id;
-    });
-
-    equippedItems.forEach(slot_data => {
-        const d_itemData = itemData.find(i => i.id === slot_data.equipped);
-        if (d_itemData) {
-            slot_data.equipped = d_itemData.id;
-            equipmentElements.e_slot_container = 'equip_slot_' + slot_data.id;
-        } else {
-            let empty_slot = 'equip_slot_EMPTY_' + slot_data.slot;
-            slot_data.id = empty_slot;
-            equipmentElements.e_slot_container = slot_data.id;
-        }
-    });
-////
     return saveData;
 }
 
@@ -739,7 +727,14 @@ export function init_trackingData() {
         // trackingData[0].stat_agility (int)
         // trackingData[0].stat_wisdom (int)
         // trackingData[0].stat_power (int) ???
+
     ];
+    
+    // For toggle_section() from general_functions.js
+    trackingData[0].t_character_section = false;
+    trackingData[0].t_character_stats_section = false;
+    trackingData[0].t_battle_section = false;
+    trackingData[0].t_inventory_section = false;
 
     return trackingData;
 }

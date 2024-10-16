@@ -8,6 +8,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+10-15-2024
+- Minor updates.
+- Created inventory.js and character.js files to shorten functions. Battle Section functions will be moved once section is more complete.
+
 10-14-2024
 - Minor changes made. Re-uploaded media items. There is a known server issue on Google Chrome browser (Mobile on Android) with CSS handling but Firefox Mobile (Android) still seems to work fine.
 

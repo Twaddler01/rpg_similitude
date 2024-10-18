@@ -9,16 +9,11 @@ import { create_el, update_equipment } from './functions.js';
 import { removeItemTooltip, createItemElements } from './inventory.js';
 
 // Run first to initialize array
-function update_character_array() {
+export function update_character_array() {
     
     // Get equipment ids
     let equippedItems = saveData[3].equippedData;
-    
-    // add .slot to array
-    equippedItems.forEach(equip_slot => {
-        equip_slot.slot = equip_slot.id;
-    });
-    
+
     equippedItems.forEach(slot_data => {
         const d_itemData = itemData.find(i => i.id === slot_data.equipped);
         if (d_itemData) {
@@ -32,24 +27,21 @@ function update_character_array() {
     });
 }
 
-// Initialize array
-update_character_array();
-
 export function update_character() {
 
-    // Flag to avoid double toggle_section() function calls
+    let e_character_section = document.getElementById('character_section');
+    let e_character_container = document.getElementById('character_container');
+
+    // Reset e_character_container elements
+    e_character_container.innerHTML = '';
+
+    if (trackingData[0].t_character_section) {
+        update_character_array();
+    }
+
     if (!trackingData[0].t_character_section) {
-        let e_character_section = document.getElementById('character_section');
-        e_character_section.addEventListener('click', () => {
-            gf.toggle_section('character');
-        });
-    } else {
         // trackingData[0].t_character_section = true
-    
-        // Reset character_container elements
-        let character_container = document.getElementById('character_container');
-        character_container.innerHTML = '';
-    
+
         let charData = saveData[1].savedCharacterData[0];
     
         if (charData.char_name && charData.char_race && charData.char_class) {
@@ -59,7 +51,7 @@ export function update_character() {
         if (!trackingData[0].character_created) {
     
             let new_char_entry = document.createElement('div');
-            character_container.appendChild(new_char_entry);
+            e_character_container.appendChild(new_char_entry);
         
             let character_entry = document.createElement('span');
             new_char_entry.appendChild(character_entry);
@@ -134,11 +126,11 @@ export function update_character() {
         if (trackingData[0].character_created) {
             
             let char_title = document.createElement('div');
-            character_container.appendChild(char_title);
+            e_character_container.appendChild(char_title);
             char_title.innerHTML = '<b>' + charData.char_name + '&nbsp;(Level ' + charData.char_level + ')</b>';
             
             let char_equipment = document.createElement('div');
-            character_container.appendChild(char_equipment);
+            e_character_container.appendChild(char_equipment);
             char_equipment.innerHTML = '<p><b>EQUIPMENT:</b></p>';
     
             // Equipment image with slots around image
@@ -231,6 +223,7 @@ export function update_character() {
     
             // Add stats for equipmemt from equipped items
             update_equipment();
+            // Stats only
             update_character_stats(false);
         }
     } // END trackingData[0].t_character_section = true

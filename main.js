@@ -11,8 +11,11 @@ import * as inv from './inventory.js';
 
 // DEBUGGING INFO
 
-//gf.logExport();
-//gf.htmlExport();
+gf.logExport();
+gf.htmlExport();
+
+// Inject gear sets
+f.add_new_gear('STARTER', 'BLUE', 2, 5, 5, 10, 20, 30, 3.0, 5.0); // Shield is x5 armor
 
 // Add main elements
 gf.add_allElements();
@@ -23,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     f.first_run();
     f.update_locations();
     inv.update_inventory();
+    gf.add_section_clicks();
     //
 });
 

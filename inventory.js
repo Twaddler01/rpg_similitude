@@ -15,7 +15,7 @@ export function update_inventory() {
 
     let inventory_section = document.getElementById('inventory_section');
     let inventory_section_container = document.getElementById('inventory_section_container');
-    
+
     if (!trackingData[0].t_inventory_section) {
         inventory_section.addEventListener('click', () => {
             gf.toggle_section('inventory');
@@ -206,7 +206,6 @@ export function updateLootCount(itemId, quantity, requestedSlot) {
     
     if (lootItem && lootItem.id === 'GOLD') {
     // If the loot item is gold, add it here
-        //// t
         let d_gold = saveData[4].currencyData[0];
         if (d_gold) {
             d_gold.cnt += quantity;
@@ -488,6 +487,11 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
     }
     
     // Sell price
+
+    // Only if description is not empty to prevent doubled hr
+    if (item_desc.innerHTML) {
+        create_el('tt_hr4', 'hr', 'item_tooltip_div');
+    }
     create_el('sell_price_lbl', 'div', 'item_tooltip_div');
     sell_price_lbl.classList.add('light_small');
     sell_price_lbl.innerHTML = 'Sell Price: ';
@@ -496,17 +500,55 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
     create_el('gold', 'img', 'gold_div');
     gold.src = 'media/currency_gold.png';
     gold.classList.add('currency_gold');
-    create_el('sell_price_amt', 'span', 'sell_price_lbl');
-    sell_price_amt.classList.add('light_small');
-    
+    create_el('sell_price_container_1', 'span', 'sell_price_lbl');
+    create_el('sell_price_amt1', 'span', 'sell_price_container_1');
+    create_el('sell_price_container_2', 'span', 'sell_price_lbl');
+    create_el('sell_price_amt2', 'span', 'sell_price_container_2');
+    sell_price_amt1.classList.add('light_small');
+    sell_price_amt2.classList.add('light_small');
+
     if (item.value > 0) {
-        sell_price_amt.innerHTML = '&nbsp;' + item.value;
+        
+        function sell_item(all) {
+            let d_gold = saveData[4].currencyData[0];
+            if (all === 'all') {
+                d_gold.cnt += (item.value * slot_data.cnt);
+                slot_data.cnt = 0;
+                slot_data.contents = '[ EMPTY ]';
+            } else {
+                d_gold.cnt += item.value;
+                slot_data.cnt -= 1;
+                if (slot_data.cnt === 0) {
+                    slot_data.contents = '[ EMPTY ]';
+                }
+            }
+            update_gold();
+            update_inventory();
+        }
+        
+        sell_price_amt1.innerHTML = '&nbsp;' + item.value + '&nbsp;';
+        create_el('sell_action', 'button', 'sell_price_container_1');
+        sell_action.classList.add('light_small');
+        sell_action.style.color = 'black';
+        sell_action.innerHTML = 'Sell';
+        sell_action.addEventListener('click', () => {
+            // Clear inventory event listener to prevent item movement on click after change
+            removeInventorySlotListener(slot_data.slot_id);
+            sell_item();
+        });
+
         if (slot_data.cnt > 1) {
-            sell_price_amt.innerHTML += '<br>Sell Price x' + slot_data.cnt + ': ' + '<img src="media/currency_gold.png" class="currency_gold">&nbsp;' + (item.value * slot_data.cnt);
+            sell_action.innerHTML = 'Sell (1)';
+            sell_price_amt2.innerHTML = '<br>Sell Price x' + slot_data.cnt + ': ' + '<img src="media/currency_gold.png" class="currency_gold">&nbsp;' + (item.value * slot_data.cnt) + '&nbsp;';
+            create_el('sell_action2', 'button', 'sell_price_container_2');
+            sell_action2.innerHTML = '<span class="light_small" style="color:black">Sell (ALL)</span>';
+            sell_action2.addEventListener('click', () => {
+                sell_item('all');
+            });
         }
     } else {
         gold_div.style.display = 'none';
-        sell_price_amt.innerHTML = '[ None ]';
+        sell_price_amt1.innerHTML = '[ None ]';
         
         // Destroy item option
         // Only available if not clicked from equipment slot and has no sell price
@@ -516,6 +558,7 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
         let nosell_inventory_item = e_equipment_id && equipped_item ? false : true;
         // console.log(item.id + ' is inventory item (no sell price) / is_inventory_item = ' + nosell_inventory_item);
 
+        // Destroy inventory item
         if (nosell_inventory_item) {
             create_el('hr4', 'hr', 'item_tooltip_div');
             create_el('destroy_sect', 'div', 'item_tooltip_div');
@@ -529,13 +572,8 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                 destroy_sect.removeChild(destroy_btn);
                 destroy_sect.innerHTML = '';
                 
-                // Clear inventory event listener to prevent item movement on click after swap
-                const slot_container = document.getElementById('inventory_slot_container_' + slot_data.slot_id);
-                if (slot_container && inventorySlotListeners[slot_data.slot_id]) {
-                    // Remove the event listener using the stored function reference
-                    slot_container.removeEventListener('click', inventorySlotListeners[slot_data.slot_id]);
-                    delete inventorySlotListeners[slot_data.slot_id];  // Optionally remove the reference
-                }
+                // Clear inventory event listener to prevent item movement on click after change
+                removeInventorySlotListener(slot_data.slot_id);
 
                 create_el('destroy_confirm_div', 'div', 'destroy_sect');
                 destroy_confirm_div.innerHTML = '<b>(DESTROY ITEM)</b> Are you sure? Action cannot be undone!';
@@ -573,7 +611,7 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                 create_el('tt_hr2', 'hr', 'item_tooltip_div');
                 create_el('equip_actions', 'div', 'item_tooltip_div');
                 equip_actions.classList.add('light_small');
-                equip_actions.innerHTML = '<b>Equipment Actions:</b>';
+                equip_actions.innerHTML = '<b>Equipment Actions:</b> ';
                 create_el('unequip_btn', 'button', 'equip_actions');
                 unequip_btn.innerHTML = 'REMOVE';
                 unequip_btn.addEventListener('click', () => {
@@ -608,13 +646,8 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                         // Store current item data first
                         let item_clicked = item;
                         let item_slot_clicked = ei.slot_id;
-                        // Clear inventory event listener to prevent item movement on click after swap
-                        const slot_container = document.getElementById('inventory_slot_container_' + ei.slot_id);
-                        if (slot_container && inventorySlotListeners[ei.slot_id]) {
-                            // Remove the event listener using the stored function reference
-                            slot_container.removeEventListener('click', inventorySlotListeners[ei.slot_id]);
-                            delete inventorySlotListeners[ei.slot_id];  // Optionally remove the reference
-                        }
+                        // Clear inventory event listener to prevent item movement on click after change
+                        removeInventorySlotListener(ei.slot_id);
 
                         // If an item is already equipped in the same slot
                         let equip_slot = saveDataEquip.find(e => e.id === item.slot);

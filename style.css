@@ -1,5 +1,4 @@
 /* style.css */
-
 body {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Safari */
@@ -37,6 +36,24 @@ body {
 .box {
     display: flex;
 }
+
+
+/* TEST */
+.color_blue {
+    position: relative;
+}
+.color_blue::after {
+    content: "";
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 255, 0.5); /* Semi-transparent blue */
+    z-index: 5;  /* Overlay above the image */
+    pointer-events: none; /* Ensure the overlay doesn't block clicks */
+}
+
+
 /* Experience and health bars */
 .bar_with_border_container {
     position: relative;  /* Position relative for inner elements */
@@ -228,6 +245,19 @@ body {
     height: 50px;
     position: relative;
 }
+
+/* Color overlay */
+/*.inv_slot_container.overlay::after {
+    content: "";
+    position: absolute;
+    top: 5;
+    left: 5;
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 0, 255, 0.2);
+    z-index: 99;  
+    pointer-events: none; 
+}*/
 
 .inv_slot {
     background-color: rgba(255, 255, 255, 0.2); /* Transparent white */
@@ -432,7 +462,7 @@ body {
     padding-bottom: 5px;
     padding-left: 5px;
     padding-right: 5px;
-    width: 80%;
+    width: 90%;
     border: 1px solid white;;
 }
 .item_tooltip_armor {

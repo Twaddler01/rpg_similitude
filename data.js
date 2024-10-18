@@ -253,7 +253,7 @@ export function init_itemData() {
         // rarity: 4 = epic (pink)
         // rarity: 5 = legendary (orange)
         // rarity: 6 = ancient (lightred)
-
+// See saveData[4].currencyData[0]
         { id: 'GOLD',
         type: 'currency',
         name: 'Gold',
@@ -416,22 +416,6 @@ export function init_itemData() {
         value: 0,
         img: 'media/icons/boots_01.jpg',
         },
-// *** OTHER ITEMS
-        { id: 'BETTER_BOOTS',
-        type: 'armor',
-        name: 'Better Boots',
-        slot: 'feet',
-        slot_name: 'Feet',
-        rarity: 1,
-        desc: 'Better feet protection. A tiny bit more comfortable.',
-        gains: [ 
-            { stat: 'armor', lbl: 'Armor', amt: 20 },
-            { stat: 'agility', lbl: 'Agility', amt: 15 },
-        ],
-        cnt: 0,
-        value: 5,
-        img: 'media/icons/boots_01.jpg',
-        },
         //
         { id: 'MH_BASIC_DAGGER',
         type: 'weapon',
@@ -450,6 +434,22 @@ export function init_itemData() {
         cnt: 0,
         value: 0,
         img: 'media/icons/mh_01.jpg',
+        },
+// *** OTHER ITEMS
+        { id: 'BETTER_BOOTS',
+        type: 'armor',
+        name: 'Better Boots',
+        slot: 'feet',
+        slot_name: 'Feet',
+        rarity: 1,
+        desc: 'Better feet protection. A tiny bit more comfortable.',
+        gains: [ 
+            { stat: 'armor', lbl: 'Armor', amt: 20 },
+            { stat: 'agility', lbl: 'Agility', amt: 15 },
+        ],
+        cnt: 0,
+        value: 5,
+        img: 'media/icons/boots_01.jpg',
         },
         //
         { id: 'BETTER_HELMET',
@@ -697,6 +697,14 @@ export function init_saveData() {
     //console.log(saveData[2].inventoryData); // like a standalone array
     //console.log(saveData[0].killsData[0]); // for array lengths
 
+    // Get equipment ids
+    let equippedItems = saveData[3].equippedData;
+    
+    // add .slot to array
+    equippedItems.forEach(equip_slot => {
+        equip_slot.slot = equip_slot.id;
+    });
+
     return saveData;
 }
 
@@ -718,24 +726,14 @@ export function init_trackingData() {
         // trackingData[0].current_weapon_dmg_max (float)
         // trackingData[0].pwr_weapon_min (float)
         // trackingData[0].pwr_weapon_max (float)
-        // *** stats WIP -- ***most will go to characterData array
-        // trackingData[0].stat_armor (int)
-        // trackingData[0].stat_strength (int)
-        // trackingData[0].stat_intelligence (int)
-        // trackingData[0].stat_dexterity (int)
-        // trackingData[0].stat_constitution (int)
-        // trackingData[0].stat_agility (int)
-        // trackingData[0].stat_wisdom (int)
-        // trackingData[0].stat_power (int) ???
 
     ];
     
     // For toggle_section() from general_functions.js
-    trackingData[0].t_character_section = false;
     trackingData[0].t_character_stats_section = false;
     trackingData[0].t_battle_section = false;
     trackingData[0].t_inventory_section = false;
-
+    trackingData[0].t_character_section = false;
     return trackingData;
 }
 
@@ -743,10 +741,10 @@ export const elementsData = init_elementsData();
 //export const battleData = init_battleData();
 export const equipmentElements = init_equipmentElements();
 export var inventoryElements = init_inventoryElements();
-export const itemData = init_itemData();
 //export const locationData = init_locationData();
 export const locationsData = init_locationsData();
 export const characterData = init_characterData();
 export const encounterData = init_encounterData();
 export const saveData = init_saveData();
 export const trackingData = init_trackingData();
+export const itemData = init_itemData();

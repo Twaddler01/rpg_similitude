@@ -74,7 +74,6 @@ export function first_run() {
 
     let filtered_itemData = itemData.filter(i => i.id !== 'GOLD');
     filtered_itemData.forEach(item => {
-        
         let add_loot = document.createElement('button');
         test_section.appendChild(add_loot);
         add_loot.innerHTML = 'Add Loot:' + item.id;
@@ -136,6 +135,14 @@ export function first_run() {
         add_loot(enemy[2], loot_min, gold_min, gold_max);
         counter++;
     });
+
+// tracking checks
+let trackBtn = document.createElement('button');
+test_section.appendChild(trackBtn);
+trackBtn.innerHTML = 'CHECK trackingData';
+trackBtn.addEventListener('click', () => {
+    console.log('t_character_section = ' + trackingData[0].t_character_section);
+});
 
 /*trackingData[0].loc = 0;
 trackingData[0].lvl = 1;
@@ -1481,7 +1488,7 @@ export function add_global_drop(id) {
     let drop_id = globalDrops.find(d => d.id === id);
     let drops = drop_id.drops;
 
-    //console.log(drops);
+    console.log(drops);
 
     function getRandomDrop() {
         for (let [key, value] of Object.entries(drops)) {
@@ -1497,9 +1504,123 @@ export function add_global_drop(id) {
         let this_drop = getRandomDrop();
         if (this_drop) {
             let d_item = itemData.find(i => i.id === this_drop);
-            //console.log(d_item);
+            console.log(d_item);
         }
     }
     
 }
-add_global_drop('GLOBAL_DROP1');
+//add_global_drop('GLOBAL_DROP1');
+
+// Add equipment to itemData
+// mh & oh -> weapon & shield
+export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, max_statAmt, armorMin, armorMax, dmgMin, dmgMax) {
+
+    name_pre = name_pre + '_';
+    const slotTypes = saveData[3].equippedData.map(e => e.id);
+    var gearSet = [
+        { id: name_pre + 'HELM', slot_name: 'Head' },
+        { id: name_pre + 'SPAULDERS', slot_name: 'Shoulders' },
+        { id: name_pre + 'GLOVES', slot_name: 'Hands' },
+        { id: name_pre + 'NECKLACE', slot_name: 'Neck' },
+        { id: name_pre + 'BELT', slot_name: 'Waist' },
+        { id: name_pre + 'CHESTPIECE', slot_name: 'Chest' },
+        { id: name_pre + 'LEGGINGS', slot_name: 'Legs' },
+        { id: name_pre + 'BRACERS', slot_name: 'Wrist' },
+        { id: name_pre + 'BOOTS', slot_name: 'Feet' },
+        { id: name_pre + 'RING1', slot_name: 'Ring1' },
+        { id: name_pre + 'RING2', slot_name: 'Ring2' },
+        { id: name_pre + 'MH', slot_name: 'Mainhand' },
+        { id: name_pre + 'OH', slot_name: 'Offhand' }
+    ];
+    
+    gearSet.forEach(item => {
+        item.gains = [];
+    })
+
+    for (let i=0; i<gearSet.length; i++) {
+        gearSet[i].slot = slotTypes[i];
+        gearSet[i].type = 'armor';
+        if (gearSet[i].slot === 'mh') {
+            gearSet[i].type = 'weapon';
+        }
+        let baseId = gearSet[i].id.replace(/[12]$/, '');
+        gearSet[i].name = baseId
+            .toLowerCase()               // Convert all to lowercase
+            .split('_')                  // Split the string by '_'
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter
+            .join(' ');                  // Join the words with a space
+        if (gearSet[i].slot === 'ring1') {
+            gearSet[i].name += ' I';
+        } else if (gearSet[i].slot === 'ring2') {
+            gearSet[i].name += ' II';
+        }
+        
+        if (gearSet[i].slot === 'mh') {
+            gearSet[i].name = gearSet[i].name.replace('Mh', 'Weapon');
+        } else if (gearSet[i].slot === 'oh') {
+            gearSet[i].name = gearSet[i].name.replace('Oh', 'Shield');
+        }
+        
+        gearSet[i].rarity = rarity_num;
+        
+        const pluralNameSlots = [ 'shoulders', 'hands', 'legs', 'wrist', 'feet'];
+        let add_s = 's';
+        if (pluralNameSlots.includes(gearSet[i].slot)) {
+            add_s = '';
+        }
+        
+        gearSet[i].desc = 'The ' + gearSet[i].name + ' seem' + add_s + ' to be part of a basic equipment set.';
+        gearSet[i].value = value;
+        // WIP use slot icons and a color overlay
+        gearSet[i].img = 'media/icons/armor/E_' + gearSet[i].slot.toUpperCase() + '_' + color + '.png';
+
+    function get_random_stats() {
+        let possibleStats = ['strength', 'intelligence', 'power', 'agility', 'wisdom'];
+        let possibleStatsAmt = 2;
+    
+        // Initialize gains if it doesn't exist
+        if (!gearSet[i].gains) {
+            gearSet[i].gains = [];
+        }
+        
+        let p;
+        for (let k = 0; k < possibleStatsAmt; k++) {
+            // Ensure no duplicate stats are selected in gearSet[i].gains
+            do {
+                p = randomize(0, possibleStats.length - 1, 1);
+            } while (gearSet[i].gains.some(gain => gain.stat === possibleStats[p]));
+            
+            // Add random stats
+            let random_stat = possibleStats[p];
+            let random_stat_lbl = random_stat.charAt(0).toUpperCase() + random_stat.slice(1);
+            let random_stat_amt = randomize(min_statAmt, max_statAmt, 1);
+            gearSet[i].gains.push({ stat: random_stat, lbl: random_stat_lbl, amt: random_stat_amt });
+        }
+        
+        // Add random armor
+        let random_armor = randomize(armorMin, armorMax, 5);
+        if (gearSet[i].slot !== 'mh' && gearSet[i].slot !== 'oh') {
+            gearSet[i].gains.push({ stat: 'armor', lbl: 'Armor', amt: random_armor });
+        }
+        if (gearSet[i].slot === 'oh' && gearSet[i].type === 'shield') {
+            gearSet[i].gains.push({ stat: 'armor', lbl: 'Armor', amt: random_armor * 5 });
+            // Double value of oh item
+            gearSet[i].value *= 2;
+        }
+        
+        // Add random damage to mh weapon
+        if (gearSet[i].slot === 'mh' && gearSet[i].type === 'weapon') {
+            let random_min_dmg = randomize(dmgMin, dmgMax, 0.1);
+            gearSet[i].gains.push({ stat: 'dmg_min', amt: Math.round(random_min_dmg * 10)/10 });
+            gearSet[i].gains.push({ stat: 'dmg_max', amt: Math.round((random_min_dmg + (dmgMax - dmgMin))*10)/10 });
+            // Double value of mh item
+            gearSet[i].value *= 2;
+        }
+    
+    }
+    get_random_stats();
+
+    }
+    // Add new gear set to itemData
+    itemData.push(...gearSet);
+}

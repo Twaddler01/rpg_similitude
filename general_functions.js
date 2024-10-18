@@ -438,16 +438,6 @@ export function add_allElements() {
             if (element.hidden) {
                 element_id.style.display = 'none';
             }
-            
-            if (element.on_click && element.id === 'character_section') {
-                let e_character_section = document.getElementById('character_section');
-                if (e_character_section) {
-                    e_character_section.addEventListener('click', () => {
-                        e_character_section.innerHTML = 'Character Section <span class="normal">[ HIDE ]</span>';
-                        toggle_section('character');
-                    });
-                }
-            }
         }
 /*
         // tables
@@ -530,15 +520,13 @@ export function toggle_section(section) {
         let e_character_section = document.getElementById('character_section');
         let e_character_container = document.getElementById('character_container');
         if (trackingData[0].t_character_section) {
-            e_character_container.innerHTML = '';
-            e_character_section.innerHTML = 'Character Section <span class="normal">[ SHOW ]</span>';
             trackingData[0].t_character_section = false;
-        } else {
-            //character_container.style.display = 'block';
-            trackingData[0].t_character_section = true;
-            //update_character('no_toggle');
             update_character();
             e_character_section.innerHTML = 'Character Section <span class="normal">[ HIDE ]</span>';
+        } else {
+            trackingData[0].t_character_section = true;
+            update_character();
+            e_character_section.innerHTML = 'Character Section <span class="normal">[ SHOW ]</span>';
         }
     }
 
@@ -569,4 +557,12 @@ export function toggle_section(section) {
             e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ HIDE ]</span>';
         }
     }
+}
+
+export function add_section_clicks() {
+    toggle_section('character');
+    let e_character_section = document.getElementById('character_section');
+    e_character_section.addEventListener('click', () => {
+        toggle_section('character');
+    });
 }

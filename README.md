@@ -8,6 +8,12 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+10-17-2024
+- Updated inventory so players can sell items for gold from inventory tooltip.
+- Added function to generate dynamic equipment sets.
+- WIP: Adding random loot drops from dynamically generated items.
+- WIP: Adding dynamic enemies for other locations (besides Starting Zone) for more battles.
+
 10-15-2024
 - Minor updates.
 - Created inventory.js and character.js files to shorten functions.js file. Battle Section functions will be moved once section is more complete.

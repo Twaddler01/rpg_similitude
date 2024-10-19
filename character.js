@@ -1,5 +1,9 @@
 // character.js
 
+// BUG first attack needs update
+// of stats due to level stat boost
+// specifically for armor and hit  etc
+
 // import arrays
 import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
 
@@ -25,6 +29,11 @@ export function update_character_array() {
             equipmentElements.e_slot_container = slot_data.id;
         }
     });
+    
+    // Add stats for equipmemt from equipped items
+    update_equipment();
+    // Stats only
+    update_character_stats(false);
 }
 
 export function update_character() {
@@ -40,91 +49,9 @@ export function update_character() {
     }
 
     if (!trackingData[0].t_character_section) {
-        // trackingData[0].t_character_section = true
 
-        let charData = saveData[1].savedCharacterData[0];
-    
-        if (charData.char_name && charData.char_race && charData.char_class) {
-            trackingData[0].character_created = true;
-        }
-    
-        if (!trackingData[0].character_created) {
-    
-            let new_char_entry = document.createElement('div');
-            e_character_container.appendChild(new_char_entry);
-        
-            let character_entry = document.createElement('span');
-            new_char_entry.appendChild(character_entry);
-            character_entry.classList.add('location_box_style');
-            character_entry.innerHTML = '<br><b>ENTER NEW CHARACTER DATA:</b><p></p>';
-        
-            let input_name_lbl = document.createElement('div');
-            new_char_entry.appendChild(input_name_lbl);
-            input_name_lbl.innerHTML = 'Name of Character:';
-            
-            let input_name = document.createElement('input');
-            input_name.placeholder = 'Enter character name';
-            new_char_entry.appendChild(input_name);
-            
-            let input_race_lbl = document.createElement('div');
-            new_char_entry.appendChild(input_race_lbl);
-            input_race_lbl.innerHTML = 'Character Race:';
-            
-            let input_race = document.createElement('input');
-            input_race.placeholder = 'Enter character race';
-            new_char_entry.appendChild(input_race);
-            
-            let input_class_lbl = document.createElement('div');
-            new_char_entry.appendChild(input_class_lbl);
-            input_class_lbl.innerHTML = 'Character Class:';
-            
-            let input_class = document.createElement('input');
-            input_class.placeholder = 'Enter character class';
-            new_char_entry.appendChild(input_class);
-            
-            let submit_btn = document.createElement('button');
-            new_char_entry.appendChild(submit_btn);
-            submit_btn.innerHTML = 'SUBMIT';
-            submit_btn.addEventListener('click', () => {
-                let charName = input_name.value;
-                let charRace = input_race.value;
-                let charClass = input_class.value;
-    
-                let confirm_div = document.createElement('div');
-                new_char_entry.appendChild(confirm_div);
-    
-                let print_input = document.createElement('div');
-                confirm_div.appendChild(print_input);
-                print_input.innerHTML = `Your name is ${charName} and you are a ${charRace} ${charClass}. Confirm?`;
-    
-                let confirm_yes = document.createElement('button');
-                confirm_div.appendChild(confirm_yes);
-                confirm_yes.innerHTML = 'YES';
-                confirm_yes.addEventListener('click', () => {
-                    saveData[1].savedCharacterData[0].char_name = charName;
-                    saveData[1].savedCharacterData[0].char_race = charRace;
-                    saveData[1].savedCharacterData[0].char_class = charClass;
-                    new_char_entry.innerHTML = '';
-                });
-    
-                let confirm_no = document.createElement('button');
-                confirm_div.appendChild(confirm_no);
-                confirm_no.innerHTML = 'NO';
-                confirm_no.addEventListener('click', () => {
-                    confirm_div.innerHTML = '';
-                    input_name.value = '';
-                    input_race.value = '';
-                    input_class.value = '';
-                    return;
-                });
-            });
-    
-            // flag character as created
-            trackingData[0].character_created = true;
-        }
-    
-        if (trackingData[0].character_created) {
-            
+            let charData = saveData[1].savedCharacterData[0];
+
             let char_title = document.createElement('div');
             e_character_container.appendChild(char_title);
             char_title.innerHTML = '<b>' + charData.char_name + '&nbsp;(Level ' + charData.char_level + ')</b>';
@@ -225,7 +152,7 @@ export function update_character() {
             update_equipment();
             // Stats only
             update_character_stats(false);
-        }
+
     } // END trackingData[0].t_character_section = true
 }
 
@@ -234,7 +161,7 @@ export function update_character_stats(updateElements) {
     if (updateElements) {
         let e_character_stats_section = document.getElementById('character_stats_section');
         let e_character_stats_container = document.getElementById('character_stats_container');
-    
+
         // Hide character_container elements since calculations are still needed
         if (!trackingData[0].t_character_stats_section) {
             e_character_stats_container.style.display = 'none';
@@ -270,10 +197,9 @@ export function update_character_stats(updateElements) {
             if (stat.lvl_mod) {
                 // Adjust to equipment amount 
                 equip_stat_amt = stat.amt - (stat.id === 'armor' ? 100 : 10);
-                // Based on player 
+                // Based on player level (depr)
                 base_level_stat = stat.lvl_amt;
-                base_level_stat *= d_player_character.char_level;
-                //console.log(base_level_stat);
+                //base_level_stat *= d_player_character.char_level;
             }
             
             let equipped_items = saveData[3].equippedData;
@@ -489,9 +415,9 @@ export function update_character_stats(updateElements) {
             if (stat.lvl_mod) {
                 // Adjust to equipment amount 
                 equip_stat_amt = stat.amt - (stat.id === 'armor' ? 100 : 10);
-                // Based on player 
+                // Based on player level (depr)
                 base_level_stat = stat.lvl_amt;
-                base_level_stat *= d_player_character.char_level;
+                //base_level_stat *= d_player_character.char_level;
             }
             
             let equipped_items = saveData[3].equippedData;

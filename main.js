@@ -14,21 +14,177 @@ import * as inv from './inventory.js';
 gf.logExport();
 gf.htmlExport();
 
-// Inject gear sets
-f.add_new_gear('STARTER', 'BLUE', 2, 5, 5, 10, 20, 30, 3.0, 5.0); // Shield is x5 armor
+// Title
+f.create_el('title_section', 'div', 'body');
+title_section.classList.add('h1');
+title_section.innerHTML = 'RPG Similitude: Just another RPG.';
 
-// Add main elements
-gf.add_allElements();
-ch.update_character_stats(true);
+f.create_el('new_character_container', 'div', 'body');
+new_character_container.classList.add('location_box_style');
+new_character_container.style.paddingBottom = '40px';
 
-// after DOM initialized
-document.addEventListener('DOMContentLoaded', () => {
+let d_character = saveData[1].savedCharacterData[0];
+
+// Check and flag if character is created or not
+if (d_character.char_name && d_character.char_race && d_character.char_class) {
+    d_character.char_created = true;
+} else {
+    d_character.char_created = false;
+}
+
+// To remove elements from character creation
+function del_new_character_container() {
+    let e_new_character_container = document.getElementById('new_character_container');
+    new_character_container.parentNode.removeChild(new_character_container);
+}
+
+// New game, setup character data
+if (!d_character.char_created) {
+
+    // Create new chatacter
+    let new_char_entry = document.createElement('div');
+    new_character_container.appendChild(new_char_entry);
+        
+    let character_entry = document.createElement('span');
+    new_char_entry.appendChild(character_entry);
+    character_entry.classList.add('location_box_style');
+    character_entry.innerHTML = '<p><b>CREATE A NEW CHARACTER:</b></p>';
+        
+    let input_name_lbl = document.createElement('div');
+    new_char_entry.appendChild(input_name_lbl);
+    input_name_lbl.innerHTML = 'Name of Character:';
+            
+    let input_name = document.createElement('input');
+    input_name.placeholder = 'Enter character name';
+    new_char_entry.appendChild(input_name);
+            
+    let input_race_lbl = document.createElement('div');
+    new_char_entry.appendChild(input_race_lbl);
+    input_race_lbl.innerHTML = 'Character Race:';
+            
+    let input_race = document.createElement('input');
+    input_race.placeholder = 'Enter character race';
+    new_char_entry.appendChild(input_race);
+            
+    let input_class_lbl = document.createElement('div');
+    new_char_entry.appendChild(input_class_lbl);
+    input_class_lbl.innerHTML = 'Character Class:';
+            
+    let input_class = document.createElement('input');
+    input_class.placeholder = 'Enter character class';
+    new_char_entry.appendChild(input_class);
+            
+    let submit_btn = document.createElement('button');
+    new_char_entry.appendChild(submit_btn);
+    submit_btn.innerHTML = 'SUBMIT';
+    submit_btn.addEventListener('click', () => {
+        let charName = input_name.value;
+        let charRace = input_race.value;
+        let charClass = input_class.value;
+    
+        let confirm_div = document.createElement('div');
+        new_char_entry.appendChild(confirm_div);
+    
+        let print_input = document.createElement('div');
+        confirm_div.appendChild(print_input);
+        print_input.innerHTML = `Your name is ${charName} and you are a ${charRace} ${charClass}. Confirm?`;
+    
+        let confirm_yes = document.createElement('button');
+        confirm_div.appendChild(confirm_yes);
+        confirm_yes.innerHTML = 'YES';
+        confirm_yes.addEventListener('click', () => {
+            saveData[1].savedCharacterData[0].char_name = charName;
+            saveData[1].savedCharacterData[0].char_race = charRace;
+            saveData[1].savedCharacterData[0].char_class = charClass;
+            new_char_entry.innerHTML = '';
+            // flag character as created
+            d_character.char_created = true;
+            del_new_character_container();
+            start_game();
+        });
+    
+        let confirm_no = document.createElement('button');
+        confirm_div.appendChild(confirm_no);
+        confirm_no.innerHTML = 'NO';
+        confirm_no.addEventListener('click', () => {
+            confirm_div.innerHTML = '';
+            input_name.value = '';
+            input_race.value = '';
+            input_class.value = '';
+            return;
+        });
+    });
+
+} else {
+    trackingData[0].char_was_loaded = true;
+    del_new_character_container();
+    start_game();
+}
+
+function start_game() {
+
+    // Inject gear sets
+    f.add_new_gear('STARTER', 'BLUE', 2, 5, 5, 10, 20, 30, 3.0, 5.0); // Shield is x5 armor
+    
+    // Add main elements
+    gf.add_allElements();
+
+    function load_starting_elements() {
+        f.first_run();
+        f.update_equipment();
+        ch.update_character_stats(true);
+        f.update_locations();
+        inv.update_inventory();
+        gf.add_section_clicks();
+    }
+    
+    async function load_starting_elements_async() {
+        await f.clearSaveData();
+        load_starting_elements();
+    }
+
+    // after DOM initialized, but only if character loaded immediately
+    if (trackingData[0].char_was_loaded) {
+        document.addEventListener('DOMContentLoaded', () => {
+            load_starting_elements();
+        });
+    } else {
+        load_starting_elements_async();
+    }
+
+}
+
+
+
+/*
+// Function to load saveData asynchronously
+async function loadSaveData() {
+    const response = await fetch('newSaveData.json');
+    const data = await response.json();
+    saveData = data;
+    console.log('saveData loaded:', saveData);
+}
+
+// Make load_starting_elements async so we can await data loading
+async function load_starting_elements() {
+    // Load saveData first
+    await loadSaveData();
+
+    // Now proceed with the rest of the initial setup
     f.first_run();
-    f.update_locations();
+    f.update_locations();  // Now saveData should be available
     inv.update_inventory();
     gf.add_section_clicks();
-    //
-});
+}
+
+// Call the load_starting_elements function when needed
+load_starting_elements();
+*/
+
+
+
+
+
 
 // MAX LOCALSTORAGE SIZE (5 MB)
 /* To monitor the size, you can use 

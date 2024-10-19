@@ -12,14 +12,6 @@ export function init_elementsData() {
         // on_click: true -> add click event to id
 
         // section
-        { id: 'title_section',
-        section_cat: true,
-        type: 'div',
-        parent_el: 'body',
-        content: 'RPG Similitude: Just another RPG.',
-        css_class: 'h1',
-        },
-        // section
         { id: 'messages_section',
         section_cat: true,
         type: 'div',
@@ -552,7 +544,7 @@ export function init_encounterData() {
     
     const encounterData = [
 
-        { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0, enemyDmg_min: 1, enemyDmg_max: 2, enemyNoCrit: 0.06, 
+        { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0, enemyDmg_min: 3, enemyDmg_max: 4, enemyNoCrit: 0.06, 
             // encounterData[0]
             enemy_list: [
                 { en: 'beginner_0', cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: [ { id: 'NPC_LOOT_SLIME', p: 0.8 }, { id: 'NPC_LOOT_SLIME_CHUNK', p: 0.2 }, ] },
@@ -607,7 +599,7 @@ export function init_encounterData() {
 
 export function init_saveData() {
 
-    const saveData = [
+    var saveData = [
     // saveData[0]
     { killsData: [ // added to locationsData array
         { kills: 3 }, // l = 0
@@ -631,11 +623,22 @@ export function init_saveData() {
     // saveData[1]
     { savedCharacterData: [ // to be added to static characterData array
         // savedCharacterData[0]
-        { char_name: 'Legolas',
-        char_race: 'Human',
-        char_class: 'Fighter',
+        
+        // SC: Char created
+        { char_created: true, 
+        char_name: 'Legolas', 
+        char_race: 'Human', 
+        char_class: 'Fighter', 
         char_level: 1,
         char_exp: 0, 
+        // SC: Char not created
+        /*{ char_created: false, 
+        char_name: null, 
+        char_race: null, 
+        char_class: null, 
+        char_level: 1, 
+        char_exp: 0, */
+        
         // Others: see playerStats = characterData.find(d => d.id === 'player_stats')
         // char_exp_to_level -> see new_battle_button()
         },
@@ -745,6 +748,6 @@ export var inventoryElements = init_inventoryElements();
 export const locationsData = init_locationsData();
 export const characterData = init_characterData();
 export const encounterData = init_encounterData();
-export const saveData = init_saveData();
+export var saveData = init_saveData();
 export const trackingData = init_trackingData();
 export const itemData = init_itemData();

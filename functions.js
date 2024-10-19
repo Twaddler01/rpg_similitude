@@ -1,25 +1,66 @@
 // functions.js
 
 // import arrays
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData, init_saveData } from './data.js';
 
 // general functions needed
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
 
+// Reset everything except new character info
+export async function clearSaveData() {
+    // Preserve savedCharacterData only
+    let saved_data = saveData[1].savedCharacterData[0];
+
+    saveData.length = 0;
+    const response = await fetch('newSaveData.json');
+    const parsedData = await response.json();
+    parsedData.forEach(item => {
+        saveData.push(item);
+    });
+
+    // Assign savedCharacterData back to the correct structure
+    if (saved_data) {
+        saveData[1].savedCharacterData = [saved_data]; 
+    }
+}
+
+function downloadSaveData() {
+    const saveDataString = JSON.stringify(saveData, null, 2);
+    const blob = new Blob([saveDataString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'saveData.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 // Main function to create new elements
 export function create_el(newId, type, parentId, content) {
     let parent_el = document.getElementById(parentId);
     let new_el = document.createElement(type);
-    if (parent_el) {
-        parent_el.appendChild(new_el);
+    
+    if (parentId === 'body') {
+        document.body.appendChild(new_el);
+        new_el.id = newId;
+        if (content) {
+            new_el.innerHTML = content;
+        }
     } else {
-        parentId.appendChild(new_el);
-    }
-    new_el.id = newId;
-    if (content) {
-        new_el.innerHTML = content;
+        if (parent_el) {
+            parent_el.appendChild(new_el);
+        } else {
+            parentId.appendChild(new_el);
+        }
+        new_el.id = newId;
+        if (content) {
+            new_el.innerHTML = content;
+        }
     }
 }
 
@@ -27,12 +68,62 @@ export function first_run() {
 
     let test_section = document.getElementById('test_section');
 
-// reset saveData
-    let reset = document.createElement('button');
-    test_section.appendChild(reset);
-    reset.innerHTML = 'RESET GAME';
-    reset.addEventListener('click', () => {
-        reset_game('test_section');
+// import saveData from textarea
+    function resetSaveData(newArray) {
+        //try {
+            saveData.length = 0;
+            const parsedData = JSON.parse(newArray);
+            parsedData.forEach(item => saveData.push(item));
+            
+            // Reset starting inventory flag
+            let savedInventory = saveData[2].inventoryData;
+            savedInventory[0].setup = true
+            
+            
+            /*console.log('saveData successfully overwritten:', saveData);
+        } catch (error) {
+            console.error('Error parsing or overwriting saveData:', error);
+        }*/
+    }
+
+    create_el('importSaveBtn', 'button', test_section);
+    importSaveBtn.innerHTML = 'Import SaveData';
+    create_el('savedata_section', 'div', test_section);
+    
+    importSaveBtn.addEventListener('click', () => {
+        let import_save_container = document.getElementById('import_save_container');
+        if (!import_save_container) {
+            import_save_container = document.createElement('div');
+            savedata_section.appendChild(import_save_container);
+            import_save_container.id = 'import_save_container';
+            create_el('ta_box', 'textarea', import_save_container);
+            ta_box.rows = 10;
+            ta_box.style.width = '100%';
+            create_el('submit_import_save', 'button', import_save_container);
+            submit_import_save.innerHTML = 'SUBMIT';
+            create_el('reset_import_save', 'button', import_save_container);
+            reset_import_save.innerHTML = 'RESET';
+            create_el('export_save', 'button', import_save_container);
+            export_save.innerHTML = 'Export saveData';
+            export_save.addEventListener('click', () => { downloadSaveData() });
+            reset_import_save.addEventListener('click', () => { ta_box.value = '' });
+        
+            submit_import_save.addEventListener('click', () => {
+                const taData = ta_box.value;
+                resetSaveData(taData);
+                console.log(saveData);
+            });
+        } else {
+            savedata_section.innerHTML = '';
+        }
+    });
+
+// download saveData
+    let save_all = document.createElement('button');
+    test_section.appendChild(save_all);
+    save_all.innerHTML = 'DOWNLOAD saveData JSON';
+    save_all.addEventListener('click', () => {
+        downloadSaveData();
     });
 
 // add 1 kill instantly to selected level
@@ -175,15 +266,48 @@ export function update_locations() {
         }
     }
 
+// Update array data
+for (let i = 0; i < locationsData.length; i++) {
+
+    if (saveData[0] && saveData[0].killsData && saveData[0].killsData[i]) {
+        locationsData[i].kills = saveData[0].killsData[i].kills;
+    }
+
+    // Always set the first level to true
+    if (i === 0) {
+        locationsData[i].kill_req_met = true;
+    }
+
+    // Update kill_req_met based on the kills of the previous level
+    if (i + 1 < locationsData.length) {
+        locationsData[i + 1].kill_req_met = locationsData[i].kills >= locationsData[i].kills_req;
+    }
+}
+
+
+/*
     // Update array data
     for (let i = 0; i < locationsData.length; i++) {
         // Insert the kills data from saveData into the corresponding location in locationsData
-        // locationsData[i].kills = saveData[i].kills
+
+        
+        //console.log(saveData[0].killsData[i].kills);
+        //locationsData[i].kills = saveData[0].killsData[i].kills;
+
+
+// Check if saveData[0].killsData exists and has an entry for the current index
+    if (saveData[0] && saveData[0].killsData && saveData[0].killsData[i]) {
+        // Insert the kills data from saveData into the corresponding location in locationsData
         locationsData[i].kills = saveData[0].killsData[i].kills;
+    } else {
+        console.warn(`Missing data for location index: ${i}`);
+    }
+
+
 
         // Always set first level true
-        if (!locationsData[0].kill_req_met) {
-            locationsData[0].kill_req_met = true;
+        if (i === 0) {
+            locationsData[i].kill_req_met = true;
         }
         
         // Update kill_req_met based on the kills of previous,level
@@ -193,7 +317,7 @@ export function update_locations() {
 
         }
     }
-
+*/
     // Location image (used im battle)
     let battle_location_image = document.createElement('div');
     location_container.appendChild(battle_location_image);
@@ -653,6 +777,7 @@ export function update_xp() {
     fill_amt = Math.round(fill_amt * 10) / 10 + '%';
     e_experience_bar_fill.style.width = fill_amt;
     e_experience_percent.innerHTML = fill_amt;
+    // Level up
     if (d_player_character.char_exp >= d_player_character.char_exp_to_level) {
         d_player_character.char_level += 1;
         e_player_level.innerHTML = 'Level: ' + d_player_character.char_level;
@@ -667,6 +792,8 @@ export function update_xp() {
         e_experience_bar_fill.style.width = fill_amt;
         e_experience_percent.innerHTML = fill_amt;
         e_experience_to_level.innerHTML = d_player_character.char_exp_to_level;
+        // Update stats from level increase
+        ch.update_character();
     }
 }
 
@@ -1147,6 +1274,7 @@ export function player_attack(enemy, encounter) {
             }
             
             // Deduct enemy health
+            turn_player_damage = Math.round(turn_player_damage * 10) / 10;
             encounter.cur_health -= turn_player_damage;
 
             //let display_critical = turn_player_critical ? ' (Critical)' : ' (Regular)';
@@ -1162,6 +1290,10 @@ export function player_attack(enemy, encounter) {
             turn_enemy_damage = 0;
         } else {
             turn_enemy_damage = randomize(encounter.enemyDmg_min, encounter.enemyDmg_max, 0.1);
+            // Player damage mitigation
+            let player_armor_reduct = 1 - (playerStats.total_armor_effect / 100);
+            turn_enemy_damage *= player_armor_reduct;
+            console.log(player_armor_reduct);
             turn_enemy_damage = Math.round(turn_enemy_damage * 10) / 10;
         }
         
@@ -1225,12 +1357,24 @@ export function player_attack(enemy, encounter) {
             new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated a level ' + enemy.lvl + '&nbsp;' + enemy.lbl + '.</span></p>';
 
 // xp gained
-let exp_to_add = xp_gain(enemy.lvl);
 let d_player_character = saveData[1].savedCharacterData[0];
+let current_char_level = d_player_character.char_level;
+console.log('before exp lvl: ' + current_char_level);
+let exp_to_add = xp_gain(enemy.lvl);
 d_player_character.char_exp += exp_to_add;
 update_xp();
 
             new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;You gained ' + exp_to_add + ' experience.';
+
+// Log level increase
+d_player_character = saveData[1].savedCharacterData[0];
+console.log('after exp lvl: ' + d_player_character.char_level);
+
+if (d_player_character.char_level > 1 && d_player_character.char_level !== current_char_level) {
+    new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;Congratulations! You have reached level ' + d_player_character.char_level + '!';
+}
+
+
 
             let loot_dropped = add_loot(enemy, 1, 1, 2);
             if (loot_dropped) {
@@ -1255,7 +1399,6 @@ playerStats.cur_health = playerStats.max_health;
 trackingData[0].next_attack = true;
 trackingData[0].combat_log_created = false;
 selectLevel(trackingData[0].loc, trackingData[0].location, trackingData[0].lvl, trackingData[0].kills);
-
 
 
         } // end if (enemy.dead)

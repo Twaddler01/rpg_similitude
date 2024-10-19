@@ -11,8 +11,8 @@ import * as inv from './inventory.js';
 
 // DEBUGGING INFO
 
-gf.logExport();
-gf.htmlExport();
+//gf.logExport();
+//gf.htmlExport();
 
 // Title
 f.create_el('title_section', 'div', 'body');

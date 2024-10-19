@@ -8,6 +8,13 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+10-19-2024
+- Added option to import JSON (pasting in newSaveData.json starts a new game). This allows data to be saved.
+- Added export option to export the saveData array as JSON. Will soon add localstorage usage with basic ANSI encryption. Plan to not only use localstorwge but also import/export of the encrypted save contents.
+- New character creation is done before loading all other elements if characterData (name, race, class) is not present yet.
+- Added basic damage mitigation from armor. Characters will only have 100 base armor at all times. Increases in armor per level are just too extreme.
+- Various other updates.
+
 10-17-2024
 - Updated inventory so players can sell items for gold from inventory tooltip.
 - Added function to generate dynamic equipment sets.

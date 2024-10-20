@@ -8,6 +8,9 @@ import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
 
+// Global variables
+const d_items_starterSet = add_new_gear('STARTER', 'BLUE', 2, 5, 5, 10, 20, 30, 3.0, 5.0);
+
 // Reset everything except new character info
 export async function clearSaveData() {
     // Preserve savedCharacterData only
@@ -254,7 +257,7 @@ export function update_locations() {
     if (location_container) {
         location_container.innerHTML = '<b>CHOOSE BATTLE LOCATION:<p></p></b>';
     }
-
+    
     if (!trackingData[0].t_battle_section) {
         // Event listener
         location_container.style.display = 'none';
@@ -266,58 +269,24 @@ export function update_locations() {
         }
     }
 
-// Update array data
-for (let i = 0; i < locationsData.length; i++) {
-
-    if (saveData[0] && saveData[0].killsData && saveData[0].killsData[i]) {
-        locationsData[i].kills = saveData[0].killsData[i].kills;
-    }
-
-    // Always set the first level to true
-    if (i === 0) {
-        locationsData[i].kill_req_met = true;
-    }
-
-    // Update kill_req_met based on the kills of the previous level
-    if (i + 1 < locationsData.length) {
-        locationsData[i + 1].kill_req_met = locationsData[i].kills >= locationsData[i].kills_req;
-    }
-}
-
-
-/*
     // Update array data
     for (let i = 0; i < locationsData.length; i++) {
-        // Insert the kills data from saveData into the corresponding location in locationsData
-
-        
-        //console.log(saveData[0].killsData[i].kills);
-        //locationsData[i].kills = saveData[0].killsData[i].kills;
-
-
-// Check if saveData[0].killsData exists and has an entry for the current index
-    if (saveData[0] && saveData[0].killsData && saveData[0].killsData[i]) {
-        // Insert the kills data from saveData into the corresponding location in locationsData
-        locationsData[i].kills = saveData[0].killsData[i].kills;
-    } else {
-        console.warn(`Missing data for location index: ${i}`);
-    }
-
-
-
-        // Always set first level true
+    
+        if (saveData[0] && saveData[0].killsData && saveData[0].killsData[i]) {
+            locationsData[i].kills = saveData[0].killsData[i].kills;
+        }
+    
+        // Always set the first level to true
         if (i === 0) {
             locationsData[i].kill_req_met = true;
         }
-        
-        // Update kill_req_met based on the kills of previous,level
-        // Ensure next index is set to true (if not at end of array) if previous index kills >= kills_req
+    
+        // Update kill_req_met based on the kills of the previous level
         if (i + 1 < locationsData.length) {
             locationsData[i + 1].kill_req_met = locationsData[i].kills >= locationsData[i].kills_req;
-
         }
     }
-*/
+
     // Location image (used im battle)
     let battle_location_image = document.createElement('div');
     location_container.appendChild(battle_location_image);
@@ -350,6 +319,21 @@ for (let i = 0; i < locationsData.length; i++) {
     test_section.appendChild(message);
     message.id = 'message';
     message.className = 'normal';
+
+    // Insert attack_box_button
+    let attack_box_button = document.createElement('button');
+    location_container.appendChild(attack_box_button);
+    attack_box_button.innerHTML = '<b><font style="font-size: 24px;"> ATTACK </font></b>';
+    attack_box_button.classList.add('location_box_style');
+    attack_box_button.classList.add('center');
+    attack_box_button.style.display = 'none';
+
+    // Insert change_location_button
+    create_el('change_location_button', 'button', location_container);
+    change_location_button.innerHTML = '<b><font style="font-size: 24px;"> CHANGE LOCATION </font></b>';
+    change_location_button.classList.add('location_box_style');
+    change_location_button.classList.add('center');
+    change_location_button.style.display = 'none';
 
     // Create and append location buttons
     const max_location = Math.max(...locationsData.map(loc => loc.loc));
@@ -797,7 +781,7 @@ export function update_xp() {
     }
 }
 
-function reset_battle() {
+export function reset_battle() {
     // Clear attack flag
     trackingData[0].next_attack = false;
     // Clear combat_log flag
@@ -808,6 +792,8 @@ function reset_battle() {
     // Clear battle elements
     let e_all_battle_ui_elements = document.getElementById('all_battle_ui_elements');
     if (e_all_battle_ui_elements) {
+        let e_battle_ui_container = document.getElementById('battle_ui_container');
+        e_battle_ui_container.classList.remove('location_box_style');
         e_all_battle_ui_elements.innerHTML = '';
     }
     // Reset location tracking
@@ -1033,7 +1019,7 @@ export function start_battle() {
 
     // Choose encounter & enemy
     // First encounter
-    console.log('first encounter loc/lvl? ' + trackingData[0].loc + ' / ' + trackingData[0].lvl);
+    //console.log('first encounter loc/lvl? ' + trackingData[0].loc + ' / ' + trackingData[0].lvl);
     if (trackingData[0].loc === 0 && trackingData[0].lvl === 1) {
         // Encounters need to be set up with loc, lvl linked
         // 
@@ -1060,9 +1046,9 @@ export function start_battle() {
     }
     
     
-    console.log('encounter/enemy?\n');
-    console.log(encounter);
-    console.log(random_enemy);
+    //console.log('encounter/enemy?\n');
+    //console.log(encounter);
+    //console.log(random_enemy);
     if (encounter && random_enemy) {
         create_el('enemy_name', 'span', 'enemy_name_level');
         enemy_name.innerHTML = random_enemy.lbl;
@@ -1150,8 +1136,6 @@ export function start_battle() {
         gf.toggleElement('s', 'change_location_button');
         attack_box_button(e_attack_box_button, random_enemy, encounter);
     }
-    //let 
-    //new_battle_container
 
 }
 
@@ -1159,14 +1143,8 @@ export function start_battle() {
 function EL_player_turn_attack(encounter, enemy) {
     // Start combat
     if (!encounter.in_combat) {
-        // DEBUG
-        console.log('Combat started...');
-        console.log(trackingData[0]);
-        console.log('encounter.in_combat?\n');
-        console.log(encounter.in_combat);
         encounter.in_combat = true;
         toggle_combat_status();
-        console.log(encounter.in_combat);
         let e_player_to_enemy_btn = document.getElementById('player_to_enemy_btn');
         e_player_to_enemy_btn.innerHTML = '[ ATTACKING ]';
         // Hide change_location_button 
@@ -1197,7 +1175,7 @@ export function attack_box_button(elementId, enemy, encounter) {
     let levels = document.getElementById('levels');
     locations.innerHTML = '';
     levels.innerHTML = '';
-    let d_curr_loc = locationsData.find(l => l.loc === trackingData[0].loc && l.lvl === 1);
+    let d_curr_loc = locationsData.find(l => l.loc === trackingData[0].loc && l.lvl === trackingData[0].lvl);
 
     // Place image in location area
     let battle_location_image = document.getElementById('battle_location_image');
@@ -1218,9 +1196,12 @@ export function attack_box_button(elementId, enemy, encounter) {
         e_player_turn_attack.style.textAlign = 'center';
         e_player_turn_attack.style.display = 'block';
         e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> USE ATTACK </font></b>';
-        // Combat flag
+        // Clear combat flag
         encounter.in_combat = false;
 
+// WIP: Insert attack bar abilities here
+        
+        
         ELHandler_player_turn_attack = function() {
             EL_player_turn_attack(encounter, enemy);
         };
@@ -1229,7 +1210,6 @@ export function attack_box_button(elementId, enemy, encounter) {
     }
 }
 
-//// ATTACKING WIP
 export function player_attack(enemy, encounter) {
 
     let playerStats = characterData.find(d => d.id === 'player_stats');
@@ -1293,7 +1273,7 @@ export function player_attack(enemy, encounter) {
             // Player damage mitigation
             let player_armor_reduct = 1 - (playerStats.total_armor_effect / 100);
             turn_enemy_damage *= player_armor_reduct;
-            console.log(player_armor_reduct);
+            //console.log(player_armor_reduct);
             turn_enemy_damage = Math.round(turn_enemy_damage * 10) / 10;
         }
         
@@ -1359,7 +1339,6 @@ export function player_attack(enemy, encounter) {
 // xp gained
 let d_player_character = saveData[1].savedCharacterData[0];
 let current_char_level = d_player_character.char_level;
-console.log('before exp lvl: ' + current_char_level);
 let exp_to_add = xp_gain(enemy.lvl);
 d_player_character.char_exp += exp_to_add;
 update_xp();
@@ -1368,7 +1347,6 @@ update_xp();
 
 // Log level increase
 d_player_character = saveData[1].savedCharacterData[0];
-console.log('after exp lvl: ' + d_player_character.char_level);
 
 if (d_player_character.char_level > 1 && d_player_character.char_level !== current_char_level) {
     new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;Congratulations! You have reached level ' + d_player_character.char_level + '!';
@@ -1377,14 +1355,28 @@ if (d_player_character.char_level > 1 && d_player_character.char_level !== curre
 
 
             let loot_dropped = add_loot(enemy, 1, 1, 2);
+            let global_dropped = add_global_drop('GLOBAL_DROP1');
             if (loot_dropped) {
-                loot_dropped.forEach(loot => {
-                    let d_itemData = itemData.find(i => i.id === loot.id);
-
-                    new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${d_itemData.name} x${loot.cnt}</span></p>`;
-                    
-                    inv.updateLootCount(loot.id, loot.cnt);
-                });
+                // WIP: Need level requirements
+                if (global_dropped) {
+                    // If GOLD drops
+                    if (global_dropped.id === 'GOLD') {
+                        let gold_cnt = randomize(5, 15, 1);
+                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${global_dropped.name} x${gold_cnt}</span></p>`;
+                        inv.updateLootCount(global_dropped.id, gold_cnt);
+                    } else {
+                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${global_dropped.name} x1</span></p>`;
+                        inv.updateLootCount(global_dropped.id, 1);
+                    }
+                } else {
+                    loot_dropped.forEach(loot => {
+                        let d_itemData = itemData.find(i => i.id === loot.id);
+    
+                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${d_itemData.name} x${loot.cnt}</span></p>`;
+                        
+                        inv.updateLootCount(loot.id, loot.cnt);
+                    });
+                }
             }
 
 // reset combat log
@@ -1426,7 +1418,6 @@ if (playerStats.dead) {
                 playerStats.cur_health = playerStats.max_health;
                 // Reset battle/location elements
                 reset_battle();
-                console.log('Revived!');
             }
         }, 1000); // 1000ms = 1 second
     };
@@ -1487,7 +1478,6 @@ export function add_loot(enemy, count, gold_min, gold_max) {
         dropped_items.push({ id: 'GOLD', cnt: gold_roll });
     }
 
-console.log(dropped_items);
     // Return dropped items with their counts
     return dropped_items;
 }
@@ -1625,19 +1615,38 @@ function start_encounter(loc, group) {
 // Location 1+ only
 //start_encounter(1, 'group_loc1');
 
-export function add_global_drop(id) {
+// Add items to global drop
+export function inject_items_to_global_drop(arrayId, dropId) {
+    let globalDrops = encounterData.filter(e => e.cat === 'global_drops');
+    let drop_id = globalDrops.find(d => d.id === dropId);
+    let drops = drop_id.drops;
+    // Use as object for key-value pairs
+    let storedData = {};
+
+    arrayId.forEach(item => {
+        storedData[item.id] = 0.04;
+    });
+    
+    Object.assign(drops, storedData);
+}
+inject_items_to_global_drop(d_items_starterSet, 'GLOBAL_DROP1');
+
+// Setup random global drop
+export function add_global_drop(dropId) {
     
     let globalDrops = encounterData.filter(e => e.cat === 'global_drops');
-    let drop_id = globalDrops.find(d => d.id === id);
+    let drop_id = globalDrops.find(d => d.id === dropId);
     let drops = drop_id.drops;
 
-    console.log(drops);
-
     function getRandomDrop() {
-        for (let [key, value] of Object.entries(drops)) {
+        // Convert the drops object into an array of key-value pairs and shuffle them
+        let shuffledEntries = Object.entries(drops)
+            .sort(() => Math.random() - 0.5);  // This shuffles the array randomly
+    
+        // Now iterate over the shuffled array
+        for (let [key, value] of shuffledEntries) {
             if (value > Math.random()) {
                 return key;
-                break;
             }
         }
     }
@@ -1647,7 +1656,11 @@ export function add_global_drop(id) {
         let this_drop = getRandomDrop();
         if (this_drop) {
             let d_item = itemData.find(i => i.id === this_drop);
-            console.log(d_item);
+            //console.log(d_item.id);
+            return d_item;
+        } else {
+            return null;
+            //console.log(i + 1);
         }
     }
     
@@ -1764,6 +1777,10 @@ export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, ma
     get_random_stats();
 
     }
+
     // Add new gear set to itemData
     itemData.push(...gearSet);
+    
+    // Return array data
+    return gearSet;
 }

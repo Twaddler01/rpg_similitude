@@ -78,58 +78,9 @@ export function init_elementsData() {
             parent_el: 'battle_section_container',
             css_class: 'location_box_style',
             },
-            // attach (battle_section_container)
-            { id: 'new_battle_container',
-            section_cat: true,
-            fetch_cat: true,
-            type: 'div',
-            parent_el: 'battle_section_container',
-            },
-                // attach (new_battle_container)
-                { id: 'new_battle_button',
-                section_cat: true,
-                fetch_cat: true,
-                type: 'div',
-                parent_el: 'new_battle_container',
-                content: '<b><font style="font-size: 24px;">[ NEW BATTLE ]</font></b>',
-                css_class: 'location_box_style',
-                css_class2: 'center',
-                hidden: 'true',
-                on_click: true, // click event
-                },
-                { id: 'battle_message_div',
-                section_cat: true,
-                fetch_cat: true,
-                type: 'div',
-                parent_el: 'new_battle_container',
-                css_class: 'normal',
-                },
-            // attach (battle_section_container)
-            { id: 'change_location_button', // replaced by new_battle_button below
-            section_cat: true,
-            fetch_cat: true,
-            type: 'button',
-            parent_el: 'battle_section_container',
-            content: '<b><font style="font-size: 24px;"> CHANGE LOCATION </font></b>',
-            css_class: 'location_box_style',
-            css_class2: 'center',
-            hidden: true,
-            },
-            
-            /// TEST remove black line
-            // attach (battle_section_container)
-            { id: 'attack_box_button', // replaced by new_battle_button below
-            section_cat: true,
-            fetch_cat: true,
-            type: 'button',
-            parent_el: 'battle_section_container',
-            content: '<b><font style="font-size: 24px;"> ATTACK </font></b>',
-            css_class: 'location_box_style',
-            css_class2: 'center',
-            hidden: true,
-            on_click: true, // click event
-            },
-            
+                // attach (location_container)
+                // update_locations() -> 'attack_box_button'
+                // update_locations() -> 'change_location_button'
             // attach (battle_section_container)
             { id: 'battle_ui_container',
             section_cat: true,
@@ -553,7 +504,7 @@ export function init_encounterData() {
             ] }, 
         // WIP dynamic entries
         // start_encounter()
-        { id: 'group_loc1',
+        { id: 'group_loc1', loc: 1, lvl: 1,
             enemy_list: [
                 //
             ] },
@@ -561,8 +512,8 @@ export function init_encounterData() {
         { id: 'group2' },
         // for add_loot() function
         { id: 'lootData', current_loot: [] },
-        // any enemy can drop
-        { cat: 'global_drops', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1, 'BETTER_BOOTS': 0.08, 'BETTER_HELMET': 0.08 } },
+        // any enemy can drop -- see f.add_global_drop()
+        { cat: 'global_drops', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1 } },
         { id: 'enemyNames', names: [ 
             { n: 'Shadowfiend', l: 'SF', type: 'shadow', u: false }, 
             { n: 'Flame Wraith', l: 'FW', type: 'elemental', u: false }, 

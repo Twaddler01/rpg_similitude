@@ -1,8 +1,8 @@
 // general_functions.js
 
 // variables needed
-import { elementsData, trackingData } from './data.js';
-import { update_equipment } from './functions.js';
+import { elementsData, trackingData, characterData } from './data.js';
+import { update_equipment, reset_battle } from './functions.js';
 import { update_inventory } from './inventory.js';
 import { update_character, update_character_stats } from './character.js';
 
@@ -533,9 +533,21 @@ export function toggle_section(section) {
     if (section === 'battle') {
         let e_battle_section = document.getElementById('battle_section');
         let location_container = document.getElementById('location_container');
-        if (trackingData[0].t_battle_section) {
+        let playerCombat = characterData.find(c => c.id === 'player_combat_status');
+
+        // Toggle only if out of combat
+        if (trackingData[0].t_battle_section && !playerCombat.in_combat) {
             location_container.style.display = 'none';
             e_battle_section.innerHTML = 'Battle Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+            let e_attack_box_button = document.getElementById('attack_box_button');
+            if (e_attack_box_button) {
+                e_attack_box_button.style.display = 'none';
+            }
+            let e_change_location_button = document.getElementById('change_location_button');
+            if (e_change_location_button) {
+                e_change_location_button.style.display = 'none';
+            }
+            reset_battle();
             trackingData[0].t_battle_section = false;
         } else {
             location_container.style.display = 'block';

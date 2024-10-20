@@ -11,8 +11,8 @@ import * as inv from './inventory.js';
 
 // DEBUGGING INFO
 
-//gf.logExport();
-//gf.htmlExport();
+gf.logExport();
+gf.htmlExport();
 
 // Title
 f.create_el('title_section', 'div', 'body');
@@ -123,9 +123,6 @@ if (!d_character.char_created) {
 
 function start_game() {
 
-    // Inject gear sets
-    f.add_new_gear('STARTER', 'BLUE', 2, 5, 5, 10, 20, 30, 3.0, 5.0); // Shield is x5 armor
-    
     // Add main elements
     gf.add_allElements();
 

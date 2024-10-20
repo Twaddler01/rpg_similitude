@@ -8,6 +8,12 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+10-20-2024
+- Corrected some issues with locationsData elements and attack/change location buttons and toggling.
+- Cannot toggle Battle Section off while in combat.
+- Added random global drops to Starting Location, will be usable dynamically in other locations soon.
+- Locations may follow an enemy 'type' pattern, such as 'elementals' sharing loot tables, etc.
+
 10-19-2024
 - Added option to import JSON (pasting in newSaveData.json starts a new game). This allows data to be saved.
 - Added export option to export the saveData array as JSON. Will soon add localstorage usage with basic ANSI encryption. Plan to not only use localstorwge but also import/export of the encrypted save contents.

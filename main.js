@@ -1,6 +1,6 @@
 // main.js
 
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData, init_trackingData } from './data.js';
 
 import * as f from  './functions.js';
 import * as gf from './general_functions.js';
@@ -11,8 +11,33 @@ import * as inv from './inventory.js';
 
 // DEBUGGING INFO
 
-//gf.logExport();
-//gf.htmlExport();
+gf.logExport();
+gf.htmlExport();
+
+new_game();
+
+function new_game() {
+
+    // Clear body content
+    // Select all divs that are direct children of body
+    /*const divs = document.querySelectorAll('body > div');
+    divs.forEach(div => {
+            console.log(div.id);
+        // Remove each div element with ids only
+        if (div.id) {
+            div.remove();
+        }
+    });*/
+
+    let all_el = document.querySelectorAll('body, body *');
+    let filteredEl = Array.from(all_el).filter(e => e.id !== 'js-console' && e.id !== 'exportButton' && e.id !== 'exportHTMLButton');
+    
+    filteredEl.forEach(el => {
+        if (el.id) {
+            console.log(el.id);
+            el.remove();
+        }
+    });
 
 // Title
 f.create_el('title_section', 'div', 'body');
@@ -100,6 +125,7 @@ if (!d_character.char_created) {
             // flag character as created
             d_character.char_created = true;
             del_new_character_container();
+            console.log(saveData);
             start_game();
         });
     
@@ -121,6 +147,9 @@ if (!d_character.char_created) {
     start_game();
 }
 
+} // END new_game()
+
+// Start main game area
 function start_game() {
 
     // Add main elements
@@ -145,11 +174,38 @@ function start_game() {
         document.addEventListener('DOMContentLoaded', () => {
             load_starting_elements();
         });
+    // If game was reset by user
+    } else if (!trackingData[0].init_run) {
+        // Use new data with JSON
+        load_starting_elements();
+    // New character, no reset, load from JSON
     } else {
         load_starting_elements_async();
     }
-
 }
+
+let test_section = document.getElementById('test_section');
+
+// WIP new game
+let new_game_btn = document.createElement('button');
+test_section.appendChild(new_game_btn);
+new_game_btn.innerHTML = 'new_game()';
+new_game_btn.addEventListener('click', () => {
+    trackingData[0] = init_trackingData();
+    // Flag as second run since doc loaded
+    trackingData[0].init_run = false;
+
+    async function new_game_async() {
+        await f.clearSaveData();
+        new_game();
+    }
+    new_game_async();
+});
+
+
+
+
+
 
 
 
@@ -177,11 +233,6 @@ async function load_starting_elements() {
 // Call the load_starting_elements function when needed
 load_starting_elements();
 */
-
-
-
-
-
 
 // MAX LOCALSTORAGE SIZE (5 MB)
 /* To monitor the size, you can use 

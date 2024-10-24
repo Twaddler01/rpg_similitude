@@ -506,7 +506,7 @@ export function toggle_section(section) {
             trackingData[0].t_character_stats_section = false;
             e_character_stats_container.style.display = 'none';
             e_character_stats_container.style.overflow = 'auto';
-            e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+            e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
         } else {
             trackingData[0].t_character_stats_section = true;
             update_equipment();
@@ -538,7 +538,7 @@ export function toggle_section(section) {
         // Toggle only if out of combat
         if (trackingData[0].t_battle_section && !playerCombat.in_combat) {
             location_container.style.display = 'none';
-            e_battle_section.innerHTML = 'Battle Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+            e_battle_section.innerHTML = 'Battle Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
             let e_attack_box_button = document.getElementById('attack_box_button');
             if (e_attack_box_button) {
                 e_attack_box_button.style.display = 'none';
@@ -561,7 +561,7 @@ export function toggle_section(section) {
         let e_inventory_section_container = document.getElementById('inventory_section_container');
         if (trackingData[0].t_inventory_section) {
             e_inventory_section_container.innerHTML = '';
-            e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>';
+            e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
             trackingData[0].t_inventory_section = false;
         } else {
             trackingData[0].t_inventory_section = true;

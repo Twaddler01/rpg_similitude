@@ -8,13 +8,10 @@ import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
 
-// Global variables
-const d_items_starterSet = add_new_gear('STARTER', 'BLUE', 2, 5, 5, 10, 20, 30, 3.0, 5.0);
-
-// Reset everything except new character info
+// //Reset everything except new character info
 export async function clearSaveData() {
     // Preserve savedCharacterData only
-    let saved_data = saveData[1].savedCharacterData[0];
+    //let saved_data = saveData[1].savedCharacterData[0];
 
     saveData.length = 0;
     const response = await fetch('newSaveData.json');
@@ -24,9 +21,9 @@ export async function clearSaveData() {
     });
 
     // Assign savedCharacterData back to the correct structure
-    if (saved_data) {
+    /*if (saved_data) {
         saveData[1].savedCharacterData = [saved_data]; 
-    }
+    }*/
 }
 
 function downloadSaveData() {
@@ -70,6 +67,23 @@ export function create_el(newId, type, parentId, content) {
 export function first_run() {
 
     let test_section = document.getElementById('test_section');
+
+    // Check divs
+    create_el('check_divs', 'button', test_section);
+    check_divs.innerHTML = 'Check divs';
+    check_divs.addEventListener('click', () => {
+    
+        let all_el = document.querySelectorAll('body, body *');
+        let filteredEl = Array.from(all_el).filter(e => e.id !== 'js-console' && e.id !== 'exportButton' && e.id !== 'exportHTMLButton');
+        
+        filteredEl.forEach(el => {
+            if (el.id) {
+                console.log(el.id);
+            } //else {
+                //console.log(el.outerHTML);
+            //}
+        });
+    });
 
 // import saveData from textarea
     function resetSaveData(newArray) {
@@ -1615,59 +1629,8 @@ function start_encounter(loc, group) {
 // Location 1+ only
 //start_encounter(1, 'group_loc1');
 
-// Add items to global drop
-export function inject_items_to_global_drop(arrayId, dropId) {
-    let globalDrops = encounterData.filter(e => e.cat === 'global_drops');
-    let drop_id = globalDrops.find(d => d.id === dropId);
-    let drops = drop_id.drops;
-    // Use as object for key-value pairs
-    let storedData = {};
-
-    arrayId.forEach(item => {
-        storedData[item.id] = 0.04;
-    });
-    
-    Object.assign(drops, storedData);
-}
-inject_items_to_global_drop(d_items_starterSet, 'GLOBAL_DROP1');
-
-// Setup random global drop
-export function add_global_drop(dropId) {
-    
-    let globalDrops = encounterData.filter(e => e.cat === 'global_drops');
-    let drop_id = globalDrops.find(d => d.id === dropId);
-    let drops = drop_id.drops;
-
-    function getRandomDrop() {
-        // Convert the drops object into an array of key-value pairs and shuffle them
-        let shuffledEntries = Object.entries(drops)
-            .sort(() => Math.random() - 0.5);  // This shuffles the array randomly
-    
-        // Now iterate over the shuffled array
-        for (let [key, value] of shuffledEntries) {
-            if (value > Math.random()) {
-                return key;
-            }
-        }
-    }
-    
-    // Get random key based on value, p
-    for (let i=0; i<50; i++) {
-        let this_drop = getRandomDrop();
-        if (this_drop) {
-            let d_item = itemData.find(i => i.id === this_drop);
-            //console.log(d_item.id);
-            return d_item;
-        } else {
-            return null;
-            //console.log(i + 1);
-        }
-    }
-    
-}
-//add_global_drop('GLOBAL_DROP1');
-
-// Add equipment to itemData
+// *** START *** JSON FILE CREATION
+// Generate mew equipment array to export as .JSON
 // mh & oh -> weapon & shield
 export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, max_statAmt, armorMin, armorMax, dmgMin, dmgMax) {
 
@@ -1778,9 +1741,101 @@ export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, ma
 
     }
 
-    // Add new gear set to itemData
-    itemData.push(...gearSet);
-    
     // Return array data
     return gearSet;
 }
+
+// Download a new array .JSON file
+function export_createdItems_JSON(filename, parsedArray) {
+    parsedArray = JSON.stringify(parsedArray, null, 2);
+    const blob = new Blob([parsedArray], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+// *** END *** JSON FILE CREATION
+// CREATED PREVIOUSLY:
+//export_createdItems_JSON('starterSet', d_items_starterSet);
+
+// Setup random global drops
+// Called only when looting
+// add_global_drop('GLOBAL_DROP1');
+export function add_global_drop(dropId) {
+    
+    let globalDrops = encounterData.filter(e => e.cat === 'global_drops');
+    let drop_id = globalDrops.find(d => d.id === dropId);
+    let drops = drop_id.drops;
+
+    function getRandomDrop() {
+        // Convert the drops object into an array of key-value pairs and shuffle them
+        let shuffledEntries = Object.entries(drops)
+            .sort(() => Math.random() - 0.5);  // This shuffles the array randomly
+    
+        // Now iterate over the shuffled array
+        for (let [key, value] of shuffledEntries) {
+            if (value > Math.random()) {
+                return key;
+            }
+        }
+    }
+    
+    // Get random key based on value, p
+    for (let i=0; i<50; i++) {
+        let this_drop = getRandomDrop();
+        if (this_drop) {
+            let d_item = itemData.find(i => i.id === this_drop);
+            //console.log(d_item.id);
+            return d_item;
+        } else {
+            return null;
+            //console.log(i + 1);
+        }
+    }
+    
+}
+
+// Add items to encounterData global drops
+function inject_items_to_global_drop(arrayId, dropId) {
+    let globalDrops = encounterData.filter(e => e.cat === 'global_drops');
+    let drop_id = globalDrops.find(d => d.id === dropId);
+    let drops = drop_id.drops;
+    // Use as object for key-value pairs
+    let storedData = {};
+
+    arrayId.forEach(item => {
+        storedData[item.id] = 0.04;
+    });
+    
+    Object.assign(drops, storedData);
+}
+
+// Load JSON item data into itemData array
+async function import_createdItems_JSON(type, filename, arrayId) {
+
+    if (type === 'item') {
+        const response = await fetch('data/' + filename);
+        const data = await response.json();
+
+        data.forEach(item => {
+            arrayId.push(item);
+        });
+        
+        return data;
+    }
+}
+
+async function load_items() {
+    // Import JSON data to itemData
+    const d_items_starterSet = await import_createdItems_JSON('item', 'starterSet.json', itemData);
+    // Place JSON data into GLOBAL_DROP1
+    inject_items_to_global_drop(d_items_starterSet, 'GLOBAL_DROP1');
+    //console.log(itemData);
+    //console.log(encounterData);
+}
+load_items();

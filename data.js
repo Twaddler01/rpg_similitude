@@ -47,7 +47,7 @@ export function init_elementsData() {
         section_cat: true,
         type: 'div',
         parent_el: 'body',
-        content: 'Character Stats <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>',
+        content: 'Character Stats <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>',
         css_class: 'h1_yellow_font',
         on_click: true,
         },
@@ -62,7 +62,7 @@ export function init_elementsData() {
         section_cat: true,
         type: 'div',
         parent_el: 'body',
-        content: 'Battle Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>',
+        content: 'Battle Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>',
         css_class: 'h1_yellow_font',
         }, 
         { id: 'battle_section_container',
@@ -93,7 +93,7 @@ export function init_elementsData() {
         section_cat: true,
         type: 'div',
         parent_el: 'body',
-        content: 'Inventory Section <span class="normal">[ SHOW ]</span><div style="background-color:#333;width:100%;padding:5px"></div>',
+        content: 'Inventory Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>',
         css_class: 'h1_yellow_font',
         },
         { id: 'inventory_section_container',
@@ -664,7 +664,7 @@ export function init_saveData() {
 
 export function init_trackingData() {
 
-    const trackingData = [
+    var trackingData = [
         // trackingData[0]
         { loc: 0 }, // (int)
         { lvl: 0 }, // (int)
@@ -688,6 +688,7 @@ export function init_trackingData() {
     trackingData[0].t_battle_section = false;
     trackingData[0].t_inventory_section = false;
     trackingData[0].t_character_section = false;
+    trackingData[0].init_run = true;
     return trackingData;
 }
 
@@ -700,5 +701,5 @@ export const locationsData = init_locationsData();
 export const characterData = init_characterData();
 export const encounterData = init_encounterData();
 export var saveData = init_saveData();
-export const trackingData = init_trackingData();
+export var trackingData = init_trackingData();
 export const itemData = init_itemData();

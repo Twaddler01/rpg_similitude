@@ -1,5 +1,4 @@
 /*!
- * (NOTE: MINOR MODIFICATIONS WERE MADE BY THIS GITHUB AUTHOR )
  * MiniConsole
  * v1.5
  * Useful for debugging Javascript on iOS devices without
@@ -15,6 +14,7 @@
 // Yes, document.write() is an old, clunky way of getting content
 // onto a page, but in this case it's the easiest and most
 // maintainable way to embed all the following quickly.
+
 document.write(`
     <div style="background-color:#333">
 	<h3 style="margin-bottom: 8px">Console</h3>

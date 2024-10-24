@@ -11,7 +11,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 # Updates
 
 10-23-2024
-- Updated options to create new game from default JSON template. JSON can be both inported or exported, keeping progress in tact. Localstorage or encrption not yet setup, but code is now setup wuth this future implementation in mind. Seems to be more reasonable for now while in development due to refreshes from browser cache, which could cause interference with HTTP server used for testing. Currently run in "incognito" for testing purposes, which doesn't work easily for cache or localstorage.
+- Updated options to create new game from default JSON template. JSON can be both imported or exported, keeping progress in tact. Localstorage or encrption not yet setup, but code is now setup wuth this future implementation in mind. Seems to be more reasonable for now while in development due to refreshes from browser cache, which could cause interference with HTTP server used for testing. Currently run in "incognito" for testing purposes, which doesn't work easily for cache or localstorage.
 
 10-20-2024
 - Corrected some issues with locationsData elements and attack/change location buttons and toggling.

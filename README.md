@@ -5,8 +5,13 @@ https://twaddler01.github.io/rpg_similitude/
 - May be issues loading code from URL. For best results, download .zip and use localhost server. (For Android, I use Simple HTTP server):
 https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Identified a css error on Chrome (Mobile) that errors on adding a css class (when trying to select a location). This is NOT an issue in Firefox Mobile. For now, recommend using the Firefox browser until issue can be addressed. Likely a Github server-related error since code executes error free on Chrome locally. Additionally, a workaround on mobile is listed above by using an HTTP server (running a Node.js server in Termux also works fine on my Android device).
+# BUGS
+- Clicking on an item in inventory and then another on the edge of box will cause image to show incorrectly. Can be corrected after retoggle.
 
 # Updates
+
+10-23-2024
+- Updated options to create new game from default JSON template. JSON can be both inported or exported, keeping progress in tact. Localstorage or encrption not yet setup, but code is now setup wuth this future implementation in mind. Seems to be more reasonable for now while in development due to refreshes from browser cache, which could cause interference with HTTP server used for testing. Currently run in "incognito" for testing purposes, which doesn't work easily for cache or localstorage.
 
 10-20-2024
 - Corrected some issues with locationsData elements and attack/change location buttons and toggling.

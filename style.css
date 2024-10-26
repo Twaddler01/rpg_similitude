@@ -9,6 +9,10 @@ body {
     background-color: black;
     color: white;
 }
+/* Disable img pointer events to prevent interruptions from clicking */
+img {
+    pointer-events: none;
+}
 .h1 {
     font-size: 32px;
     color: white;

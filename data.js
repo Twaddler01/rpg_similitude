@@ -649,15 +649,15 @@ export function init_saveData() {
         ] },
     ];
 
-    // Assign any additional data to array
+    // Assign any additional data to array (must match index order)
     const more_gatherData = [
         { name: 'Herb Gathering', cost: 200, 
             materials: [ 
-                { id: 'greenleaf', name: 'Green Leaf', hp: 10, lvl_req: 1, cnt: 0 },
-                { id: 'jadeleaf', name: 'Jade Leaf', hp: 200, lvl_req: 1, cnt: 0 },
-                { id: 'goldenclove', name: 'Golden Clove', hp: 200, lvl_req: 1, cnt: 0 },
-                { id: 'foxglove', name: 'Fox Glove', hp: 200, lvl_req: 1, cnt: 0 },
-                { id: 'thornypike', name: 'Thorny Pike', hp: 200, lvl_req: 1, cnt: 0 },
+                { id: 'greenleaf', name: 'Green Leaf', hp: 100, lvl_req: 0, cnt: 0 },
+                { id: 'jadeleaf', name: 'Jade Leaf', hp: 200, lvl_req: 0, cnt: 0 },
+                { id: 'goldenclove', name: 'Golden Clove', hp: 200, lvl_req: 0, cnt: 0 },
+                { id: 'foxglove', name: 'Fox Glove', hp: 200, lvl_req: 0, cnt: 0 },
+                { id: 'thornypike', name: 'Thorny Pike', hp: 200, lvl_req: 0, cnt: 0 },
                 { id: 'deathglory', name: 'Death Glory', hp: 200, lvl_req: 5, cnt: 0 },
                 { id: 'morningglade', name: 'Morning Glade', hp: 200, lvl_req: 5, cnt: 0 },
                 { id: 'judegloom', name: 'Jude Gloom', hp: 200, lvl_req: 5, cnt: 0 },

@@ -71,7 +71,6 @@ export function update_gather() {
                 }
                 gather_learn_btn.addEventListener('click', gather_learn_click);
                 
-                
                 let gold_img = create_el('gold_img', 'img', gather_learn_div);
                 gold_img.src = 'media/currency_gold.png';
                 gold_img.classList.add('currency_gold');
@@ -80,7 +79,6 @@ export function update_gather() {
                 let gather_cost = create_el('gather_cost', 'span', gather_learn_div);
                 gather_cost.style.paddingLeft = '5px';
                 gather_cost.innerHTML = gather.cost;
-
 
             } else {
                 load_gather();
@@ -91,26 +89,29 @@ export function update_gather() {
                 let gather_ready_container = create_el('gather_ready_container', 'div', gather_container);
                 
                 // Skill label and XP bar
-                create_el('gather_label', 'div', gather_ready_container);
+                let gather_label = create_el('gather_label', 'div', gather_ready_container);
                 gather_label.classList.add('bar_label_container');
             
-                create_el('gather_label_left', 'span', gather_label);
+                let gather_label_left = create_el('gather_label_left', 'span', gather_label);
                 gather_label_left.classList.add('bar_left_label');
                 gather_label_left.innerHTML = gather.name.toUpperCase();;
             
-                create_el('gather_label_right', 'span', gather_label);
+                let gather_label_right = create_el('gather_label_right', 'span', gather_label);
                 gather_label_right.classList.add('bar_right_label');
                 gather_label_right.innerHTML = 'Level: ' + gather.lvl;
-
-                let f_skill_xp = create_el('f_skill_xp', 'div', gather_ready_container);
+                
+                let f_skill_xp = create_el('f_skill_xp', 'div', gather_label);
                 // Skill XP level formula
                 let xp_to_level = Math.round(150 * gather.xp_lvl_mult * gather.lvl) * 10 / 10;
-                let new_xp_bar = create_bar_elements('skill_xp_bar', 'f_skill_xp', 'Experience', xp_to_level, 'blue');
+                let new_xp_bar = create_bar_elements('skill_xp_bar', f_skill_xp, 'Experience', xp_to_level, 'blue');
                 new_xp_bar.updateValue(0);
                 
                 // Update current XP after each gather completes
-                function update_skill_xp() {
+                function update_skill_xp(mat_lvl_req) {
                     let gather_xp_gain = 20;
+                    if ((gather.lvl - mat_lvl_req) >= 5) {
+                        gather_xp_gain = 0;
+                    }
                     gather.xp_amt += gather_xp_gain;
                     new_xp_bar.updateValue(gather.xp_amt);
                     if (gather.xp_amt >= xp_to_level) {
@@ -215,7 +216,7 @@ export function update_gather() {
                                     td_4.innerHTML = mat.cnt;
                                     progress_fill.style.width = '0%';
                                     // Add and update XP
-                                    update_skill_xp();
+                                    update_skill_xp(mat.lvl_req);
                                     
                                 }
                             }

@@ -1848,8 +1848,14 @@ load_items();
 export function create_bar_elements(id, parentId, textInside, valueTotal, barColor) {
     let parentEl = document.getElementById(parentId);
     if (!parentEl) {
-        console.error('create_bar_elements(id: ' + id + ', parentId: ' + parentId + ') - parentID error.');
-        return;
+        // If parentEl isn't in DOM, try element id directly
+        if (!parentId) {
+            console.error('create_bar_elements(id: ' + id + ', parentId: ' + parentId + ') - parentID error.');
+            return;
+        } else {
+            // If not in DOM, but element id is present
+            parentEl = parentId;
+        }
     }
 
     // Container with border

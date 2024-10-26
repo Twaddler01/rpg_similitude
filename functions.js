@@ -62,6 +62,8 @@ export function create_el(newId, type, parentId, content) {
             new_el.innerHTML = content;
         }
     }
+    
+    return new_el;
 }
 
 export function first_run() {
@@ -642,6 +644,7 @@ export function update_health() {
     // Update elements
     e_char_health.innerHTML = playerStats.cur_health;
     e_player_health_bar_fill.style.width = Math.round(((playerStats.cur_health / playerStats.max_health) * 100)) + '%';
+    e_player_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
     let d_player_current_health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
     d_player_current_health_percent = Math.round(d_player_current_health_percent * 10) / 10;
     e_player_current_health_percent.innerHTML = d_player_current_health_percent + '%';
@@ -689,6 +692,7 @@ export function update_health() {
         e_enemy_health.innerHTML = Math.round(encounter.cur_health * 10) / 10;
         e_enemy_current_health_percent.innerHTML = d_enemy_health_percent + '%';
         e_enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
+        e_enemy_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
         
         // Enemy death
         if (encounter.cur_health <= 0) {
@@ -774,6 +778,7 @@ export function update_xp() {
     // Calculate fill
     fill_amt = Math.round(fill_amt * 10) / 10 + '%';
     e_experience_bar_fill.style.width = fill_amt;
+    e_experience_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
     e_experience_percent.innerHTML = fill_amt;
     // Level up
     if (d_player_character.char_exp >= d_player_character.char_exp_to_level) {
@@ -788,6 +793,7 @@ export function update_xp() {
         fill_amt = Math.round(fill_amt * 10) / 10 + '%';
         e_char_exp.innerHTML = d_player_character.char_exp;
         e_experience_bar_fill.style.width = fill_amt;
+        e_experience_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
         e_experience_percent.innerHTML = fill_amt;
         e_experience_to_level.innerHTML = d_player_character.char_exp_to_level;
         // Update stats from level increase
@@ -869,21 +875,15 @@ export function start_battle() {
     // Player labels
     // Add to group player_battle_status_bars
     create_el('player_name_level', 'div', 'player_battle_status_bars');
-    player_name_level.style.backgroundColor = '#333';
-    player_name_level.style.fontSize = '18px';
-    player_name_level.style.color = '#00FFFF';
-    player_name_level.style.padding = '5px';
+    player_name_level.classList.add('bar_label_container');
 
     create_el('player_name', 'span', 'player_name_level');
+    player_name.classList.add('bar_left_label');
     player_name.innerHTML = d_player_character.char_name;
-    player_name.style.display = 'inline-block';
-    player_name.style.width = '50%';
 
     create_el('player_level', 'span', 'player_name_level');
+    player_level.classList.add('bar_right_label');
     player_level.innerHTML = 'Level: ' + d_player_character.char_level;
-    player_level.style.display = 'inline-block';
-    player_level.style.width = '50%';
-    player_level.style.textAlign = 'right';
 
     // Player health
     // Add to group player_battle_status_bars
@@ -897,6 +897,7 @@ export function start_battle() {
     create_el('player_health_bar_fill', 'div', 'player_health_container');
     player_health_bar_fill.classList.add('bar_with_border_fill');
     player_health_bar_fill.style.backgroundColor = 'green';
+    player_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
     // Fill calculated below
 
     create_el('player_current_health_text', 'span', 'player_health_container');
@@ -931,6 +932,7 @@ export function start_battle() {
     create_el('player_resource_bar_fill', 'div', 'player_resource_container');
     player_resource_bar_fill.classList.add('bar_with_border_fill');
     player_resource_bar_fill.style.backgroundColor = '#6E6800';
+    player_resource_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
     // Fill calculated below
 
     create_el('player_current_resource_text', 'span', 'player_resource_container');
@@ -957,6 +959,7 @@ export function start_battle() {
     // Create the experience bar fill (blue bar)
     create_el('experience_bar_fill', 'div', 'experience_container');
     experience_bar_fill.classList.add('bar_with_border_fill');
+    experience_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
 
     create_el('experience_text', 'span', 'experience_container');
     experience_text.classList.add('bar_with_border_text');
@@ -1087,6 +1090,7 @@ export function start_battle() {
         create_el('enemy_health_bar_fill', 'div', 'enemy_health_container');
         enemy_health_bar_fill.classList.add('bar_with_border_fill');
         enemy_health_bar_fill.style.backgroundColor = 'green';
+        enemy_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
         // Fill calculated below
 
         // Get random enemy max health value
@@ -1839,3 +1843,71 @@ async function load_items() {
     //console.log(encounterData);
 }
 load_items();
+
+// Skill bar, returns elements and a value with methods for updating
+export function create_bar_elements(id, parentId, textInside, valueTotal, barColor) {
+    let parentEl = document.getElementById(parentId);
+    if (!parentEl) {
+        console.error('create_bar_elements(id: ' + id + ', parentId: ' + parentId + ') - parentID error.');
+        return;
+    }
+
+    // Container with border
+    let container = document.createElement('div');
+    container.id = id + '_container';
+    container.classList.add('f_create_bar_elements_container');
+    parentEl.appendChild(container);
+    container.style.width = '100%';
+
+    // Fill element inside the progress bar
+    let progress_fill = document.createElement('div');
+    progress_fill.id = id + '_progress_fill';
+    progress_fill.classList.add('f_create_bar_elements_progress_fill');
+    container.appendChild(progress_fill);
+
+    // Set color of fill
+    progress_fill.style.backgroundColor = barColor;
+
+    // Display text above the fill element
+    let progress_text = document.createElement('div');
+    progress_text.id = id + '_progress_text';
+    progress_text.classList.add('f_create_bar_elements_progress_text');
+    container.appendChild(progress_text);
+
+    // Initialize and set the width based on valueTotal
+    let valueCurrent = valueTotal;
+    let bar_percentage = (valueCurrent / valueTotal) * 100;
+    progress_fill.style.width = bar_percentage + '%';
+    progress_text.innerHTML = textInside + ': ' + valueCurrent + ' / ' + valueTotal;
+
+    // Method to update the bar fill and text display
+    function updateValue(newValue) {
+        valueCurrent = Math.max(0, Math.min(newValue, valueTotal));  // Constrain between 0 and valueTotal
+        bar_percentage = (valueCurrent / valueTotal) * 100;
+        progress_fill.style.width = bar_percentage + '%';  // Update fill width
+        progress_text.innerHTML = textInside + ': ' + valueCurrent + ' / ' + valueTotal;
+    }
+
+    // Method to update the textInside display
+    function updateText(newText) {
+        textInside = newText;
+        progress_text.innerHTML = textInside + ': ' + valueCurrent + ' / ' + valueTotal;
+    }
+    
+    // Method to update bar fill total
+    function updateTotal(newValue) {
+        valueTotal = newValue;
+        bar_percentage = (valueCurrent / valueTotal) * 100;
+        progress_fill.style.width = bar_percentage + '%';  // Update fill width
+        progress_text.innerHTML = textInside + ': ' + valueCurrent + ' / ' + valueTotal;
+    }
+
+    return {
+        container,
+        progress_fill,
+        progress_text,
+        updateValue,
+        updateText,
+        updateTotal
+    };
+}

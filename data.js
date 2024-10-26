@@ -639,10 +639,87 @@ export function init_saveData() {
         ] },
     // saveData[4].currencyData[0]
     { currencyData: [
-        { id: 'GOLD', cnt: 0, name: 'Gold' },
+        { id: 'GOLD', cnt: 800, name: 'Gold' },
+        ] },
+    // saveData[5].gatherData
+    { gatherData: [
+        { id: 'herbgather', learned: false, lvl: 1, gather_str: 4, gather_str_mult: 1.08, xp_amt: 0, xp_lvl_mult: 1.5 },
+        { id: 'oremine', learned: false, lvl: 1 },
+        { id: 'tailor', learned: false, lvl: 1 },
         ] },
     ];
 
+    // Assign any additional data to array
+    const more_gatherData = [
+        { name: 'Herb Gathering', cost: 200, 
+            materials: [ 
+                { id: 'greenleaf', name: 'Green Leaf', hp: 10, lvl_req: 1, cnt: 0 },
+                { id: 'jadeleaf', name: 'Jade Leaf', hp: 200, lvl_req: 1, cnt: 0 },
+                { id: 'goldenclove', name: 'Golden Clove', hp: 200, lvl_req: 1, cnt: 0 },
+                { id: 'foxglove', name: 'Fox Glove', hp: 200, lvl_req: 1, cnt: 0 },
+                { id: 'thornypike', name: 'Thorny Pike', hp: 200, lvl_req: 1, cnt: 0 },
+                { id: 'deathglory', name: 'Death Glory', hp: 200, lvl_req: 5, cnt: 0 },
+                { id: 'morningglade', name: 'Morning Glade', hp: 200, lvl_req: 5, cnt: 0 },
+                { id: 'judegloom', name: 'Jude Gloom', hp: 200, lvl_req: 5, cnt: 0 },
+                { id: 'nightbloom', name: 'Night Bloom', hp: 200, lvl_req: 5, cnt: 0 },
+                { id: 'bloodroot', name: 'Blood Root', hp: 200, lvl_req: 5, cnt: 0 },
+                { id: 'elderberry', name: 'Elder Berry', hp: 200, lvl_req: 5, cnt: 0 },
+            ] },
+        { name: 'Ore Mining', cost: 200,
+            materials: [
+                { id: 'copper', name: 'Copper', hp: 100, lvl_req: 1, cnt: 0 },
+            ], },
+        // Replace with a different gathering skill
+        { name: 'Tailor', cost: 200, 
+            materials: [
+                { id: 'basic_cloth', name: 'Basic Cloth', hp: 100, lvl_req: 1, cnt: 0 },
+            ], }
+        ];
+    
+    // Add dynamic img urls
+    more_gatherData.forEach(gather => {
+        let mats = gather.materials;
+        if (gather.name === 'Herb Gathering') {
+            for (let i = 0; i < mats.length; i++) {
+                if (i < 10) {
+                    mats[i].img = 'media/icons/gather/herb_0' + i + '.png';
+                } else {
+                    mats[i].img = 'media/icons/gather/herb_' + i + '.png';
+                }
+            }
+        }
+        if (gather.name === 'Ore Mining') {
+            for (let i = 0; i < mats.length; i++) {
+                if (i < 10) {
+                    mats[i].img = 'media/icons/gather/mine_0' + i + '.png';
+                } else {
+                    mats[i].img = 'media/icons/gather/mine_' + i + '.png';
+                }
+            }
+        }
+        if (gather.name === 'Tailor') {
+            for (let i = 0; i < mats.length; i++) {
+                if (i < 10) {
+                    mats[i].img = 'media/icons/gather/tail_0' + i + '.png';
+                } else {
+                    mats[i].img = 'media/icons/gather/tail_' + i + '.png';
+                }
+            }
+        }
+    });
+    
+    saveData[5].gatherData.forEach((item, index) => {
+        Object.assign(item, more_gatherData[index]);
+    });
+
+    // add .slot to equippedData
+    let equippedItems = saveData[3].equippedData;
+    equippedItems.forEach(equip_slot => {
+        equip_slot.slot = equip_slot.id;
+    });
+
+    return saveData;
+    
     //console.log(saveData[0]); // with 'killsData'
     //console.log(saveData[1]); // with 'characterData'
     //console.log(saveData[2]); // with 'inventoryData'
@@ -650,16 +727,6 @@ export function init_saveData() {
     //console.log(saveData[1].savedCharacterData); // like a standalone array
     //console.log(saveData[2].inventoryData); // like a standalone array
     //console.log(saveData[0].killsData[0]); // for array lengths
-
-    // Get equipment ids
-    let equippedItems = saveData[3].equippedData;
-    
-    // add .slot to array
-    equippedItems.forEach(equip_slot => {
-        equip_slot.slot = equip_slot.id;
-    });
-
-    return saveData;
 }
 
 export function init_trackingData() {
@@ -684,6 +751,7 @@ export function init_trackingData() {
     ];
     
     // For toggle_section() from general_functions.js
+    trackingData[0].t_gather_section = false;
     trackingData[0].t_character_stats_section = false;
     trackingData[0].t_battle_section = false;
     trackingData[0].t_inventory_section = false;

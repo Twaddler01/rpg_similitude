@@ -5,6 +5,7 @@ import { elementsData, trackingData, characterData } from './data.js';
 import { update_equipment, reset_battle } from './functions.js';
 import { update_inventory } from './inventory.js';
 import { update_character, update_character_stats } from './character.js';
+import { update_gather } from './gather.js';
 
 // Override console.log, console.warn, and console.error for exporting into a file
 export function logExport() {
@@ -497,6 +498,20 @@ export function add_allElements() {
 
 // Show or hide sections (clear/create or hide/show)
 export function toggle_section(section) {
+
+    if (section === 'gather') {
+        let e_gather_section = document.getElementById('gather_section');
+        let e_gather_container = document.getElementById('gather_container');
+        if (trackingData[0].t_gather_section) {
+            trackingData[0].t_gather_section = false;
+            update_gather();
+            e_gather_section.innerHTML = 'Gather Section <span class="normal">[ SHOW ]</span>';
+        } else {
+            trackingData[0].t_gather_section = true;
+            update_gather();
+            e_gather_section.innerHTML = 'Gather Section <span class="normal">[ HIDE ]</span>';
+        }
+    }
 
     if (section === 'stats') {
         let e_character_stats_section = document.getElementById('character_stats_section');

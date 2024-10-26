@@ -37,6 +37,29 @@ body {
     display: flex;
 }
 
+/* create_bar_elements() */
+.f_create_bar_elements_container {
+    text-align: center;
+    height: 15px;
+    width: 200px;
+    border: white 1px solid;
+    position: relative;
+}
+.f_create_bar_elements_progress_fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.f_create_bar_elements_progress_text {
+    color: white;
+    font-size: 10px;
+    position: absolute; 
+    width: 100%;
+    top: 0;
+    left: 0;
+    text-align: center;
+}
 
 /* TEST */
 .color_blue {
@@ -53,8 +76,28 @@ body {
     pointer-events: none; /* Ensure the overlay doesn't block clicks */
 }
 
-
+.basic_icon {
+    height: 50px;
+    width: 50px;
+    display: block;
+}
 /* Experience and health bars */
+.bar_label_container {
+    background-color: #333;
+    font-size: 18px;
+    color: #00FFFF;
+    padding: 5px;
+}
+.bar_left_label {
+    display: inline-block;
+    width: 50%;
+}
+.bar_right_label {
+    display: inline-block;
+    width: 50%;
+    text-align: right;
+}
+
 .bar_with_border_container {
     position: relative;  /* Position relative for inner elements */
     height: 20px;

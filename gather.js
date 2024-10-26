@@ -1,0 +1,235 @@
+// gather.js
+
+import { saveData, trackingData } from './data.js';
+import { toggle_section } from './general_functions.js';
+import { create_el, create_bar_elements } from './functions.js';
+
+//import * as gf from './general_functions.js';
+//import * as ch from './character.js';
+//import * as inv from './inventory.js';
+
+export function update_gather() {
+    
+    let gather_section = document.getElementById('gather_section');
+    let gather_container = document.getElementById('gather_container');
+    // Insert new divs before character_section
+    let character_section = document.getElementById('character_section');
+
+    if (!gather_section) {
+        gather_section = document.createElement('div');
+        character_section.parentNode.insertBefore(gather_section, character_section);
+        gather_section.id = 'gather_section';
+        gather_section.classList.add('h1_yellow_font')
+        gather_section.innerHTML = 'Gather Section <span class="normal">[ SHOW ]</span>';
+        gather_section.addEventListener('click', () => {
+            // note: add to add_section_clicks() if needed to run function initially
+            toggle_section('gather');
+        });
+    }
+
+    // Clear any existing elements
+    if (gather_container) {
+        gather_container.innerHTML = '';
+    // Create container
+    } else {
+        gather_container = document.createElement('div');
+        character_section.parentNode.insertBefore(gather_container, character_section);
+        gather_container.id = 'gather_container';
+        gather_container.classList.add('location_box_style');
+    }
+
+    // On toggle, load toggled action
+    if (trackingData[0].t_gather_section) {
+        //
+        let gather_messages_div = create_el('gather_messages_div', 'div', gather_container);
+        gather_messages_div.classList.add('normal');
+        create_el('new_gather', 'div', gather_container);
+        let saveDataGatherData = saveData[5].gatherData;
+
+        saveDataGatherData.forEach(gather => {
+            // Learn to gather
+            if (!gather.learned) {
+                let gather_learn_div = create_el('gather_learn_div', 'div', new_gather);
+                gather_learn_div.classList.add('normal');
+                let gather_learn_btn = create_el('gather_learn_btn', 'button', gather_learn_div);
+                gather_learn_btn.innerHTML = 'Learn ' + gather.name;
+                function gather_learn_click() {
+                    let d_gold = saveData[4].currencyData[0];
+                    if (d_gold.cnt >= gather.cost) {
+                        d_gold.cnt -= gather.cost;
+                        gather.learned = true;
+                        gather_messages_div.innerHTML += 'You have learned a new skill: <b>' + gather.name.toUpperCase() + '</b>!<br>';
+                        // Clear the message after 20 seconds (20,000 milliseconds)
+                        setTimeout(() => {
+                            gather_messages_div.innerHTML = '';
+                        }, 20000);
+                        gather_learn_div.remove();
+                        load_gather();
+                    } else {
+                        gather_messages_div.innerHTML = 'Not enough gold.';
+                    }
+                }
+                gather_learn_btn.addEventListener('click', gather_learn_click);
+                
+                
+                let gold_img = create_el('gold_img', 'img', gather_learn_div);
+                gold_img.src = 'media/currency_gold.png';
+                gold_img.classList.add('currency_gold');
+                gold_img.style.paddingLeft = '10px';
+
+                let gather_cost = create_el('gather_cost', 'span', gather_learn_div);
+                gather_cost.style.paddingLeft = '5px';
+                gather_cost.innerHTML = gather.cost;
+
+
+            } else {
+                load_gather();
+            }
+            
+            function load_gather() {
+
+                let gather_ready_container = create_el('gather_ready_container', 'div', gather_container);
+                
+                // Skill label and XP bar
+                create_el('gather_label', 'div', gather_ready_container);
+                gather_label.classList.add('bar_label_container');
+            
+                create_el('gather_label_left', 'span', gather_label);
+                gather_label_left.classList.add('bar_left_label');
+                gather_label_left.innerHTML = gather.name.toUpperCase();;
+            
+                create_el('gather_label_right', 'span', gather_label);
+                gather_label_right.classList.add('bar_right_label');
+                gather_label_right.innerHTML = 'Level: ' + gather.lvl;
+
+                let f_skill_xp = create_el('f_skill_xp', 'div', gather_ready_container);
+                // Skill XP level formula
+                let xp_to_level = Math.round(150 * gather.xp_lvl_mult * gather.lvl) * 10 / 10;
+                let new_xp_bar = create_bar_elements('skill_xp_bar', 'f_skill_xp', 'Experience', xp_to_level, 'blue');
+                new_xp_bar.updateValue(0);
+                
+                // Update current XP after each gather completes
+                function update_skill_xp() {
+                    let gather_xp_gain = 20;
+                    gather.xp_amt += gather_xp_gain;
+                    new_xp_bar.updateValue(gather.xp_amt);
+                    if (gather.xp_amt >= xp_to_level) {
+                        gather.xp_amt -= xp_to_level;
+                        new_xp_bar.updateValue(gather.xp_amt);
+                        gather.lvl += 1;
+                        gather_label_right.innerHTML = 'Level: ' + gather.lvl;
+                        xp_to_level = Math.round(150 * gather.xp_lvl_mult * gather.lvl) * 10 / 10;
+                        new_xp_bar.updateTotal(xp_to_level);
+                    }
+                }
+
+
+                // Get materials data for each learned skill
+                let gatherMaterial = gather.materials;
+                if (gatherMaterial) {
+                    // Create rows based on materials unlocked
+                    let material = gatherMaterial.filter(m => m.lvl_req <= gather.lvl);
+                    if (material) {
+                        material.forEach(mat => {
+
+                            let gather_row = create_el('gather_row', 'div', gather_container);
+                            
+                            let gather_table = create_el('gather_table', 'table', gather_row);
+                            gather_table.style.width = '100%';
+                            let tr = create_el('tr', 'tr', gather_table);
+                            let td_1 = create_el('td_1', 'td', tr);
+                            td_1.style.verticalAlign = 'center';
+                            let gather_img = create_el('gather_img', 'img', td_1);
+                            gather_img.classList.add('basic_icon');
+                            gather_img.src = mat.img;
+                            let td_2 = create_el('td_2', 'td', tr);
+            
+                            // Create the main progress bar container
+                            let progress_div = create_el('progress_div', 'div', td_2);
+                            progress_div.classList.add('center');
+                            progress_div.style.height = '15px';
+                            progress_div.style.width = '200px';
+                            progress_div.style.border = 'white 1px solid';
+                            progress_div.style.position = 'relative'; // Allows positioning of inner elements
+                            
+                            // Create the fill element inside the progress bar
+                            let progress_fill = create_el('progress_fill', 'div', progress_div);
+                            progress_fill.style.height = '100%';
+                            progress_fill.style.backgroundColor = 'green';
+                            progress_fill.style.width = '0%'; // Initial width set to 0, updated later based on progress
+                            progress_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+                            
+                            // Display text above the fill element
+                            let progress_text = create_el('progress_text', 'div', progress_div);
+                            progress_text.style.color = 'white';
+                            progress_text.style.fontSize = '10px';
+                            progress_text.style.position = 'absolute'; // Overlay the text on the progress bar
+                            progress_text.style.width = '100%';
+                            progress_text.style.top = '0';
+                            progress_text.style.left = '0';
+                            progress_text.style.textAlign = 'center';
+                            
+                            // Gathered amount display
+                            let td_3 = create_el('td_3', 'td', tr);
+                            td_3.classList.add('center');
+                            td_3.style.fontSize = '12px';
+                            td_3.style.verticalAlign = 'center';
+                            td_3.innerHTML = mat.name;
+                            
+                            let td_4 = create_el('td_4', 'td', tr);
+                            td_4.classList.add('center');
+                            td_4.style.fontSize = '12px';
+                            td_4.style.verticalAlign = 'center';
+                            td_4.innerHTML = mat.cnt;
+                            
+                            // Set progress values
+                            let d_progress_total = mat.hp;
+                            let d_progress_curr = mat.hp;
+                            let reset = false;
+
+                            // Update the width of the fill element and the text content
+                            let progress_percent = (d_progress_curr / d_progress_total) * 100;
+                            progress_fill.style.width = progress_percent + '%';
+                            progress_text.innerHTML = 'GATHER: ' + d_progress_curr + ' / ' + d_progress_total;
+                            
+                            // Gather click action
+                            function gather_click() {
+                                if (d_progress_curr === 0) {
+                                    d_progress_curr = d_progress_total;
+                                    progress_fill.style.width = '100%';
+                                    progress_text.innerHTML = 'GATHER: ' + d_progress_curr + ' / ' + d_progress_total;
+                                    return;
+                                }
+                                // WIP: Need a depreciation of xp based on current skill lvl
+                                let gather_strength = gather.gather_str * gather.gather_str_mult * gather.lvl;
+                                d_progress_curr -= gather_strength;
+                                d_progress_curr = Math.round(d_progress_curr * 10) / 10;
+                                progress_percent = (d_progress_curr / d_progress_total) * 100;
+                                progress_fill.style.width = progress_percent + '%';
+                                progress_text.innerHTML = 'GATHER: ' + d_progress_curr + ' / ' + d_progress_total;
+                                if (d_progress_curr <= 0) {
+                                    d_progress_curr = 0;
+                                    // Add material to material inventory
+                                    mat.cnt += 1;
+                                    progress_text.innerHTML = 'COMPLETE!';
+                                    td_4.innerHTML = mat.cnt;
+                                    progress_fill.style.width = '0%';
+                                    // Add and update XP
+                                    update_skill_xp();
+                                    
+                                }
+                            }
+                            
+                            td_1.addEventListener('click', gather_click);
+                            
+                            
+                            
+                            
+                            
+                        });
+                    }
+                }
+            }
+        });
+    }
+}

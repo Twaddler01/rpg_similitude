@@ -6,7 +6,7 @@ import * as f from  './functions.js';
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
-
+import * as g from './gather.js';
 //`
 
 // DEBUGGING INFO
@@ -162,6 +162,7 @@ function start_game() {
         f.update_locations();
         inv.update_inventory();
         gf.add_section_clicks();
+        g.update_gather();
     }
     
     async function load_starting_elements_async() {
@@ -191,6 +192,7 @@ let new_game_btn = document.createElement('button');
 test_section.appendChild(new_game_btn);
 new_game_btn.innerHTML = 'new_game()';
 new_game_btn.addEventListener('click', () => {
+    // Reset trackingData
     trackingData[0] = init_trackingData();
     // Flag as second run since doc loaded
     trackingData[0].init_run = false;
@@ -202,6 +204,14 @@ new_game_btn.addEventListener('click', () => {
     new_game_async();
 });
 
+/*f.create_el('test_bar_btn', 'button', test_section);
+test_bar_btn.innerHTML = 'BAR TEST';
+let skillBar = f.create_bar_elements('test_bar_0', 'test_section', 'AMOUNT', 200, 'green');
+let progress = 200;
+test_bar_btn.addEventListener('click', () => {
+    progress -= 10;
+    skillBar.updateValue(progress);
+});*/
 
 
 

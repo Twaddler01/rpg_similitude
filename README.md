@@ -10,6 +10,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+10-26-2024
+- Added gathering skills. "Tailor" is probably going to move to CRAFT whenever code is updated for CRAFT skills, which will eventually be implemented.
+- Updated some styles to integrate progress/skill bar function, where all bar elements will soon be moved to and created with instead. So far, this function with methods is extremely useful -- it is a new concept for this coder but very useful and will likely be used more in the future. 
+
 10-23-2024
 - Updated options to create new game from default JSON template. JSON can be both imported or exported, keeping progress in tact. Localstorage or encrption not yet setup, but code is now setup with this future implementation in mind. Seems to be more reasonable for now while in development due to refreshes from browser cache, which could cause interference with HTTP server used for testing. Currently run code in browser "incognito" mode for testing purposes, which doesn't work easily for cache or localstorage.
 

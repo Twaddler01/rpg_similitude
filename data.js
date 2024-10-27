@@ -649,6 +649,25 @@ export function init_saveData() {
         ] },
     ];
 
+    // ONLY NEEDED OUTSIDE OF LOADING JSON
+    // add .slot to equippedData
+    let equippedItems = saveData[3].equippedData;
+    equippedItems.forEach(equip_slot => {
+        equip_slot.slot = equip_slot.id;
+    });
+
+    return saveData;
+    
+    //console.log(saveData[0]); // with 'killsData'
+    //console.log(saveData[1]); // with 'characterData'
+    //console.log(saveData[2]); // with 'inventoryData'
+    //console.log(saveData[0].killsData); // like a standalone array
+    //console.log(saveData[1].savedCharacterData); // like a standalone array
+    //console.log(saveData[2].inventoryData); // like a standalone array
+    //console.log(saveData[0].killsData[0]); // for array lengths
+}
+
+export function update_saveData() {
     // Assign any additional data to array (must match index order)
     const more_gatherData = [
         { name: 'Herb Gathering', cost: 200, 
@@ -658,12 +677,12 @@ export function init_saveData() {
                 { id: 'goldenclove', name: 'Golden Clove', hp: 200, lvl_req: 0, cnt: 0 },
                 { id: 'foxglove', name: 'Fox Glove', hp: 200, lvl_req: 0, cnt: 0 },
                 { id: 'thornypike', name: 'Thorny Pike', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'deathglory', name: 'Death Glory', hp: 200, lvl_req: 5, cnt: 0 },
-                { id: 'morningglade', name: 'Morning Glade', hp: 200, lvl_req: 5, cnt: 0 },
-                { id: 'judegloom', name: 'Jude Gloom', hp: 200, lvl_req: 5, cnt: 0 },
-                { id: 'nightbloom', name: 'Night Bloom', hp: 200, lvl_req: 5, cnt: 0 },
-                { id: 'bloodroot', name: 'Blood Root', hp: 200, lvl_req: 5, cnt: 0 },
-                { id: 'elderberry', name: 'Elder Berry', hp: 200, lvl_req: 5, cnt: 0 },
+                { id: 'deathglory', name: 'Death Glory', hp: 200, lvl_req: 0, cnt: 0 },
+                { id: 'morningglade', name: 'Morning Glade', hp: 200, lvl_req: 0, cnt: 0 },
+                { id: 'judegloom', name: 'Jude Gloom', hp: 200, lvl_req: 0, cnt: 0 },
+                { id: 'nightblade', name: 'Night Blade', hp: 200, lvl_req: 0, cnt: 0 },
+                { id: 'bloodroot', name: 'Blood Root', hp: 200, lvl_req: 0, cnt: 0 },
+                { id: 'elderberry', name: 'Elder Berry', hp: 200, lvl_req: 0, cnt: 0 },
             ] },
         { name: 'Ore Mining', cost: 200,
             materials: [
@@ -711,22 +730,6 @@ export function init_saveData() {
     saveData[5].gatherData.forEach((item, index) => {
         Object.assign(item, more_gatherData[index]);
     });
-
-    // add .slot to equippedData
-    let equippedItems = saveData[3].equippedData;
-    equippedItems.forEach(equip_slot => {
-        equip_slot.slot = equip_slot.id;
-    });
-
-    return saveData;
-    
-    //console.log(saveData[0]); // with 'killsData'
-    //console.log(saveData[1]); // with 'characterData'
-    //console.log(saveData[2]); // with 'inventoryData'
-    //console.log(saveData[0].killsData); // like a standalone array
-    //console.log(saveData[1].savedCharacterData); // like a standalone array
-    //console.log(saveData[2].inventoryData); // like a standalone array
-    //console.log(saveData[0].killsData[0]); // for array lengths
 }
 
 export function init_trackingData() {
@@ -761,10 +764,8 @@ export function init_trackingData() {
 }
 
 export const elementsData = init_elementsData();
-//export const battleData = init_battleData();
 export const equipmentElements = init_equipmentElements();
 export var inventoryElements = init_inventoryElements();
-//export const locationData = init_locationData();
 export const locationsData = init_locationsData();
 export const characterData = init_characterData();
 export const encounterData = init_encounterData();

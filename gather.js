@@ -104,14 +104,15 @@ export function update_gather() {
                 // Skill XP level formula
                 let xp_to_level = Math.round(150 * gather.xp_lvl_mult * gather.lvl) * 10 / 10;
                 let new_xp_bar = create_bar_elements('skill_xp_bar', f_skill_xp, 'Experience', xp_to_level, 'blue');
-                new_xp_bar.updateValue(0);
-                
+
                 // Update current XP after each gather completes
                 function update_skill_xp(mat_lvl_req) {
                     let gather_xp_gain = 20;
+                    // 5+ levels above required level give no xp
                     if ((gather.lvl - mat_lvl_req) >= 5) {
                         gather_xp_gain = 0;
                     }
+                    // WIP: increase XP gains for higher levels
                     gather.xp_amt += gather_xp_gain;
                     new_xp_bar.updateValue(gather.xp_amt);
                     if (gather.xp_amt >= xp_to_level) {
@@ -123,7 +124,9 @@ export function update_gather() {
                         new_xp_bar.updateTotal(xp_to_level);
                     }
                 }
-
+                // Current values
+                new_xp_bar.updateValue(gather.xp_amt);
+                new_xp_bar.updateTotal(xp_to_level);
 
                 // Get materials data for each learned skill
                 let gatherMaterial = gather.materials;

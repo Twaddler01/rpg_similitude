@@ -1,6 +1,6 @@
 // main.js
 
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData, init_trackingData } from './data.js';
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, update_saveData, trackingData, init_trackingData } from './data.js';
 
 import * as f from  './functions.js';
 import * as gf from './general_functions.js';
@@ -14,27 +14,21 @@ import * as g from './gather.js';
 gf.logExport();
 gf.htmlExport();
 
+// Add array updates
+update_saveData();
+init_trackingData();
+f.setup_encounters(1);
+
 new_game();
 
 function new_game() {
-
-    // Clear body content
-    // Select all divs that are direct children of body
-    /*const divs = document.querySelectorAll('body > div');
-    divs.forEach(div => {
-            console.log(div.id);
-        // Remove each div element with ids only
-        if (div.id) {
-            div.remove();
-        }
-    });*/
 
     let all_el = document.querySelectorAll('body, body *');
     let filteredEl = Array.from(all_el).filter(e => e.id !== 'js-console' && e.id !== 'exportButton' && e.id !== 'exportHTMLButton');
     
     filteredEl.forEach(el => {
         if (el.id) {
-            console.log(el.id);
+            //console.log(el.id);
             el.remove();
         }
     });
@@ -125,7 +119,6 @@ if (!d_character.char_created) {
             // flag character as created
             d_character.char_created = true;
             del_new_character_container();
-            console.log(saveData);
             start_game();
         });
     
@@ -193,7 +186,8 @@ test_section.appendChild(new_game_btn);
 new_game_btn.innerHTML = 'new_game()';
 new_game_btn.addEventListener('click', () => {
     // Reset trackingData
-    trackingData[0] = init_trackingData();
+    trackingData.length = 0;
+    init_trackingData();
     // Flag as second run since doc loaded
     trackingData[0].init_run = false;
 

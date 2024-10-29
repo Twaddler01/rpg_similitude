@@ -1,7 +1,7 @@
 // functions.js
 
 // import arrays
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData, init_saveData } from './data.js';
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, update_saveData, trackingData } from './data.js';
 
 // general functions needed
 import * as gf from './general_functions.js';
@@ -19,11 +19,10 @@ export async function clearSaveData() {
     parsedData.forEach(item => {
         saveData.push(item);
     });
-
-    // Assign savedCharacterData back to the correct structure
-    /*if (saved_data) {
-        saveData[1].savedCharacterData = [saved_data]; 
-    }*/
+    
+    // Reset saveData modifications
+    update_saveData();
+    //console.log(saveData);
 }
 
 function downloadSaveData() {
@@ -673,10 +672,12 @@ export function update_health() {
     
 // ENEMY ////
 
-    let encounter = encounterData.find(e => e.id === 'beginner_0');
+// WIP uodate loc/lvl for loc 1
+console.log(trackingData[0].loc + ' / ' + trackingData[0].lvl)
+    let encounter = encounterData.find(e => e.loc === trackingData[0].loc && e.lvl === trackingData[0].lvl);
 
     // First encounter
-    if (encounter.in_combat && trackingData[0].loc === 0 && trackingData[0].lvl === 1) {
+    if (encounter.in_combat) { // && trackingData[0].loc === 0 && trackingData[0].lvl === 1) {
 // Encounters need to be set up with loc, lvl linked
 
         let e_enemy_health = document.getElementById('e_enemy_health');
@@ -1014,7 +1015,6 @@ export function start_battle() {
     create_el('battle_verses_box', 'div', all_battle_ui_elements);
     battle_verses_box.innerHTML = '<p style="text-align:center;font-size:16px;color:red;" id="player_to_enemy_btn">[ TARGETING ]</p>';
 
-//// WIP Enemy battle elemwnta
 // WIP need multiple enemies
 
     // Place enemy_ui_containers here
@@ -1051,14 +1051,22 @@ export function start_battle() {
         // All other encounters
         let enemy_loc = trackingData[0].loc;
         let enemy_lvl = trackingData[0].lvl;
+
         // Get matching loc/lvl encounter
-        encounter = encounterData.find(e => e.loc === enemy_loc && e.lvl === enemy_lvl);
+        encounter = encounterData.find(e => e.id === 'group_lvl_' + enemy_loc && e.loc === enemy_loc && e.lvl === enemy_lvl);
+        
         // Choose random array index of enemyList;
         let enemyList = encounter.enemy_list;
         random_enemy = choose_enemy(enemyList);
+        console.log('random_enemy');
+        console.log(random_enemy);
+        console.log('encounter');
+        console.log(encounter);
+
         // Mark enemy alive
         random_enemy.dead = false;
         trackingData[0].current_enemy = random_enemy.id;
+        
         //// WIP more array data needed
     }
     
@@ -1235,8 +1243,8 @@ export function player_attack(enemy, encounter) {
     //let enemyStats = [];
     
     //console.log(playerStats);
-    //console.log(enemy);
-    //console.log(encounter);
+    console.log(enemy);
+    console.log(encounter);
 
 // PLAYER TURN
 
@@ -1523,7 +1531,7 @@ function randomize(min, max, step) {
 }
 
 //// 
-function start_encounter(loc, group) {
+export function setup_encounters(loc) {
 
     let hp_min = 25;
     let hp_max = 30;
@@ -1540,9 +1548,6 @@ function start_encounter(loc, group) {
     let d_level_data = locationsData.filter(l => l.loc && l.loc > 0 && l.lvl > 0 && l.lbl !== 'END');
     
     d_level_data.forEach((level, index) => {
-
-        let d_encounter = encounterData.find(e => e.id === group);
-        let d_enemy_list = d_encounter.enemy_list;
 
         if (level.loc === loc) {
             let stat_mult = (1 - incr_rate) + (incr_rate * (index + 1));
@@ -1585,6 +1590,7 @@ function start_encounter(loc, group) {
                 new_enemy_list.push({
                     //loc: loc,
                     id: entry_id,
+                    cat: 'enemy',
                     lbl: enemy_name,   // Include the random name in the enemy list
                     lvl: index + 1, 
                     drops: []
@@ -1598,7 +1604,7 @@ function start_encounter(loc, group) {
     function pickRandomName() {
         
     // Get random names
-    let enemy_names = encounterData.find(e => e.id === 'enemyNames');
+    let enemy_names = encounterData.find(e => e.id === 'enemyNames1');
     let names = enemy_names.names;
     
     // Filter out names that haven't been used yet (u: false)
@@ -1626,12 +1632,14 @@ function start_encounter(loc, group) {
 
     // check array
     encounterData.forEach(e => {
-        console.log(e);
+        //console.log('setup_encounters');
+        //console.log(e);
     });
 
 } // End function
 // Location 1+ only
-//start_encounter(1, 'group_loc1');
+//// WIP
+//setup_encounters(1);
 
 // *** START *** JSON FILE CREATION
 // Generate mew equipment array to export as .JSON
@@ -1834,13 +1842,11 @@ async function import_createdItems_JSON(type, filename, arrayId) {
     }
 }
 
-async function load_items() {
+export async function load_items() {
     // Import JSON data to itemData
     const d_items_starterSet = await import_createdItems_JSON('item', 'starterSet.json', itemData);
     // Place JSON data into GLOBAL_DROP1
     inject_items_to_global_drop(d_items_starterSet, 'GLOBAL_DROP1');
-    //console.log(itemData);
-    //console.log(encounterData);
 }
 load_items();
 

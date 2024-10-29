@@ -10,6 +10,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+10-28-2024
+- Updated data.js for arrays to be accessed directly.
+- Minor adjustments for data management, especially for dynamic array modifications.
+
 10-26-2024
 - Added gathering skills. "Tailor" is probably going to move to CRAFT whenever code is updated for CRAFT skills, which will eventually be implemented. Only Herb Gathering is semi-functional.
 - Updated some styles to integrate progress/skill bar function, where all bar elements will soon be moved to and created with instead. So far, this function with methods is extremely useful -- it is a new concept for this coder but very useful and will likely be used more in the future. 

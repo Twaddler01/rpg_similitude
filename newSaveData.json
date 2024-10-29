@@ -277,11 +277,7 @@
       {
         "id": "herbgather",
         "learned": false,
-        "lvl": 1,
-        "gather_str": 4,
-        "gather_str_mult": 1.08,
-        "xp_amt": 0,
-        "xp_lvl_mult": 1.5
+        "lvl": 1
       },
       {
         "id": "oremine",

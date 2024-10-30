@@ -1,17 +1,12 @@
 // functions.js
 
-// import arrays
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, update_saveData, trackingData } from './data.js';
-
-// general functions needed
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, gatherData, trackingData } from './data.js';
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
 
-// //Reset everything except new character info
+// Reset saveData to defaults
 export async function clearSaveData() {
-    // Preserve savedCharacterData only
-    //let saved_data = saveData[1].savedCharacterData[0];
 
     saveData.length = 0;
     const response = await fetch('newSaveData.json');
@@ -19,13 +14,12 @@ export async function clearSaveData() {
     parsedData.forEach(item => {
         saveData.push(item);
     });
-    
-    // Reset saveData modifications
-    update_saveData();
-    //console.log(saveData);
 }
 
 function downloadSaveData() {
+    //const filteredSaveData = exportFilteredSaveData(baselineData, saveData);
+    
+    // Convert to JSON and create a blob for download
     const saveDataString = JSON.stringify(saveData, null, 2);
     const blob = new Blob([saveDataString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -68,6 +62,26 @@ export function create_el(newId, type, parentId, content) {
 export function first_run() {
 
     let test_section = document.getElementById('test_section');
+
+    // Function to create a button and add click functionality
+    function add_test_action(name, buttonTxt, action) {
+        const button = create_el(name, 'button', test_section); // Assuming create_el creates & returns the element
+        button.innerHTML = buttonTxt;
+        button.addEventListener('click', action); // Attach action to click event
+    }
+
+// Check modifiedSaveData
+let get_modifiedSaveData = () => {
+
+downloadSaveData();
+
+//const exportedData = exportFilteredSaveData(baselineData, saveData);
+//console.log(exportedData);
+//downloadFilteredSaveData();
+};
+
+add_test_action('testJsonDl', 'Download Save Data', get_modifiedSaveData);
+
 
     // Check divs
     create_el('check_divs', 'button', test_section);
@@ -259,6 +273,28 @@ let enemy_list = encounterData.find(e => e.loc === trackingData[0].loc && e.lvl 
 let enemy = enemy_list.enemy_list;
 console.log(enemy);*/
 
+}
+
+export function getModifiedValues(original, modified) {
+    const modifiedValues = [];
+
+    original.forEach((origItem, index) => {
+        const modItem = modified[index];
+        const itemChanges = {};
+
+        for (const key in origItem) {
+            // Check if the property exists in the modified data and is different from original
+            if (JSON.stringify(origItem[key]) !== JSON.stringify(modItem[key])) {
+                itemChanges[key] = modItem[key];
+            }
+        }
+
+        if (Object.keys(itemChanges).length > 0) {
+            modifiedValues[index] = itemChanges;
+        }
+    });
+
+    return modifiedValues;
 }
 
 export function update_locations() {
@@ -670,15 +706,12 @@ export function update_health() {
         return;
     }
     
-// ENEMY ////
+// ENEMY
 
-// WIP uodate loc/lvl for loc 1
-console.log(trackingData[0].loc + ' / ' + trackingData[0].lvl)
     let encounter = encounterData.find(e => e.loc === trackingData[0].loc && e.lvl === trackingData[0].lvl);
 
     // First encounter
     if (encounter.in_combat) { // && trackingData[0].loc === 0 && trackingData[0].lvl === 1) {
-// Encounters need to be set up with loc, lvl linked
 
         let e_enemy_health = document.getElementById('e_enemy_health');
         let e_enemy_current_health_percent = document.getElementById('enemy_current_health_percent');
@@ -697,7 +730,7 @@ console.log(trackingData[0].loc + ' / ' + trackingData[0].lvl)
         
         // Enemy death
         if (encounter.cur_health <= 0) {
-            encounter.cur_health;
+            encounter.cur_health = 0;
             e_enemy_health_bar_fill.style.width = '0%';
             e_enemy_current_health_percent.innerHTML = '';
             e_enemy_current_health_text.innerHTML = '[ DEAD ]';
@@ -1036,7 +1069,6 @@ export function start_battle() {
 
     // Choose encounter & enemy
     // First encounter
-    //console.log('first encounter loc/lvl? ' + trackingData[0].loc + ' / ' + trackingData[0].lvl);
     if (trackingData[0].loc === 0 && trackingData[0].lvl === 1) {
         // Encounters need to be set up with loc, lvl linked
         // 
@@ -1058,10 +1090,10 @@ export function start_battle() {
         // Choose random array index of enemyList;
         let enemyList = encounter.enemy_list;
         random_enemy = choose_enemy(enemyList);
-        console.log('random_enemy');
-        console.log(random_enemy);
-        console.log('encounter');
-        console.log(encounter);
+        //console.log('random_enemy');
+        //console.log(random_enemy);
+        //console.log('encounter');
+        //console.log(encounter);
 
         // Mark enemy alive
         random_enemy.dead = false;
@@ -1243,8 +1275,8 @@ export function player_attack(enemy, encounter) {
     //let enemyStats = [];
     
     //console.log(playerStats);
-    console.log(enemy);
-    console.log(encounter);
+    //console.log(enemy);
+    //console.log(encounter);
 
 // PLAYER TURN
 
@@ -1252,7 +1284,6 @@ export function player_attack(enemy, encounter) {
     if (!enemy.dead) {
 
 // STAT: Hit chance
-        
         // Generate a random number to determine if the attack misses (10% chance)
         let randomMissChance = Math.random();
         let player_miss_chance = 1 - (playerStats.total_hit_chance / 100);
@@ -1312,7 +1343,7 @@ export function player_attack(enemy, encounter) {
         update_health();
         
         if (encounter.cur_health <= 0) {
-            encounter.cur_health = 0;
+            //encounter.cur_health = 0;
             enemy.dead = true;
             locationsData.forEach((item, index) => {
                 if (locationsData[index].loc === trackingData[0].loc && locationsData[index].lvl === trackingData[0].lvl) {
@@ -1362,99 +1393,97 @@ export function player_attack(enemy, encounter) {
         if (enemy.dead) {
             new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated a level ' + enemy.lvl + '&nbsp;' + enemy.lbl + '.</span></p>';
 
-// xp gained
-let d_player_character = saveData[1].savedCharacterData[0];
-let current_char_level = d_player_character.char_level;
-let exp_to_add = xp_gain(enemy.lvl);
-d_player_character.char_exp += exp_to_add;
-update_xp();
-
+            // xp gained
+            let d_player_character = saveData[1].savedCharacterData[0];
+            let current_char_level = d_player_character.char_level;
+            let exp_to_add = xp_gain(enemy.lvl);
+            d_player_character.char_exp += exp_to_add;
+            update_xp();
+            
             new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;You gained ' + exp_to_add + ' experience.';
-
-// Log level increase
-d_player_character = saveData[1].savedCharacterData[0];
-
-if (d_player_character.char_level > 1 && d_player_character.char_level !== current_char_level) {
-    new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;Congratulations! You have reached level ' + d_player_character.char_level + '!';
-}
-
-
-
-            let loot_dropped = add_loot(enemy, 1, 1, 2);
-            let global_dropped = add_global_drop('GLOBAL_DROP1');
-            if (loot_dropped) {
-                // WIP: Need level requirements
-                if (global_dropped) {
-                    // If GOLD drops
-                    if (global_dropped.id === 'GOLD') {
-                        let gold_cnt = randomize(5, 15, 1);
-                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${global_dropped.name} x${gold_cnt}</span></p>`;
-                        inv.updateLootCount(global_dropped.id, gold_cnt);
-                    } else {
-                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${global_dropped.name} x1</span></p>`;
-                        inv.updateLootCount(global_dropped.id, 1);
-                    }
-                } else {
-                    loot_dropped.forEach(loot => {
-                        let d_itemData = itemData.find(i => i.id === loot.id);
-    
-                        new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${d_itemData.name} x${loot.cnt}</span></p>`;
-                        
-                        inv.updateLootCount(loot.id, loot.cnt);
-                    });
-                }
+            
+            // Log level increase
+            d_player_character = saveData[1].savedCharacterData[0];
+            
+            if (d_player_character.char_level > 1 && d_player_character.char_level !== current_char_level) {
+                new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;Congratulations! You have reached level ' + d_player_character.char_level + '!';
             }
-
-// reset combat log
-encounter.log_cnt = 0;
-
-// AUTO PREPARE NEXT ATTACK
-// Other resets are performed in reset_battle()
-encounter.in_combat = false;
-update_locations();
-gf.toggleElement('s', 'change_location_button');
-playerStats.cur_health = playerStats.max_health;
-trackingData[0].next_attack = true;
-trackingData[0].combat_log_created = false;
-selectLevel(trackingData[0].loc, trackingData[0].location, trackingData[0].lvl, trackingData[0].kills);
-
+    
+            // Check if any drops are present
+            if (enemy.drops.length > 0) {
+    
+                let loot_dropped = add_loot(enemy, 1, 1, 2);
+                let global_dropped = add_global_drop('GLOBAL_DROP1');
+                if (loot_dropped) {
+                    // WIP: Need level requirements
+                    if (global_dropped) {
+                        // If GOLD drops
+                        if (global_dropped.id === 'GOLD') {
+                            let gold_cnt = randomize(5, 15, 1);
+                            new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${global_dropped.name} x${gold_cnt}</span></p>`;
+                            inv.updateLootCount(global_dropped.id, gold_cnt);
+                        } else {
+                            new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${global_dropped.name} x1</span></p>`;
+                            inv.updateLootCount(global_dropped.id, 1);
+                        }
+                    } else {
+                        loot_dropped.forEach(loot => {
+                            let d_itemData = itemData.find(i => i.id === loot.id);
+                            
+                            new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${d_itemData.name} x${loot.cnt}</span></p>`;
+                                inv.updateLootCount(loot.id, loot.cnt);
+                            });
+                        }
+                    }
+            } else {
+                new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:yellow;font-weight:bold;">&nbsp;You received no loot.</span></p>`;
+            }
+    
+            // reset combat log
+            encounter.log_cnt = 0;
+            
+            // AUTO PREPARE NEXT ATTACK
+            // Other resets are performed in reset_battle()
+            encounter.in_combat = false;
+            update_locations();
+            gf.toggleElement('s', 'change_location_button');
+            playerStats.cur_health = playerStats.max_health;
+            trackingData[0].next_attack = true;
+            trackingData[0].combat_log_created = false;
+            selectLevel(trackingData[0].loc, trackingData[0].location, trackingData[0].lvl, trackingData[0].kills);
 
         } // end if (enemy.dead)
 
-// WIP on player death element, reset
-if (playerStats.dead) {
-    new_div.innerHTML += `<p><span class="material-symbols-outlined">skull</span><span style="color:yellow;font-weight:bold;">&nbsp;You have died.</span></p>`;
-    let e_player_turn_attack = document.getElementById('player_turn_attack');
-    e_player_turn_attack.removeEventListener('click', ELHandler_player_turn_attack);
-    e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> REVIVE </font></b>';
-
-    let do_revive = function() {
-        e_player_turn_attack.removeEventListener('click', do_revive);
-        let wait_time = 10;
+        // WIP on player death element, reset
+        if (playerStats.dead) {
+            new_div.innerHTML += `<p><span class="material-symbols-outlined">skull</span><span style="color:yellow;font-weight:bold;">&nbsp;You have died.</span></p>`;
+            let e_player_turn_attack = document.getElementById('player_turn_attack');
+            e_player_turn_attack.removeEventListener('click', ELHandler_player_turn_attack);
+            e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> REVIVE </font></b>';
         
-        // Countdown to revive
-        let countdown = setInterval(function() {
-            if (wait_time > 0) {
-                e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> REVIVE in ' + wait_time + ' seconds. </font></b>';
-                wait_time--;
-            } else {
-                clearInterval(countdown);
-                // Reset player & elements
-                playerStats.dead = false;
-                playerStats.cur_health = playerStats.max_health;
-                // Reset battle/location elements
-                reset_battle();
-            }
-        }, 1000); // 1000ms = 1 second
-    };
-    
-    e_player_turn_attack.addEventListener('click', do_revive);
-}
-
-
-
-    } // end if (!enemy.dead && encounter.cur_health > 0) {
-
+            let do_revive = function() {
+                e_player_turn_attack.removeEventListener('click', do_revive);
+                let wait_time = 10;
+                
+                // Countdown to revive
+                let countdown = setInterval(function() {
+                    if (wait_time > 0) {
+                        e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> REVIVE in ' + wait_time + ' seconds. </font></b>';
+                        wait_time--;
+                    } else {
+                        clearInterval(countdown);
+                        // Reset player & elements
+                        playerStats.dead = false;
+                        playerStats.cur_health = playerStats.max_health;
+                        // Reset battle/location elements
+                        reset_battle();
+                    }
+                }, 1000); // 1000ms = 1 second
+            };
+            
+            e_player_turn_attack.addEventListener('click', do_revive);
+        }
+    } // end if (!enemy.dead
 }
 
 export function add_loot(enemy, count, gold_min, gold_max) {

@@ -1,9 +1,6 @@
 // inventory.js
 
-// import arrays
 import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
-
-// functions needed
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import { create_el, update_equipment } from './functions.js';

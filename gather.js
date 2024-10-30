@@ -1,12 +1,8 @@
 // gather.js
 
-import { saveData, trackingData } from './data.js';
+import { saveData, gatherData, trackingData } from './data.js';
 import { toggle_section } from './general_functions.js';
 import { create_el, create_bar_elements } from './functions.js';
-
-//import * as gf from './general_functions.js';
-//import * as ch from './character.js';
-//import * as inv from './inventory.js';
 
 export function update_gather() {
     
@@ -40,15 +36,17 @@ export function update_gather() {
 
     // On toggle, load toggled action
     if (trackingData[0].t_gather_section) {
-        //
         let gather_messages_div = create_el('gather_messages_div', 'div', gather_container);
         gather_messages_div.classList.add('normal');
         create_el('new_gather', 'div', gather_container);
-        let saveDataGatherData = saveData[5].gatherData;
+        
+        let saveData_gatherData = saveData[5].gatherData;
+        gatherData.forEach(gather => {
+            // Match gatherData standalone array for storing cnt
+            let saved_gatherData = saveData_gatherData.find(g => g.id === gather.id);
 
-        saveDataGatherData.forEach(gather => {
             // Learn to gather
-            if (!gather.learned) {
+            if (!saved_gatherData.learned) {
                 let gather_learn_div = create_el('gather_learn_div', 'div', new_gather);
                 gather_learn_div.classList.add('normal');
                 let gather_learn_btn = create_el('gather_learn_btn', 'button', gather_learn_div);
@@ -57,7 +55,7 @@ export function update_gather() {
                     let d_gold = saveData[4].currencyData[0];
                     if (d_gold.cnt >= gather.cost) {
                         d_gold.cnt -= gather.cost;
-                        gather.learned = true;
+                        saved_gatherData.learned = true;
                         gather_messages_div.innerHTML += 'You have learned a new skill: <b>' + gather.name.toUpperCase() + '</b>!<br>';
                         // Clear the message after 20 seconds (20,000 milliseconds)
                         setTimeout(() => {
@@ -98,44 +96,46 @@ export function update_gather() {
             
                 let gather_label_right = create_el('gather_label_right', 'span', gather_label);
                 gather_label_right.classList.add('bar_right_label');
-                gather_label_right.innerHTML = 'Level: ' + gather.lvl;
+                gather_label_right.innerHTML = 'Level: ' + saved_gatherData.lvl;
                 
                 let f_skill_xp = create_el('f_skill_xp', 'div', gather_label);
                 // Skill XP level formula
-                let xp_to_level = Math.round(150 * gather.xp_lvl_mult * gather.lvl) * 10 / 10;
+                let xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl) * 10 / 10;
                 let new_xp_bar = create_bar_elements('skill_xp_bar', f_skill_xp, 'Experience', xp_to_level, 'blue');
 
                 // Update current XP after each gather completes
                 function update_skill_xp(mat_lvl_req) {
                     let gather_xp_gain = 20;
                     // 5+ levels above required level give no xp
-                    if ((gather.lvl - mat_lvl_req) >= 5) {
+                    if ((saved_gatherData.lvl - mat_lvl_req) >= 5) {
                         gather_xp_gain = 0;
                     }
                     // WIP: increase XP gains for higher levels
-                    gather.xp_amt += gather_xp_gain;
-                    new_xp_bar.updateValue(gather.xp_amt);
-                    if (gather.xp_amt >= xp_to_level) {
-                        gather.xp_amt -= xp_to_level;
-                        new_xp_bar.updateValue(gather.xp_amt);
-                        gather.lvl += 1;
-                        gather_label_right.innerHTML = 'Level: ' + gather.lvl;
-                        xp_to_level = Math.round(150 * gather.xp_lvl_mult * gather.lvl) * 10 / 10;
+                    saved_gatherData.xp_amt += gather_xp_gain;
+                    new_xp_bar.updateValue(saved_gatherData.xp_amt);
+                    if (saved_gatherData.xp_amt >= xp_to_level) {
+                        saved_gatherData.xp_amt -= xp_to_level;
+                        new_xp_bar.updateValue(saved_gatherData.xp_amt);
+                        saved_gatherData.lvl += 1;
+                        gather_label_right.innerHTML = 'Level: ' + saved_gatherData.lvl;
+                        xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl) * 10 / 10;
                         new_xp_bar.updateTotal(xp_to_level);
                     }
                 }
                 // Current values
-                new_xp_bar.updateValue(gather.xp_amt);
+                new_xp_bar.updateValue(saved_gatherData.xp_amt);
                 new_xp_bar.updateTotal(xp_to_level);
 
                 // Get materials data for each learned skill
                 let gatherMaterial = gather.materials;
                 if (gatherMaterial) {
                     // Create rows based on materials unlocked
-                    let material = gatherMaterial.filter(m => m.lvl_req <= gather.lvl);
+                    let material = gatherMaterial.filter(m => m.lvl_req <= saved_gatherData.lvl);
                     if (material) {
-                        material.forEach(mat => {
-
+                        material.forEach((mat, index) => {
+                            let d_saved_gatherData_inventory = saved_gatherData.inventory;
+                            let gather_inventory = d_saved_gatherData_inventory[index];
+                            
                             let gather_row = create_el('gather_row', 'div', gather_container);
                             
                             let gather_table = create_el('gather_table', 'table', gather_row);
@@ -184,7 +184,7 @@ export function update_gather() {
                             td_4.classList.add('center');
                             td_4.style.fontSize = '12px';
                             td_4.style.verticalAlign = 'center';
-                            td_4.innerHTML = mat.cnt;
+                            td_4.innerHTML = gather_inventory.cnt;
                             
                             // Set progress values
                             let d_progress_total = mat.hp;
@@ -205,7 +205,7 @@ export function update_gather() {
                                     return;
                                 }
                                 // WIP: Need a depreciation of xp based on current skill lvl
-                                let gather_strength = gather.gather_str * gather.gather_str_mult * gather.lvl;
+                                let gather_strength = gather.gather_str * gather.gather_str_mult * saved_gatherData.lvl;
                                 d_progress_curr -= gather_strength;
                                 d_progress_curr = Math.round(d_progress_curr * 10) / 10;
                                 progress_percent = (d_progress_curr / d_progress_total) * 100;
@@ -214,9 +214,9 @@ export function update_gather() {
                                 if (d_progress_curr <= 0) {
                                     d_progress_curr = 0;
                                     // Add material to material inventory
-                                    mat.cnt += 1;
+                                    gather_inventory.cnt += 1;
                                     progress_text.innerHTML = 'COMPLETE!';
-                                    td_4.innerHTML = mat.cnt;
+                                    td_4.innerHTML = gather_inventory.cnt;
                                     progress_fill.style.width = '0%';
                                     // Add and update XP
                                     update_skill_xp(mat.lvl_req);

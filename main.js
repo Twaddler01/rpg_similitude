@@ -1,7 +1,6 @@
 // main.js
 
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, update_saveData, trackingData, init_trackingData } from './data.js';
-
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, gatherData, init_gatherData, trackingData, init_trackingData } from './data.js';
 import * as f from  './functions.js';
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
@@ -15,9 +14,10 @@ gf.logExport();
 gf.htmlExport();
 
 // Add array updates
-update_saveData();
+init_gatherData();
 init_trackingData();
 f.setup_encounters(1);
+
 
 new_game();
 

@@ -1,6 +1,5 @@
 // general_functions.js
 
-// variables needed
 import { elementsData, trackingData, characterData } from './data.js';
 import { update_equipment, reset_battle } from './functions.js';
 import { update_inventory } from './inventory.js';

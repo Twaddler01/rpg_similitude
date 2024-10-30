@@ -252,8 +252,8 @@
         "slot": "ring2"
       },
       {
-        "id": "equip_slot_EMPTY_mh",
-        "equipped": null,
+        "id": "mh",
+        "equipped": "MH_BASIC_DAGGER",
         "slot": "mh"
       },
       {
@@ -276,18 +276,68 @@
     "gatherData": [
       {
         "id": "herbgather",
-        "learned": false,
-        "lvl": 1
+        "learned": true,
+        "lvl": 1,
+        "xp_amt": 0,
+        "inventory": [
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          },
+          {
+            "cnt": 0
+          }
+        ]
       },
       {
         "id": "oremine",
         "learned": false,
-        "lvl": 1
+        "lvl": 1,
+        "xp_amt": 0,
+        "inventory": [
+          {
+            "id": "copper",
+            "cnt": 0
+          }
+        ]
       },
       {
         "id": "tailor",
         "learned": false,
-        "lvl": 1
+        "lvl": 1,
+        "xp_amt": 0,
+        "inventory": [
+          {
+            "id": "basic_cloth",
+            "cnt": 0
+          }
+        ]
       }
     ]
   }

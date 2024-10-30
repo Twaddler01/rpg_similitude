@@ -506,7 +506,7 @@ export const encounterData = [
     ];
 
 export var saveData = [
-    // saveData[0]
+    // saveData[0].killsData
     { killsData: [ // added to locationsData array
         { kills: 3 }, // l = 0
         { kills: 3 }, // l = 0 + 1
@@ -526,7 +526,7 @@ export var saveData = [
         { kills: 14 }, // max = 14 + 1
         { kills: 15 }, // placeholder
         ] },
-    // saveData[1]
+    // saveData[1].savedCharacterData
     { savedCharacterData: [ // to be added to static characterData array
         // savedCharacterData[0]
         
@@ -549,7 +549,7 @@ export var saveData = [
         // char_exp_to_level -> see new_battle_button()
         },
         ] },
-    // saveData[2]
+    // saveData[2].inventoryData
     { inventoryData: [ // slots added below
         { /* size: see inventoryMaxSlots above */ 
           setup: false,
@@ -576,8 +576,8 @@ export var saveData = [
         { type: 'slot', slot_id: 19, contents: '[ EMPTY ]', cnt: 0 },
         { type: 'slot', slot_id: 20, contents: '[ EMPTY ]', cnt: 0 },
     ] },
-    // saveData[3]
-    { equippedData: [ // to be added to static array?
+    // saveData[3].equippedData
+    { equippedData: [ 
         { id: 'head' , equipped: 'BASIC_HELMET', }, // l = 0
         { id: 'shoulders', equipped: null },
         { id: 'hands', equipped: null },
@@ -598,51 +598,63 @@ export var saveData = [
         ] },
     // saveData[5].gatherData
     { gatherData: [
-        { id: 'herbgather', learned: false, lvl: 1 },  // , gather_str: 4, gather_str_mult: 1.08, xp_amt: 0, xp_lvl_mult: 1.5 },
-        { id: 'oremine', learned: false, lvl: 1 },
-        { id: 'tailor', learned: false, lvl: 1 },
+        { id: 'herbgather', learned: false, lvl: 1, xp_amt: 0,
+        inventory: [
+            { cnt: 0 },
+            { cnt: 0 }, 
+            { cnt: 0 }, 
+            { cnt: 0 }, 
+            { cnt: 0 }, 
+            { cnt: 0 }, 
+            { cnt: 0 }, 
+            { cnt: 0 }, 
+            { cnt: 0 }, 
+            { cnt: 0 }, 
+            { cnt: 0 }
         ] },
+        { id: 'oremine', learned: false, lvl: 1, xp_amt: 0, 
+        inventory: [ 
+            { id: 'copper', cnt: 0 }
+        ] },
+        { id: 'tailor', learned: false, lvl: 1, xp_amt: 0, 
+        inventory: [ 
+            { id: 'basic_cloth', cnt: 0 }
+        ] }
+    ] }
 ];
-//console.log(saveData[0]); // with 'killsData'
-//console.log(saveData[1]); // with 'characterData'
-//console.log(saveData[2]); // with 'inventoryData'
-//console.log(saveData[0].killsData); // like a standalone array
-//console.log(saveData[1].savedCharacterData); // like a standalone array
-//console.log(saveData[2].inventoryData); // like a standalone array
-//console.log(saveData[0].killsData[0]); // for array lengths
 
-// WIP: do same with killsData (from locationsData) here
-// Add data to saveData for temporary integration
-export function update_saveData() {
-    // Assign any additional data to array (must match index order)
-    const more_gatherData = [
-        { name: 'Herb Gathering', cost: 200, gather_str: 4, gather_str_mult: 1.08, xp_amt: 0, xp_lvl_mult: 1.5,
-            materials: [ 
-                { id: 'greenleaf', name: 'Green Leaf', hp: 100, lvl_req: 0, cnt: 0 },
-                { id: 'jadeleaf', name: 'Jade Leaf', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'goldenclove', name: 'Golden Clove', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'foxglove', name: 'Fox Glove', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'thornypike', name: 'Thorny Pike', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'deathglory', name: 'Death Glory', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'morningglade', name: 'Morning Glade', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'judegloom', name: 'Jude Gloom', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'nightblade', name: 'Night Blade', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'bloodroot', name: 'Blood Root', hp: 200, lvl_req: 0, cnt: 0 },
-                { id: 'elderberry', name: 'Elder Berry', hp: 200, lvl_req: 0, cnt: 0 },
-            ] },
-        { name: 'Ore Mining', cost: 200,
-            materials: [
-                { id: 'copper', name: 'Copper', hp: 100, lvl_req: 1, cnt: 0 },
-            ], },
-        // Replace with a different gathering skill
-        { name: 'Tailor', cost: 200, 
-            materials: [
-                { id: 'basic_cloth', name: 'Basic Cloth', hp: 100, lvl_req: 1, cnt: 0 },
-            ], }
-        ];
-    
+// Matches indices of saveData[5].gatherData
+export const gatherData = [
+    { id: 'herbgather', name: 'Herb Gathering', cost: 200, gather_str: 4, gather_str_mult: 1.08, xp_lvl_mult: 1.5,
+    materials: [ 
+        { id: 'greenleaf', name: 'Green Leaf', hp: 100, lvl_req: 0 },
+        { id: 'jadeleaf', name: 'Jade Leaf', hp: 200, lvl_req: 0 },
+        { id: 'goldenclove', name: 'Golden Clove', hp: 200, lvl_req: 0 },
+        { id: 'foxglove', name: 'Fox Glove', hp: 200, lvl_req: 0 },
+        { id: 'thornypike', name: 'Thorny Pike', hp: 200, lvl_req: 0 },
+        { id: 'deathglory', name: 'Death Glory', hp: 200, lvl_req: 0 },
+        { id: 'morningglade', name: 'Morning Glade', hp: 200, lvl_req: 0 },
+        { id: 'judegloom', name: 'Jude Gloom', hp: 200, lvl_req: 0 },
+        { id: 'nightblade', name: 'Night Blade', hp: 200, lvl_req: 0 },
+        { id: 'bloodroot', name: 'Blood Root', hp: 200, lvl_req: 0 },
+        { id: 'elderberry', name: 'Elder Berry', hp: 200, lvl_req: 0 },
+    ] },
+    { id: 'oremine', name: 'Ore Mining', cost: 200,
+    materials: [
+        { id: 'copper', name: 'Copper', hp: 100, lvl_req: 1 },
+    ], },
+    // WIP: Replace with a different gathering skill
+    { id: 'tailor', name: 'Tailor', cost: 200, 
+    materials: [
+        { id: 'basic_cloth', name: 'Basic Cloth', hp: 100, lvl_req: 1 }
+    ] }
+];
+
+// Add dynamic data to gatherData
+export function init_gatherData() {
+
     // Add dynamic img urls
-    more_gatherData.forEach(gather => {
+    gatherData.forEach(gather => {
         let mats = gather.materials;
         if (gather.name === 'Herb Gathering') {
             for (let i = 0; i < mats.length; i++) {
@@ -671,10 +683,6 @@ export function update_saveData() {
                 }
             }
         }
-    });
-    
-    saveData[5].gatherData.forEach((item, index) => {
-        Object.assign(item, more_gatherData[index]);
     });
 }
 

@@ -1085,8 +1085,9 @@ export function start_battle() {
         let enemy_lvl = trackingData[0].lvl;
 
         // Get matching loc/lvl encounter
-        encounter = encounterData.find(e => e.id === 'group_lvl_' + enemy_loc && e.loc === enemy_loc && e.lvl === enemy_lvl);
-        
+        encounter = encounterData.find(e => e.id === 'group_lvl_' + enemy_lvl && e.loc === enemy_loc && e.lvl === enemy_lvl);
+console.log(encounterData);
+
         // Choose random array index of enemyList;
         let enemyList = encounter.enemy_list;
         random_enemy = choose_enemy(enemyList);
@@ -1233,7 +1234,7 @@ export function attack_box_button(elementId, enemy, encounter) {
     let levels = document.getElementById('levels');
     locations.innerHTML = '';
     levels.innerHTML = '';
-    let d_curr_loc = locationsData.find(l => l.loc === trackingData[0].loc && l.lvl === trackingData[0].lvl);
+    let d_curr_loc_img = locationsData.find(l => l.loc === trackingData[0].loc && l.lvl === 1);
 
     // Place image in location area
     let battle_location_image = document.getElementById('battle_location_image');
@@ -1241,7 +1242,7 @@ export function attack_box_button(elementId, enemy, encounter) {
     battle_location_image.appendChild(loc_img);
     loc_img.style.width = '150px';
     loc_img.style.height = 'auto';
-    loc_img.src = d_curr_loc.img;
+    loc_img.src = d_curr_loc_img.img;
 
     let e_locations_status = document.getElementById('locations_status');
     if (enemy) {

@@ -10,6 +10,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+10-29-2024
+- Modified saveData to better account for data not needing to be saved. For now on, using separate arrays for data that doesn't need to be saved. May save dynamic and random encounterData, but haven't decided yet.
+- Encounters work for a few more levels, but loot not yet added for the enemies.
+
 10-28-2024
 - Updated data.js for arrays to be accessed directly.
 - Minor adjustments for data management, especially for dynamic array modifications.

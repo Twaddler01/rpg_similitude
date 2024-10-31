@@ -1,1 +1,364 @@
-
+[
+  {
+    "id": "STARTER_HELM",
+    "slot_name": "Head",
+    "gains": [
+      {
+        "stat": "agility",
+        "lbl": "Agility",
+        "amt": 10
+      },
+      {
+        "stat": "intelligence",
+        "lbl": "Intelligence",
+        "amt": 10
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 25
+      }
+    ],
+    "slot": "head",
+    "type": "armor",
+    "name": "Starter Helm",
+    "rarity": 2,
+    "desc": "The Starter Helm seems to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_HEAD_BLUE.png"
+  },
+  {
+    "id": "STARTER_SPAULDERS",
+    "slot_name": "Shoulders",
+    "gains": [
+      {
+        "stat": "strength",
+        "lbl": "Strength",
+        "amt": 5
+      },
+      {
+        "stat": "intelligence",
+        "lbl": "Intelligence",
+        "amt": 7
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 25
+      }
+    ],
+    "slot": "shoulders",
+    "type": "armor",
+    "name": "Starter Spaulders",
+    "rarity": 2,
+    "desc": "The Starter Spaulders seem to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_SHOULDERS_BLUE.png"
+  },
+  {
+    "id": "STARTER_GLOVES",
+    "slot_name": "Hands",
+    "gains": [
+      {
+        "stat": "intelligence",
+        "lbl": "Intelligence",
+        "amt": 6
+      },
+      {
+        "stat": "power",
+        "lbl": "Power",
+        "amt": 9
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 30
+      }
+    ],
+    "slot": "hands",
+    "type": "armor",
+    "name": "Starter Gloves",
+    "rarity": 2,
+    "desc": "The Starter Gloves seem to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_HANDS_BLUE.png"
+  },
+  {
+    "id": "STARTER_NECKLACE",
+    "slot_name": "Neck",
+    "gains": [
+      {
+        "stat": "intelligence",
+        "lbl": "Intelligence",
+        "amt": 8
+      },
+      {
+        "stat": "wisdom",
+        "lbl": "Wisdom",
+        "amt": 6
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 30
+      }
+    ],
+    "slot": "neck",
+    "type": "armor",
+    "name": "Starter Necklace",
+    "rarity": 2,
+    "desc": "The Starter Necklace seems to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_NECK_BLUE.png"
+  },
+  {
+    "id": "STARTER_BELT",
+    "slot_name": "Waist",
+    "gains": [
+      {
+        "stat": "strength",
+        "lbl": "Strength",
+        "amt": 5
+      },
+      {
+        "stat": "intelligence",
+        "lbl": "Intelligence",
+        "amt": 9
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 20
+      }
+    ],
+    "slot": "waist",
+    "type": "armor",
+    "name": "Starter Belt",
+    "rarity": 2,
+    "desc": "The Starter Belt seems to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_WAIST_BLUE.png"
+  },
+  {
+    "id": "STARTER_CHESTPIECE",
+    "slot_name": "Chest",
+    "gains": [
+      {
+        "stat": "strength",
+        "lbl": "Strength",
+        "amt": 7
+      },
+      {
+        "stat": "power",
+        "lbl": "Power",
+        "amt": 5
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 25
+      }
+    ],
+    "slot": "chest",
+    "type": "armor",
+    "name": "Starter Chestpiece",
+    "rarity": 2,
+    "desc": "The Starter Chestpiece seems to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_CHEST_BLUE.png"
+  },
+  {
+    "id": "STARTER_LEGGINGS",
+    "slot_name": "Legs",
+    "gains": [
+      {
+        "stat": "power",
+        "lbl": "Power",
+        "amt": 6
+      },
+      {
+        "stat": "agility",
+        "lbl": "Agility",
+        "amt": 10
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 20
+      }
+    ],
+    "slot": "legs",
+    "type": "armor",
+    "name": "Starter Leggings",
+    "rarity": 2,
+    "desc": "The Starter Leggings seem to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_LEGS_BLUE.png"
+  },
+  {
+    "id": "STARTER_BRACERS",
+    "slot_name": "Wrist",
+    "gains": [
+      {
+        "stat": "power",
+        "lbl": "Power",
+        "amt": 9
+      },
+      {
+        "stat": "agility",
+        "lbl": "Agility",
+        "amt": 7
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 25
+      }
+    ],
+    "slot": "wrist",
+    "type": "armor",
+    "name": "Starter Bracers",
+    "rarity": 2,
+    "desc": "The Starter Bracers seem to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_WRIST_BLUE.png"
+  },
+  {
+    "id": "STARTER_BOOTS",
+    "slot_name": "Feet",
+    "gains": [
+      {
+        "stat": "wisdom",
+        "lbl": "Wisdom",
+        "amt": 6
+      },
+      {
+        "stat": "strength",
+        "lbl": "Strength",
+        "amt": 8
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 25
+      }
+    ],
+    "slot": "feet",
+    "type": "armor",
+    "name": "Starter Boots",
+    "rarity": 2,
+    "desc": "The Starter Boots seem to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_FEET_BLUE.png"
+  },
+  {
+    "id": "STARTER_RING1",
+    "slot_name": "Ring1",
+    "gains": [
+      {
+        "stat": "wisdom",
+        "lbl": "Wisdom",
+        "amt": 7
+      },
+      {
+        "stat": "agility",
+        "lbl": "Agility",
+        "amt": 5
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 20
+      }
+    ],
+    "slot": "ring1",
+    "type": "armor",
+    "name": "Starter Ring I",
+    "rarity": 2,
+    "desc": "The Starter Ring I seems to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_RING1_BLUE.png"
+  },
+  {
+    "id": "STARTER_RING2",
+    "slot_name": "Ring2",
+    "gains": [
+      {
+        "stat": "strength",
+        "lbl": "Strength",
+        "amt": 6
+      },
+      {
+        "stat": "agility",
+        "lbl": "Agility",
+        "amt": 5
+      },
+      {
+        "stat": "armor",
+        "lbl": "Armor",
+        "amt": 20
+      }
+    ],
+    "slot": "ring2",
+    "type": "armor",
+    "name": "Starter Ring II",
+    "rarity": 2,
+    "desc": "The Starter Ring II seems to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_RING2_BLUE.png"
+  },
+  {
+    "id": "STARTER_MH",
+    "slot_name": "Mainhand",
+    "gains": [
+      {
+        "stat": "strength",
+        "lbl": "Strength",
+        "amt": 6
+      },
+      {
+        "stat": "intelligence",
+        "lbl": "Intelligence",
+        "amt": 8
+      },
+      {
+        "stat": "dmg_min",
+        "amt": 3
+      },
+      {
+        "stat": "dmg_max",
+        "amt": 5
+      }
+    ],
+    "slot": "mh",
+    "type": "weapon",
+    "name": "Starter Weapon",
+    "rarity": 2,
+    "desc": "The Starter Weapon seems to be part of a basic equipment set.",
+    "value": 10,
+    "img": "media/icons/armor/E_MH_BLUE.png"
+  },
+  {
+    "id": "STARTER_OH",
+    "slot_name": "Offhand",
+    "gains": [
+      {
+        "stat": "agility",
+        "lbl": "Agility",
+        "amt": 8
+      },
+      {
+        "stat": "strength",
+        "lbl": "Strength",
+        "amt": 5
+      }
+    ],
+    "slot": "oh",
+    "type": "armor",
+    "name": "Starter Shield",
+    "rarity": 2,
+    "desc": "The Starter Shield seems to be part of a basic equipment set.",
+    "value": 5,
+    "img": "media/icons/armor/E_OH_BLUE.png"
+  }
+]

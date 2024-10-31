@@ -1,0 +1,90 @@
+[
+  {
+    "id": "MH_SIMPLE_KNIFE",
+    "slot_name": "Mainhand",
+    "gains": [
+      {
+        "stat": "power",
+        "lbl": "Power",
+        "amt": 10
+      },
+      {
+        "stat": "dmg_min",
+        "amt": 3
+      },
+      {
+        "stat": "dmg_max",
+        "amt": 4
+      }
+    ],
+    "slot": "mh",
+    "type": "weapon",
+    "name": "Simple Knife",
+    "rarity": 1,
+    "desc": "A simple knife.",
+    "value": 5,
+    "img": "media/icons/armor/E_MH_SIMPLE_KNIFE.png"
+  },
+  {
+    "id": "MH_SIMPLE_DAGGER",
+    "slot_name": "Mainhand",
+    "gains": [
+      {
+        "stat": "strength",
+        "lbl": "Strength",
+        "amt": 5
+      },
+      {
+        "stat": "power",
+        "lbl": "Power",
+        "amt": 5
+      },
+      {
+        "stat": "dmg_min",
+        "amt": 5
+      },
+      {
+        "stat": "dmg_max",
+        "amt": 6
+      }
+    ],
+    "slot": "mh",
+    "type": "weapon",
+    "name": "Simple Dagger",
+    "rarity": 1,
+    "desc": "A simple dagger.",
+    "value": 5,
+    "img": "media/icons/armor/E_MH_SIMPLE_DAGGER.png"
+  },
+  {
+    "id": "MH_SIMPLE_SWORD",
+    "slot_name": "Mainhand",
+    "gains": [
+      {
+        "stat": "strength",
+        "lbl": "Strength",
+        "amt": 5
+      },
+      {
+        "stat": "power",
+        "lbl": "Power",
+        "amt": 5
+      },
+      {
+        "stat": "dmg_min",
+        "amt": 6.2
+      },
+      {
+        "stat": "dmg_max",
+        "amt": 7.2
+      }
+    ],
+    "slot": "mh",
+    "type": "weapon",
+    "name": "Simple Sword",
+    "rarity": 1,
+    "desc": "A simple sword.",
+    "value": 5,
+    "img": "media/icons/armor/E_MH_SIMPLE_SWORD.png"
+  }
+]

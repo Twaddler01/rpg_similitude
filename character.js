@@ -9,7 +9,7 @@ import { elementsData, equipmentElements, inventoryElements, itemData, locations
 
 // general functions needed
 import * as gf from './general_functions.js';
-import { create_el, update_equipment } from './functions.js';
+import { create_el } from './functions.js';
 import { removeItemTooltip, createItemElements } from './inventory.js';
 
 // Run first to initialize array
@@ -592,4 +592,33 @@ export function calculate_weapon_damage(itemLevel, statPower, minDmg, maxDmg) {
     }
 
     return [damage_min, damage_max];
+}
+
+export function update_equipment() {
+    
+    // Reset stats
+    let stat_data_reset = characterData.filter(d => d.type === 'stat');
+
+    stat_data_reset.forEach(reset => {
+        reset.amt = reset.base;
+    });
+    
+    // Match saveData with items
+    let d_equippedData = saveData[3].equippedData;
+    d_equippedData.forEach(item => {
+        let d_itemData = itemData.find(i => i.id === item.equipped);
+
+        if (d_itemData) {
+            const stat_gains = d_itemData.gains;
+            const stat_data = characterData.filter(d => d.type === 'stat');
+            // Calculate total stats equipped
+            stat_data.forEach(stat => {
+                stat_gains.forEach(char_stat => {
+                    if (char_stat.stat === stat.id) {
+                        stat.amt += char_stat.amt;
+                    }
+                });
+            });
+        } 
+    });
 }

@@ -71,19 +71,18 @@ export function first_run() {
     }
 
 // Check modifiedSaveData
-let get_modifiedSaveData = () => {
+    let get_modifiedSaveData = () => {
+    
+    downloadSaveData();
+    
+    //const exportedData = exportFilteredSaveData(baselineData, saveData);
+    //console.log(exportedData);
+    //downloadFilteredSaveData();
+    };
+    
+    add_test_action('testJsonDl', 'Download Save Data', get_modifiedSaveData);
 
-downloadSaveData();
-
-//const exportedData = exportFilteredSaveData(baselineData, saveData);
-//console.log(exportedData);
-//downloadFilteredSaveData();
-};
-
-add_test_action('testJsonDl', 'Download Save Data', get_modifiedSaveData);
-
-
-    // Check divs
+// Check divs
     create_el('check_divs', 'button', test_section);
     check_divs.innerHTML = 'Check divs';
     check_divs.addEventListener('click', () => {
@@ -245,7 +244,7 @@ add_test_action('testJsonDl', 'Download Save Data', get_modifiedSaveData);
     test_section.appendChild(e_add_loot);
     e_add_loot.innerHTML = 'add_loot()';
 
-    // To track each loot cycle
+// To track each loot cycle
     let counter = 0;
     e_add_loot.addEventListener('click', () => {
         let encounter = encounterData.find(e => e.id === 'beginner_0');
@@ -259,42 +258,6 @@ add_test_action('testJsonDl', 'Download Save Data', get_modifiedSaveData);
         counter++;
     });
 
-// tracking checks
-let trackBtn = document.createElement('button');
-test_section.appendChild(trackBtn);
-trackBtn.innerHTML = 'CHECK trackingData';
-trackBtn.addEventListener('click', () => {
-    console.log('t_character_section = ' + trackingData[0].t_character_section);
-});
-
-/*trackingData[0].loc = 0;
-trackingData[0].lvl = 1;
-let enemy_list = encounterData.find(e => e.loc === trackingData[0].loc && e.lvl === trackingData[0].lvl);
-let enemy = enemy_list.enemy_list;
-console.log(enemy);*/
-
-}
-
-export function getModifiedValues(original, modified) {
-    const modifiedValues = [];
-
-    original.forEach((origItem, index) => {
-        const modItem = modified[index];
-        const itemChanges = {};
-
-        for (const key in origItem) {
-            // Check if the property exists in the modified data and is different from original
-            if (JSON.stringify(origItem[key]) !== JSON.stringify(modItem[key])) {
-                itemChanges[key] = modItem[key];
-            }
-        }
-
-        if (Object.keys(itemChanges).length > 0) {
-            modifiedValues[index] = itemChanges;
-        }
-    });
-
-    return modifiedValues;
 }
 
 export function update_locations() {
@@ -583,35 +546,6 @@ export function reset_game(elid) {
     } else {
         console.error('elid "' + elid + '" is invalid for reset_game() function call.');
     }
-}
-
-export function update_equipment() {
-    
-    // Reset stats
-    let stat_data_reset = characterData.filter(d => d.type === 'stat');
-
-    stat_data_reset.forEach(reset => {
-        reset.amt = reset.base;
-    });
-    
-    // Match saveData with items
-    let d_equippedData = saveData[3].equippedData;
-    d_equippedData.forEach(item => {
-        let d_itemData = itemData.find(i => i.id === item.equipped);
-
-        if (d_itemData) {
-            const stat_gains = d_itemData.gains;
-            const stat_data = characterData.filter(d => d.type === 'stat');
-            // Calculate total stats equipped
-            stat_data.forEach(stat => {
-                stat_gains.forEach(char_stat => {
-                    if (char_stat.stat === stat.id) {
-                        stat.amt += char_stat.amt;
-                    }
-                });
-            });
-        } 
-    });
 }
 
 // Test
@@ -1086,7 +1020,6 @@ export function start_battle() {
 
         // Get matching loc/lvl encounter
         encounter = encounterData.find(e => e.id === 'group_lvl_' + enemy_lvl && e.loc === enemy_loc && e.lvl === enemy_lvl);
-console.log(encounterData);
 
         // Choose random array index of enemyList;
         let enemyList = encounter.enemy_list;
@@ -1409,14 +1342,25 @@ export function player_attack(enemy, encounter) {
             if (d_player_character.char_level > 1 && d_player_character.char_level !== current_char_level) {
                 new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;Congratulations! You have reached level ' + d_player_character.char_level + '!';
             }
-    
+
             // Check if any drops are present
             if (enemy.drops.length > 0) {
     
                 let loot_dropped = add_loot(enemy, 1, 1, 2);
-                let global_dropped = add_global_drop('GLOBAL_DROP1');
+                
+                let global_dropped = null;
+                // use GLOBAL_DROP1 for loc1 only
+                if (encounter.loc === 1) {
+                    loot_dropped = add_loot(enemy, 1, 4, 6);
+                    global_dropped = add_global_drop('GLOBAL_DROP1');
+                }
+                if (encounter.loc === 0) {
+                    //loot_dropped = add_loot(enemy, 1, 0, 0);
+                    global_dropped = add_global_drop('GLOBAL_DROP0');
+                }
+                let gold_total = 0;
+
                 if (loot_dropped) {
-                    // WIP: Need level requirements
                     if (global_dropped) {
                         // If GOLD drops
                         if (global_dropped.id === 'GOLD') {
@@ -1431,11 +1375,20 @@ export function player_attack(enemy, encounter) {
                         loot_dropped.forEach(loot => {
                             let d_itemData = itemData.find(i => i.id === loot.id);
                             
-                            new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${d_itemData.name} x${loot.cnt}</span></p>`;
+                            if (loot.id === 'GOLD') {
+                                gold_total += loot.cnt;
+                            } else {
+                                new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: ${d_itemData.name} x${loot.cnt}</span></p>`;
                                 inv.updateLootCount(loot.id, loot.cnt);
-                            });
+                            }
+                        });
+                        if (gold_total > 0) {
+                            // Combine totals of Gold (from loot_dropped)
+                            new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:lightgreen;font-weight:bold;">&nbsp;You looted: Gold x${gold_total}</span></p>`;
+                            inv.updateLootCount('GOLD', gold_total);
                         }
                     }
+                }
             } else {
                 new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:yellow;font-weight:bold;">&nbsp;You received no loot.</span></p>`;
             }
@@ -1623,7 +1576,7 @@ export function setup_encounters(loc) {
                     cat: 'enemy',
                     lbl: enemy_name,   // Include the random name in the enemy list
                     lvl: index + 1, 
-                    drops: []
+                    drops: [ { id: 'GOLD', p: 1 } ]
                 });
             }
         }
@@ -1671,6 +1624,7 @@ export function setup_encounters(loc) {
 //// WIP
 //setup_encounters(1);
 
+// EQUIPMEMT CREATOR -- CUSTOM OPTIONS
 // *** START *** JSON FILE CREATION
 // Generate mew equipment array to export as .JSON
 // mh & oh -> weapon & shield
@@ -1735,9 +1689,9 @@ export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, ma
         // WIP use slot icons and a color overlay
         gearSet[i].img = 'media/icons/armor/E_' + gearSet[i].slot.toUpperCase() + '_' + color + '.png';
 
-    function get_random_stats() {
+    function get_random_stats(possibleStatsAmt) {
         let possibleStats = ['strength', 'intelligence', 'power', 'agility', 'wisdom'];
-        let possibleStatsAmt = 2;
+        //let possibleStatsAmt = 2;
     
         // Initialize gains if it doesn't exist
         if (!gearSet[i].gains) {
@@ -1779,7 +1733,7 @@ export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, ma
         }
     
     }
-    get_random_stats();
+    get_random_stats(1);
 
     }
 
@@ -1875,8 +1829,10 @@ async function import_createdItems_JSON(type, filename, arrayId) {
 export async function load_items() {
     // Import JSON data to itemData
     const d_items_starterSet = await import_createdItems_JSON('item', 'starterSet.json', itemData);
+    const d_items_basicWeapons = await import_createdItems_JSON('item', 'basicWeapons.json', itemData);
     // Place JSON data into GLOBAL_DROP1
     inject_items_to_global_drop(d_items_starterSet, 'GLOBAL_DROP1');
+    inject_items_to_global_drop(d_items_basicWeapons, 'GLOBAL_DROP0');
 }
 load_items();
 
@@ -1925,6 +1881,8 @@ export function create_bar_elements(id, parentId, textInside, valueTotal, barCol
     // Method to update the bar fill and text display
     function updateValue(newValue) {
         valueCurrent = Math.max(0, Math.min(newValue, valueTotal));  // Constrain between 0 and valueTotal
+        Math.round(valueCurrent * 10) / 10;
+        Math.round(valueTotal  * 10) / 10;
         bar_percentage = (valueCurrent / valueTotal) * 100;
         progress_fill.style.width = bar_percentage + '%';  // Update fill width
         progress_text.innerHTML = textInside + ': ' + valueCurrent + ' / ' + valueTotal;
@@ -1939,6 +1897,8 @@ export function create_bar_elements(id, parentId, textInside, valueTotal, barCol
     // Method to update bar fill total
     function updateTotal(newValue) {
         valueTotal = newValue;
+        Math.round(valueCurrent * 10) / 10;
+        Math.round(valueTotal  * 10) / 10;
         bar_percentage = (valueCurrent / valueTotal) * 100;
         progress_fill.style.width = bar_percentage + '%';  // Update fill width
         progress_text.innerHTML = textInside + ': ' + valueCurrent + ' / ' + valueTotal;

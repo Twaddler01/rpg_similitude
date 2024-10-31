@@ -385,6 +385,24 @@ export const itemData = [
     value: 0,
     img: 'media/icons/head_01.jpg',
     },
+    //
+    { id: 'MH_TEST_DAGGER',
+    type: 'weapon',
+    name: 'Test Dagger',
+    slot: 'mh',
+    slot_name: 'Mainhand',
+    rarity: 4,
+    desc: 'Overpowered.',
+    gains: [ 
+        { stat: 'dmg_min', amt: 8.9 }, 
+        { stat: 'dmg_max', amt: 9.6 }, 
+        { stat: 'constitution', lbl: 'Constitution', amt: 10 }, 
+        { stat: 'agility', lbl: 'Agility', amt: 10 }, 
+    ],
+    cnt: 0,
+    value: 0,
+    img: 'media/icons/mh_01.jpg',
+    }
 ];
 
 // Shpuld match indexes with saveData[0].killsData
@@ -474,6 +492,7 @@ export const encounterData = [
         { id: 'lootData', current_loot: [] },
         // any enemy can drop -- see f.add_global_drop()
         { cat: 'global_drops', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1 } },
+        { cat: 'global_drops', id: 'GLOBAL_DROP0', drops: { 'GOLD': 0.05 } },
         { id: 'enemyNames1', names: [ 
             { n: 'Shadowfiend', l: 'SF', type: 'shadow', u: false }, 
             { n: 'Flame Wraith', l: 'FW', type: 'elemental', u: false }, 
@@ -589,7 +608,7 @@ export var saveData = [
         { id: 'feet', equipped: 'BASIC_BOOTS' },
         { id: 'ring1', equipped: null },
         { id: 'ring2', equipped: null },
-        { id: 'mh', equipped: 'MH_BASIC_DAGGER' },
+        { id: 'mh', equipped: 'MH_TEST_DAGGER' },
         { id: 'oh', equipped: null },
         ] },
     // saveData[4].currencyData[0]
@@ -627,17 +646,17 @@ export var saveData = [
 export const gatherData = [
     { id: 'herbgather', name: 'Herb Gathering', cost: 200, gather_str: 4, gather_str_mult: 1.08, xp_lvl_mult: 1.5,
     materials: [ 
-        { id: 'greenleaf', name: 'Green Leaf', hp: 100, lvl_req: 0 },
-        { id: 'jadeleaf', name: 'Jade Leaf', hp: 200, lvl_req: 0 },
-        { id: 'goldenclove', name: 'Golden Clove', hp: 200, lvl_req: 0 },
-        { id: 'foxglove', name: 'Fox Glove', hp: 200, lvl_req: 0 },
-        { id: 'thornypike', name: 'Thorny Pike', hp: 200, lvl_req: 0 },
-        { id: 'deathglory', name: 'Death Glory', hp: 200, lvl_req: 0 },
-        { id: 'morningglade', name: 'Morning Glade', hp: 200, lvl_req: 0 },
-        { id: 'judegloom', name: 'Jude Gloom', hp: 200, lvl_req: 0 },
-        { id: 'nightblade', name: 'Night Blade', hp: 200, lvl_req: 0 },
-        { id: 'bloodroot', name: 'Blood Root', hp: 200, lvl_req: 0 },
-        { id: 'elderberry', name: 'Elder Berry', hp: 200, lvl_req: 0 },
+        { id: 'greenleaf', name: 'Green Leaf', hp: 10, lvl_req: 0 }, // 100
+        { id: 'jadeleaf', name: 'Jade Leaf', hp: 200, lvl_req: 2 },
+        { id: 'goldenclove', name: 'Golden Clove', hp: 200, lvl_req: 5 },
+        { id: 'foxglove', name: 'Fox Glove', hp: 200, lvl_req: 5 },
+        { id: 'thornypike', name: 'Thorny Pike', hp: 200, lvl_req: 5 },
+        { id: 'deathglory', name: 'Death Glory', hp: 200, lvl_req: 5 },
+        { id: 'morningglade', name: 'Morning Glade', hp: 200, lvl_req: 5 },
+        { id: 'judegloom', name: 'Jude Gloom', hp: 200, lvl_req: 5 },
+        { id: 'nightblade', name: 'Night Blade', hp: 200, lvl_req: 5 },
+        { id: 'bloodroot', name: 'Blood Root', hp: 200, lvl_req: 5 },
+        { id: 'elderberry', name: 'Elder Berry', hp: 200, lvl_req: 5 },
     ] },
     { id: 'oremine', name: 'Ore Mining', cost: 200,
     materials: [

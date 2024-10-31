@@ -100,26 +100,34 @@ export function update_gather() {
                 
                 let f_skill_xp = create_el('f_skill_xp', 'div', gather_label);
                 // Skill XP level formula
-                let xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl) * 10 / 10;
+                let xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl * 10) / 10;
                 let new_xp_bar = create_bar_elements('skill_xp_bar', f_skill_xp, 'Experience', xp_to_level, 'blue');
 
                 // Update current XP after each gather completes
                 function update_skill_xp(mat_lvl_req) {
-                    let gather_xp_gain = 20;
+                    // mat_lvl_req 0 is mat_level 1 for multiplier
+                    let mat_level = 1;
+                    if (mat_lvl_req !== 0) {
+                        mat_level = mat_lvl_req;
+                    }
+                    let gather_xp_gain = Math.round(18.4 * mat_level * 10) / 10;
                     // 5+ levels above required level give no xp
                     if ((saved_gatherData.lvl - mat_lvl_req) >= 5) {
                         gather_xp_gain = 0;
                     }
                     // WIP: increase XP gains for higher levels
                     saved_gatherData.xp_amt += gather_xp_gain;
+                    saved_gatherData.xp_amt = Math.round(saved_gatherData.xp_amt * 10) / 10;
                     new_xp_bar.updateValue(saved_gatherData.xp_amt);
                     if (saved_gatherData.xp_amt >= xp_to_level) {
                         saved_gatherData.xp_amt -= xp_to_level;
+                        saved_gatherData.xp_amt = Math.round(saved_gatherData.xp_amt * 10) / 10;
                         new_xp_bar.updateValue(saved_gatherData.xp_amt);
                         saved_gatherData.lvl += 1;
                         gather_label_right.innerHTML = 'Level: ' + saved_gatherData.lvl;
-                        xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl) * 10 / 10;
+                        xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl * 10) / 10;
                         new_xp_bar.updateTotal(xp_to_level);
+                        update_gather();
                     }
                 }
                 // Current values

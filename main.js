@@ -17,7 +17,7 @@ gf.htmlExport();
 init_gatherData();
 init_trackingData();
 f.setup_encounters(1);
-
+//console.log(JSON.stringify(encounterData, null, 2));
 
 new_game();
 
@@ -150,7 +150,7 @@ function start_game() {
 
     function load_starting_elements() {
         f.first_run();
-        f.update_equipment();
+        ch.update_equipment();
         ch.update_character_stats(true);
         f.update_locations();
         inv.update_inventory();

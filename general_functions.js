@@ -1,9 +1,9 @@
 // general_functions.js
 
 import { elementsData, trackingData, characterData } from './data.js';
-import { update_equipment, reset_battle } from './functions.js';
+import { reset_battle } from './functions.js';
 import { update_inventory } from './inventory.js';
-import { update_character, update_character_stats } from './character.js';
+import { update_character, update_character_stats, update_equipment } from './character.js';
 import { update_gather } from './gather.js';
 
 // Override console.log, console.warn, and console.error for exporting into a file

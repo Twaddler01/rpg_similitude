@@ -3,7 +3,7 @@
 import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
-import { create_el, update_equipment } from './functions.js';
+import { create_el } from './functions.js';
 
 let selectedSlot = null;
 // Create a global object to store listeners by slot_id

@@ -6,10 +6,15 @@ https://twaddler01.github.io/rpg_similitude/
 https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Identified a css error on Chrome (Mobile) that errors on adding a css class (when trying to select a location). This is NOT an issue in Firefox Mobile. For now, recommend using the Firefox browser until issue can be addressed. Likely a Github server-related error since code executes error free on Chrome locally. Additionally, a workaround on mobile is listed above by using an HTTP server (running a Node.js server in Termux also works fine on my Android device).
 # BUGS
-- Clicking on an item in inventory and then another on the edge of box will cause image to show incorrectly (for some items). Can be corrected after retoggle.
 - Tooltips are displaying incorrect "base damage" and "damage per turn".
 
 # Updates
+
+10-31-2024
+- FIXED BUG: Clicking on an item in inventory and then another on the edge of box will cause image to show incorrectly (for some items). Can be corrected after retoggle.
+- Inventory BUG corrected by removing all click listeners first. Also addressed issue where slot_id was mismatched, placing a swapped item in wrong slot--now slot ids matach original.
+- Disabled toggles while in combat and it now displays error message. Easiest fix for now, since toggle was interfering with battles. This also addresses disabling item or inventory swaps while in combat. May give an option to cancel or attempt evade of battle with a minor penalty later.
+- WIP Player death needs this integration too.
 
 10-30-2024
 - Updated encounter looting options and corrected a few issues.

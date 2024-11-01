@@ -1202,12 +1202,16 @@ export function attack_box_button(elementId, enemy, encounter) {
     }
 }
 
+export const enemyStats = [];
+
 export function player_attack(enemy, encounter) {
 
     let playerStats = characterData.find(d => d.id === 'player_stats');
     
-    //let enemyStats = [];
-    
+    // Reset, assign enemy lvl to global
+    enemyStats.length = 0;
+    enemyStats.push({ lvl: enemy.lvl });
+
     //console.log(playerStats);
     //console.log(enemy);
     //console.log(encounter);

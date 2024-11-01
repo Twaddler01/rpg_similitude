@@ -15,6 +15,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Inventory BUG corrected by removing all click listeners first. Also addressed issue where slot_id was mismatched, placing a swapped item in wrong slot--now slot ids matach original.
 - Disabled toggles while in combat and it now displays error message. Easiest fix for now, since toggle was interfering with battles. This also addresses disabling item or inventory swaps while in combat. May give an option to cancel or attempt evade of battle with a minor penalty later.
 - WIP Player death needs this integration too.
+- Added weapon icons for newly added basic weapons. Note that equipment and enemies are quite unbalanced still.
 
 10-30-2024
 - Updated encounter looting options and corrected a few issues.

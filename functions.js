@@ -1913,3 +1913,10 @@ export function create_bar_elements(id, parentId, textInside, valueTotal, barCol
         updateTotal
     };
 }
+
+export function add_message(message) {
+    let messages_section_container = document.getElementById('messages_section_container');
+    let currentDateTime = new Date().toLocaleString();
+    messages_section_container.innerHTML = '' ? '<br>' : '';
+    messages_section_container.innerHTML += `<span style="color: gray;">(${currentDateTime})</span><br><span style="color: red;">${message}</span>`;
+}

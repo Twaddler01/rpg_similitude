@@ -1,7 +1,7 @@
 // general_functions.js
 
 import { elementsData, trackingData, characterData } from './data.js';
-import { reset_battle } from './functions.js';
+import { reset_battle, add_message } from './functions.js';
 import { update_inventory } from './inventory.js';
 import { update_character, update_character_stats, update_equipment } from './character.js';
 import { update_gather } from './gather.js';
@@ -498,6 +498,9 @@ export function add_allElements() {
 // Show or hide sections (clear/create or hide/show)
 export function toggle_section(section) {
 
+////
+let playerCombat = characterData.find(c => c.id === 'player_combat_status');
+if (!playerCombat.in_combat) {
     if (section === 'gather') {
         let e_gather_section = document.getElementById('gather_section');
         let e_gather_container = document.getElementById('gather_container');
@@ -547,10 +550,9 @@ export function toggle_section(section) {
     if (section === 'battle') {
         let e_battle_section = document.getElementById('battle_section');
         let location_container = document.getElementById('location_container');
-        let playerCombat = characterData.find(c => c.id === 'player_combat_status');
 
         // Toggle only if out of combat
-        if (trackingData[0].t_battle_section && !playerCombat.in_combat) {
+        if (trackingData[0].t_battle_section) {
             location_container.style.display = 'none';
             e_battle_section.innerHTML = 'Battle Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
             let e_attack_box_button = document.getElementById('attack_box_button');
@@ -583,6 +585,11 @@ export function toggle_section(section) {
             e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ HIDE ]</span>';
         }
     }
+////
+} else {
+    add_message('You are in combat.');
+}
+////
 }
 
 export function add_section_clicks() {

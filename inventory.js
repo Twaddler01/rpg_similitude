@@ -3,7 +3,7 @@
 import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
-import { create_el } from './functions.js';
+import { create_el, add_message } from './functions.js';
 
 let selectedSlot = null;
 // Create a global object to store listeners by slot_id
@@ -194,10 +194,7 @@ export function updateLootCount(itemId, quantity, requestedSlot) {
         }
         
         if (inventory_full) {
-            let messages_section_container = document.getElementById('messages_section_container');
-            let currentDateTime = new Date().toLocaleString();
-            messages_section_container.innerHTML = '' ? '<br>' : '';
-            messages_section_container.innerHTML += `<span style="color: gray;">(${currentDateTime})</span><br><span style="color: red;">Inventory is full.</span>`;
+            add_message('Inventory is full.');
         }
     }
     
@@ -642,23 +639,22 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                         
                         // Store current item data first
                         let item_clicked = item;
-                        let item_slot_clicked = ei.slot_id;
-                        // Clear inventory event listener to prevent item movement on click after change
-                        removeInventorySlotListener(ei.slot_id);
+                        let item_slot_clicked = slot_data.slot_id;
+                        // Clear all previous event listeners first
+                        Object.keys(inventorySlotListeners).forEach(slot_id => {
+                            removeInventorySlotListener(slot_id);  // Remove old listeners
+                        });
+                        // Clear the object after removing listeners
+                        Object.keys(inventorySlotListeners).forEach(slot_id => {
+                            delete inventorySlotListeners[slot_id];
+                        });
 
                         // If an item is already equipped in the same slot
                         let equip_slot = saveDataEquip.find(e => e.id === item.slot);
                         if (equip_slot && equip_slot.equipped) {
-                            //console.log('(existing item) e: ' + current_equipped.equipped + ' / i: ' + item_clicked.id);
-                            // If duplicate item is already equipped, do nothing (return)
-                            if (equip_slot.equipped === item_clicked.id) {
-                                //console.log(current_equipped.equipped + '...is already equipped, skipping');
-                                update_inventory();
-                                ch.update_character();
-                                return;
-                            }
-                            //console.log('adding to equipped: ' + item.id);
-                            ei.contents = '[ EMPTY ]';
+                            // Clear inventory slot accessed
+                            slot_data.contents = '[ EMPTY ]';
+                            // Add equipped item back to same inventory slot
                             updateLootCount(equip_slot.equipped, 1, item_slot_clicked);
                             // Swap new iten with equipment slot item
                             equip_slot.equipped = item.id;

@@ -10,6 +10,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 
+11-01-2024
+- Updated equipment.js.
+- Working on potentially adding "tabs" instead of the expand-type design. It should be a lot more visually appealing. Will require changing "toggle" setup and/or removing of it, but so far it looks much cleaner.
+
 10-31-2024
 - FIXED BUG: Clicking on an item in inventory and then another on the edge of box will cause image to show incorrectly (for some items). Can be corrected after retoggle.
 - Inventory BUG corrected by removing all click listeners first. Also addressed issue where slot_id was mismatched, placing a swapped item in wrong slot--now slot ids matach original.

@@ -13,6 +13,53 @@ body {
 img {
     pointer-events: none;
 }
+
+
+
+/* TEST */
+/* Style for the tab container */
+.tab-container {
+  display: flex;
+  border-bottom: 2px solid #ccc;
+}
+
+/* Non-selected tabs default to gray */
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  background-color: #e0e0e0; /* Gray background for non-selected tabs */
+  transition: background-color 0.3s;
+}
+
+/* Tab hover effect */
+.tab:hover {
+  background-color: #d0d0d0;
+}
+
+/* Active tab style */
+.tab.active {
+  background-color: #fff; /* White background for the selected tab */
+  border-bottom: 2px solid white;
+}
+
+/* Content container */
+#content-container {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-top: none;
+  min-height: 100px;
+}
+
+
+
+
+
+
+
 .h1 {
     font-size: 32px;
     color: white;

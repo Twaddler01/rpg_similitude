@@ -295,3 +295,67 @@ function loaded_DOM() {
         }
     });
 }
+
+
+
+
+
+
+
+let new_content = document.createElement('div');
+document.body.appendChild(new_content);
+new_content.innerHTML = 
+`
+  <div class="tab-container">
+    <div class="tab" onclick="showTabContent(1)">Tab 1</div>
+    <div class="tab" onclick="showTabContent(2)">Tab 2</div>
+    <div class="tab" onclick="showTabContent(3)">Tab 3</div>
+  </div>
+
+  <div id="content-container">
+    <div id="character_section">Character Section</div>
+    <div id="character_container" class="location_box_style"></div>
+  </div>
+`;
+
+// Attach showTabContent to the window to ensure global accessibility
+window.showTabContent = function(tabNumber) {
+  const contentContainer = document.getElementById("content-container");
+
+  // Clear previous content
+  contentContainer.innerHTML = "";
+
+  // Remove active class from all tabs
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.classList.remove("active");
+  });
+
+  // Set the clicked tab as active
+  const activeTab = document.querySelector(`.tab:nth-child(${tabNumber})`);
+  activeTab.classList.add("active");
+
+  // Generate content specifically for Tab 1
+  if (tabNumber === 1) {
+    const tab1Content = document.createElement("div");
+    tab1Content.innerHTML = 
+    `
+      <div id="character_section">Character Section [ SHOW ]</div>
+      <div id="character_container" class="location_box_style"></div>
+    `;
+    contentContainer.appendChild(tab1Content);
+
+    // Add event listener only if it hasn't been added before
+    const character_section = document.getElementById('character_section');
+    if (!character_section.dataset.listenerAdded) {
+      character_section.addEventListener('click', () => {
+          gf.toggle_section('character');
+      });
+      character_section.dataset.listenerAdded = true; // Mark as added
+    }
+  } else {
+    // Other tab content can be handled here if needed
+    const otherContent = document.createElement("div");
+    otherContent.textContent = `Content for Tab ${tabNumber}`;
+    contentContainer.appendChild(otherContent);
+  }
+};

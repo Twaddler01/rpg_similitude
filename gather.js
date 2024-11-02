@@ -9,11 +9,17 @@ export function update_gather() {
     let gather_section = document.getElementById('gather_section');
     let gather_container = document.getElementById('gather_container');
     // Insert new divs before character_section
-    let character_section = document.getElementById('character_section');
+    
+    //let character_section = document.getElementById('character_section');
+    let character_stats_section = document.getElementById('character_stats_section');
 
     if (!gather_section) {
         gather_section = document.createElement('div');
-        character_section.parentNode.insertBefore(gather_section, character_section);
+        
+        
+        character_stats_section.parentNode.insertBefore(gather_section, character_stats_section);
+        //character_section.parentNode.insertBefore(gather_section, character_section);
+
         gather_section.id = 'gather_section';
         gather_section.classList.add('h1_yellow_font')
         gather_section.innerHTML = 'Gather Section <span class="normal">[ SHOW ]</span>';
@@ -29,7 +35,10 @@ export function update_gather() {
     // Create container
     } else {
         gather_container = document.createElement('div');
-        character_section.parentNode.insertBefore(gather_container, character_section);
+        
+        //character_section.parentNode.insertBefore(gather_container, character_section);
+        character_stats_section.parentNode.insertBefore(gather_container, character_stats_section);
+
         gather_container.id = 'gather_container';
         gather_container.classList.add('location_box_style');
     }

@@ -4,6 +4,7 @@ import { elementsData, equipmentElements, inventoryElements, itemData, locations
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
+import { update_battleStats } from './equipment.js';
 
 // Reset saveData to defaults
 export async function clearSaveData() {
@@ -704,7 +705,27 @@ export function toggle_combat_status() {
         player_combat_status.style.display = 'block';
         player_battle_status_bars.style.border = 'solid 5px red';
         enemy_battle_status_bars.style.border = 'solid 5px red';
+
+// WIP: Hide all other elements completely?
+// create a floating combat div?
+// possible tabbing?
+
+        // Close all sections when in combat
+        if (trackingData[0].t_gather_section) {
+            gf.toggle_section('gather');
+        }
+        if (trackingData[0].t_character_stats_section) {
+            gf.toggle_section('stats');
+        }
+        if (!trackingData[0].t_character_section) {
+            gf.toggle_section('character');
+        }
+        if (trackingData[0].t_inventory_section) {
+            gf.toggle_section('inventory');
+        }
+        
         playerCombat.in_combat = true;
+        
         return;
     }
 }
@@ -1208,9 +1229,27 @@ export function player_attack(enemy, encounter) {
 
     let playerStats = characterData.find(d => d.id === 'player_stats');
     
-    // Reset, assign enemy lvl to global
-    enemyStats.length = 0;
-    enemyStats.push({ lvl: enemy.lvl });
+    let d_player_character = saveData[1].savedCharacterData[0];
+    let current_char_level = d_player_character.char_level;
+
+// Main function call
+let fetch_battleStats = update_battleStats(current_char_level, saveData[3].equippedData, enemy.lvl);
+// Function methods
+let hitChance = fetch_battleStats.calc_hitChance();
+let critChance = fetch_battleStats.calc_meleeCriticalStrikeChance();
+let [attack_min, attack_max] = fetch_battleStats.calc_MeleeAttack();
+let dmg_mit_armor = fetch_battleStats.calc_armorMitigation();
+// For use below
+let missChance = Math.round((1 - hitChance) * 1000) / 1000;
+let noCritChance = Math.round((1 - critChance) * 1000) / 1000;
+
+console.log('missChance: ' + missChance);
+console.log('noCritChance: ' + noCritChance);
+console.log('attack_min: ' + attack_min);
+console.log('attack_max: ' + attack_max);
+console.log('dmg_mit_armor: ' + dmg_mit_armor);
+
+
 
     //console.log(playerStats);
     //console.log(enemy);
@@ -1332,8 +1371,6 @@ export function player_attack(enemy, encounter) {
             new_div.innerHTML += '<p><span class="material-symbols-outlined">skull</span><span style="color:#F7EB00;font-weight:bold;">&nbsp;You defeated a level ' + enemy.lvl + '&nbsp;' + enemy.lbl + '.</span></p>';
 
             // xp gained
-            let d_player_character = saveData[1].savedCharacterData[0];
-            let current_char_level = d_player_character.char_level;
             let exp_to_add = xp_gain(enemy.lvl);
             d_player_character.char_exp += exp_to_add;
             update_xp();
@@ -1433,6 +1470,9 @@ export function player_attack(enemy, encounter) {
                         // Reset player & elements
                         playerStats.dead = false;
                         playerStats.cur_health = playerStats.max_health;
+                        if (playerCombat.in_combat) {
+                            playerCombat.in_combat = false;
+                        }
                         // Reset battle/location elements
                         reset_battle();
                     }

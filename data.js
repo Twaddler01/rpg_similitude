@@ -26,7 +26,7 @@ export const elementsData = [
         css_class: 'location_box_style',
         },
     // character equipment section
-    { id: 'character_section',
+    /*{ id: 'character_section',
     section_cat: true,
     type: 'div',
     parent_el: 'body',
@@ -39,7 +39,7 @@ export const elementsData = [
     type: 'div',
     parent_el: 'body',
     css_class: 'location_box_style',
-    },
+    },*/
     // character stats section
     { id: 'character_stats_section',
     section_cat: true,
@@ -398,6 +398,7 @@ export const itemData = [
         { stat: 'dmg_max', amt: 9.6 }, 
         { stat: 'constitution', lbl: 'Constitution', amt: 10 }, 
         { stat: 'agility', lbl: 'Agility', amt: 10 }, 
+        { stat: 'criticalStrikeChance_melee', lbl: 'Melee Critical Strike Chance', amt: 0.05 }, 
     ],
     cnt: 0,
     value: 0,

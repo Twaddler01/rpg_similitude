@@ -498,98 +498,95 @@ export function add_allElements() {
 // Show or hide sections (clear/create or hide/show)
 export function toggle_section(section) {
 
-////
-let playerCombat = characterData.find(c => c.id === 'player_combat_status');
-if (!playerCombat.in_combat) {
-    if (section === 'gather') {
-        let e_gather_section = document.getElementById('gather_section');
-        let e_gather_container = document.getElementById('gather_container');
-        if (trackingData[0].t_gather_section) {
-            trackingData[0].t_gather_section = false;
-            update_gather();
-            e_gather_section.innerHTML = 'Gather Section <span class="normal">[ SHOW ]</span>';
-        } else {
-            trackingData[0].t_gather_section = true;
-            update_gather();
-            e_gather_section.innerHTML = 'Gather Section <span class="normal">[ HIDE ]</span>';
-        }
-    }
-
-    if (section === 'stats') {
-        let e_character_stats_section = document.getElementById('character_stats_section');
-        let e_character_stats_container = document.getElementById('character_stats_container');
-
-        if (trackingData[0].t_character_stats_section) {
-            trackingData[0].t_character_stats_section = false;
-            e_character_stats_container.style.display = 'none';
-            e_character_stats_container.style.overflow = 'auto';
-            e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
-        } else {
-            trackingData[0].t_character_stats_section = true;
-            update_equipment();
-            update_character_stats(true);
-            e_character_stats_container.style.display = 'block';
-            e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ HIDE ]</span>';
-        }
-    }
-
-    if (section === 'character') {
-        let e_character_section = document.getElementById('character_section');
-        let e_character_container = document.getElementById('character_container');
-        if (trackingData[0].t_character_section) {
-            trackingData[0].t_character_section = false;
-            update_character();
-            e_character_section.innerHTML = 'Character Section <span class="normal">[ HIDE ]</span>';
-        } else {
-            trackingData[0].t_character_section = true;
-            update_character();
-            e_character_section.innerHTML = 'Character Section <span class="normal">[ SHOW ]</span>';
-        }
-    }
-
-    if (section === 'battle') {
-        let e_battle_section = document.getElementById('battle_section');
-        let location_container = document.getElementById('location_container');
-
-        // Toggle only if out of combat
-        if (trackingData[0].t_battle_section) {
-            location_container.style.display = 'none';
-            e_battle_section.innerHTML = 'Battle Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
-            let e_attack_box_button = document.getElementById('attack_box_button');
-            if (e_attack_box_button) {
-                e_attack_box_button.style.display = 'none';
+    let playerCombat = characterData.find(c => c.id === 'player_combat_status');
+    if (!playerCombat.in_combat) {
+        if (section === 'gather') {
+            let e_gather_section = document.getElementById('gather_section');
+            let e_gather_container = document.getElementById('gather_container');
+            if (trackingData[0].t_gather_section) {
+                trackingData[0].t_gather_section = false;
+                update_gather();
+                e_gather_section.innerHTML = 'Gather Section <span class="normal">[ SHOW ]</span>';
+            } else {
+                trackingData[0].t_gather_section = true;
+                update_gather();
+                e_gather_section.innerHTML = 'Gather Section <span class="normal">[ HIDE ]</span>';
             }
-            let e_change_location_button = document.getElementById('change_location_button');
-            if (e_change_location_button) {
-                e_change_location_button.style.display = 'none';
+        }
+    
+        if (section === 'stats') {
+            let e_character_stats_section = document.getElementById('character_stats_section');
+            let e_character_stats_container = document.getElementById('character_stats_container');
+    
+            if (trackingData[0].t_character_stats_section) {
+                trackingData[0].t_character_stats_section = false;
+                e_character_stats_container.style.display = 'none';
+                e_character_stats_container.style.overflow = 'auto';
+                e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
+            } else {
+                trackingData[0].t_character_stats_section = true;
+                update_equipment();
+                update_character_stats(true);
+                e_character_stats_container.style.display = 'block';
+                e_character_stats_section.innerHTML = 'Character Stats <span class="normal">[ HIDE ]</span>';
             }
-            reset_battle();
-            trackingData[0].t_battle_section = false;
-        } else {
-            location_container.style.display = 'block';
-            e_battle_section.innerHTML = 'Battle Section <span class="normal">[ HIDE ]</span>';
-            trackingData[0].t_battle_section = true;
         }
-    }
-
-    if (section === 'inventory') {
-        let e_inventory_section = document.getElementById('inventory_section');
-        let e_inventory_section_container = document.getElementById('inventory_section_container');
-        if (trackingData[0].t_inventory_section) {
-            e_inventory_section_container.innerHTML = '';
-            e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
-            trackingData[0].t_inventory_section = false;
-        } else {
-            trackingData[0].t_inventory_section = true;
-            update_inventory();
-            e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ HIDE ]</span>';
+    
+        if (section === 'character') {
+            let e_character_section = document.getElementById('character_section');
+            let e_character_container = document.getElementById('character_container');
+            if (trackingData[0].t_character_section) {
+                trackingData[0].t_character_section = false;
+                update_character();
+                e_character_section.innerHTML = 'Character Section <span class="normal">[ HIDE ]</span>';
+            } else {
+                trackingData[0].t_character_section = true;
+                update_character();
+                e_character_section.innerHTML = 'Character Section <span class="normal">[ SHOW ]</span>';
+            }
         }
+    
+        if (section === 'battle') {
+            let e_battle_section = document.getElementById('battle_section');
+            let location_container = document.getElementById('location_container');
+    
+            // Toggle only if out of combat
+            if (trackingData[0].t_battle_section) {
+                location_container.style.display = 'none';
+                e_battle_section.innerHTML = 'Battle Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
+                let e_attack_box_button = document.getElementById('attack_box_button');
+                if (e_attack_box_button) {
+                    e_attack_box_button.style.display = 'none';
+                }
+                let e_change_location_button = document.getElementById('change_location_button');
+                if (e_change_location_button) {
+                    e_change_location_button.style.display = 'none';
+                }
+                reset_battle();
+                trackingData[0].t_battle_section = false;
+            } else {
+                location_container.style.display = 'block';
+                e_battle_section.innerHTML = 'Battle Section <span class="normal">[ HIDE ]</span>';
+                trackingData[0].t_battle_section = true;
+            }
+        }
+    
+        if (section === 'inventory') {
+            let e_inventory_section = document.getElementById('inventory_section');
+            let e_inventory_section_container = document.getElementById('inventory_section_container');
+            if (trackingData[0].t_inventory_section) {
+                e_inventory_section_container.innerHTML = '';
+                e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>';
+                trackingData[0].t_inventory_section = false;
+            } else {
+                trackingData[0].t_inventory_section = true;
+                update_inventory();
+                e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ HIDE ]</span>';
+            }
+        }
+    } else {
+        add_message('You are in combat. You must finish your current battle first.');
     }
-////
-} else {
-    add_message('You are in combat.');
-}
-////
 }
 
 export function add_section_clicks() {

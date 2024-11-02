@@ -6,7 +6,7 @@ https://twaddler01.github.io/rpg_similitude/
 https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Identified a css error on Chrome (Mobile) that errors on adding a css class (when trying to select a location). This is NOT an issue in Firefox Mobile. For now, recommend using the Firefox browser until issue can be addressed. Likely a Github server-related error since code executes error free on Chrome locally. Additionally, a workaround on mobile is listed above by using an HTTP server (running a Node.js server in Termux also works fine on my Android device).
 # BUGS
-- Tooltips are displaying incorrect "base damage" and "damage per turn".
+- Tooltips are displaying incorrect "base damage" and "damage per turn". This will be resolved with a soon to be implemented in new equipment.js function (for battle calculations based on item and character/enemy stats).
 
 # Updates
 

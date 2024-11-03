@@ -499,7 +499,7 @@ export function add_allElements() {
 export function toggle_section(section) {
 
     let playerCombat = characterData.find(c => c.id === 'player_combat_status');
-    if (!playerCombat.in_combat) {
+    //if (!playerCombat.in_combat) {
         if (section === 'gather') {
             let e_gather_section = document.getElementById('gather_section');
             let e_gather_container = document.getElementById('gather_container');
@@ -584,9 +584,9 @@ export function toggle_section(section) {
                 e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ HIDE ]</span>';
             }
         }
-    } else {
+    /*} else {
         add_message('You are in combat. You must finish your current battle first.');
-    }
+    }*/
 }
 
 export function add_section_clicks() {

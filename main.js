@@ -6,6 +6,7 @@ import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
 import * as g from './gather.js';
+import * as e from './equipment.js';
 //`
 
 // DEBUGGING INFO
@@ -60,7 +61,12 @@ function del_new_character_container() {
 // New game, setup character data
 if (!d_character.char_created) {
 
-    // Create new chatacter
+    let e_new_content = document.getElementById('new_content');
+    if (e_new_content) {
+        e_new_content.remove();
+    }
+
+    // Create new character
     let new_char_entry = document.createElement('div');
     new_character_container.appendChild(new_char_entry);
         
@@ -112,6 +118,11 @@ if (!d_character.char_created) {
         confirm_div.appendChild(confirm_yes);
         confirm_yes.innerHTML = 'YES';
         confirm_yes.addEventListener('click', () => {
+            if (charName === '') {
+                charName = 'John Doe';
+                charRace = 'Human';
+                charClass = 'Fighter';
+            }
             saveData[1].savedCharacterData[0].char_name = charName;
             saveData[1].savedCharacterData[0].char_race = charRace;
             saveData[1].savedCharacterData[0].char_class = charClass;
@@ -145,16 +156,18 @@ if (!d_character.char_created) {
 // Start main game area
 function start_game() {
 
+    layout_loadTabs();
+
     // Add main elements
     gf.add_allElements();
 
     function load_starting_elements() {
         f.first_run();
-        ch.update_equipment();
-        ch.update_character_stats(true);
+        //ch.update_equipment();
+        //ch.update_character_stats(true);
         f.update_locations();
         inv.update_inventory();
-        gf.add_section_clicks();
+        //gf.add_section_clicks();
         g.update_gather();
     }
     
@@ -302,29 +315,54 @@ function loaded_DOM() {
 
 
 
-let new_content = document.createElement('div');
-document.body.appendChild(new_content);
-new_content.innerHTML = 
-`
-  <div class="tab-container">
-    <div class="tab" onclick="showTabContent(1)">Tab 1</div>
-    <div class="tab" onclick="showTabContent(2)">Tab 2</div>
-    <div class="tab" onclick="showTabContent(3)">Tab 3</div>
-  </div>
+function layout_loadTabs() {
 
+// Find the title_section element
+const title_section = document.getElementById('title_section');
+
+let e_new_content = document.getElementById('new_content');
+if (e_new_content) {
+    e_new_content.remove();
+}
+let new_content = document.createElement('div');
+new_content.id = 'new_content';
+title_section.insertAdjacentElement('afterend', new_content);
+new_content.innerHTML = `
+<div style="border-top: 1px solid #ccc; padding: 5px;">
+  <div id="playerInfo_name"><b>noname</b></div>
+  <div id="playerInfo_level">Level nolevel norace noclass</div>
+</div>
+<div class="tab-wrapper">
+  <div class="tab-container">
+    <div class="tab" onclick="showTabContent(1)">EQUIPMENT</div>
+    <div class="tab" onclick="showTabContent(2)">STATS</div>
+    <div class="tab" onclick="showTabContent(3)">Tab 3</div>
+    <div class="tab" onclick="showTabContent(4)">Tab 4</div>
+    <div class="tab" onclick="showTabContent(5)">Tab 5</div>
+    <div class="tab" onclick="showTabContent(6)">Tab 6</div>
+  </div>
+</div>
   <div id="content-container">
-    <div id="character_section">Character Section</div>
-    <div id="character_container" class="location_box_style"></div>
+      <div id="tab_player_equipment" class="location_box_style"></div>
+      <div id="tab_player_stats" class="location_box_style"></div>
+
   </div>
 `;
+
+let d_char = saveData[1].savedCharacterData[0];
+let playerInfo_name = document.getElementById('playerInfo_name');
+playerInfo_name.innerHTML = '<b>' + d_char.char_name + '</b>';
+let playerInfo_level = document.getElementById('playerInfo_level');
+playerInfo_level.innerHTML = 'Level ' + d_char.char_level + '&nbsp;' + d_char.char_race + '&nbsp;' + d_char.char_class;
 
 // Attach showTabContent to the window to ensure global accessibility
 window.showTabContent = function(tabNumber) {
   const contentContainer = document.getElementById("content-container");
 
   // Clear previous content
-  contentContainer.innerHTML = "";
-
+  if (contentContainer) {
+    contentContainer.innerHTML = "";
+  }
   // Remove active class from all tabs
   document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.remove("active");
@@ -334,28 +372,35 @@ window.showTabContent = function(tabNumber) {
   const activeTab = document.querySelector(`.tab:nth-child(${tabNumber})`);
   activeTab.classList.add("active");
 
+  // TAB 1 on page load
   // Generate content specifically for Tab 1
   if (tabNumber === 1) {
     const tab1Content = document.createElement("div");
-    tab1Content.innerHTML = 
-    `
-      <div id="character_section">Character Section [ SHOW ]</div>
-      <div id="character_container" class="location_box_style"></div>
+    tab1Content.innerHTML = `
+      <div id="tab_player_equipment" class="location_box_style"></div>
     `;
     contentContainer.appendChild(tab1Content);
-
-    // Add event listener only if it hasn't been added before
-    const character_section = document.getElementById('character_section');
-    if (!character_section.dataset.listenerAdded) {
-      character_section.addEventListener('click', () => {
-          gf.toggle_section('character');
-      });
-      character_section.dataset.listenerAdded = true; // Mark as added
-    }
+    // Load character equipment
+    ch.update_character();
+  } else if (tabNumber === 2) {
+    const tab2Content = document.createElement("div");
+    tab2Content.innerHTML = `
+      <div id="tab_player_stats" class="location_box_style"></div>
+    `;
+    contentContainer.appendChild(tab2Content);
+    // Load character stats
+    e.update_stats();
   } else {
     // Other tab content can be handled here if needed
     const otherContent = document.createElement("div");
     otherContent.textContent = `Content for Tab ${tabNumber}`;
     contentContainer.appendChild(otherContent);
   }
+  
+    
 };
+
+// Load default tab first
+showTabContent(1);
+
+}

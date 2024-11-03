@@ -49,6 +49,8 @@ export function create_el(newId, type, parentId, content) {
         if (parent_el) {
             parent_el.appendChild(new_el);
         } else {
+            //console.log('newId: ' + newId);
+            //console.log('parentId: ' + parentId.id);
             parentId.appendChild(new_el);
         }
         new_el.id = newId;
@@ -82,6 +84,16 @@ export function first_run() {
     };
     
     add_test_action('testJsonDl', 'Download Save Data', get_modifiedSaveData);
+
+// general test buttons
+    let test_addlevel = () => {
+        let player = saveData[1].savedCharacterData[0];
+        player.char_level += 1;
+        let playerInfo_level = document.getElementById('playerInfo_level');
+        playerInfo_level.innerHTML = 'Level ' + player.char_level + '&nbsp;' + player.char_race + '&nbsp;' + player.char_class;
+    };
+    add_test_action('addlevel', 'test_addlevel', test_addlevel);
+
 
 // Check divs
     create_el('check_divs', 'button', test_section);
@@ -1237,8 +1249,11 @@ let fetch_battleStats = update_battleStats(current_char_level, saveData[3].equip
 // Function methods
 let hitChance = fetch_battleStats.calc_hitChance();
 let critChance = fetch_battleStats.calc_meleeCriticalStrikeChance();
-let [attack_min, attack_max] = fetch_battleStats.calc_MeleeAttack();
+let [attack_min, attack_max] = fetch_battleStats.calc_meleeAttack();
 let dmg_mit_armor = fetch_battleStats.calc_armorMitigation();
+let resource_melee = fetch_battleStats.calc_resource_melee();
+let total_health = fetch_battleStats.calc_totalHealth();
+
 // For use below
 let missChance = Math.round((1 - hitChance) * 1000) / 1000;
 let noCritChance = Math.round((1 - critChance) * 1000) / 1000;
@@ -1248,8 +1263,8 @@ console.log('noCritChance: ' + noCritChance);
 console.log('attack_min: ' + attack_min);
 console.log('attack_max: ' + attack_max);
 console.log('dmg_mit_armor: ' + dmg_mit_armor);
-
-
+console.log('resource_melee: ' + resource_melee);
+console.log('total_health: ' + total_health);
 
     //console.log(playerStats);
     //console.log(enemy);

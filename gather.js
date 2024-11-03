@@ -11,13 +11,13 @@ export function update_gather() {
     // Insert new divs before character_section
     
     //let character_section = document.getElementById('character_section');
-    let character_stats_section = document.getElementById('character_stats_section');
+    let new_section = document.getElementById('new_section');
 
     if (!gather_section) {
         gather_section = document.createElement('div');
         
         
-        character_stats_section.parentNode.insertBefore(gather_section, character_stats_section);
+        new_section.parentNode.insertBefore(gather_section, new_section);
         //character_section.parentNode.insertBefore(gather_section, character_section);
 
         gather_section.id = 'gather_section';
@@ -37,7 +37,7 @@ export function update_gather() {
         gather_container = document.createElement('div');
         
         //character_section.parentNode.insertBefore(gather_container, character_section);
-        character_stats_section.parentNode.insertBefore(gather_container, character_stats_section);
+        new_section.parentNode.insertBefore(gather_container, new_section);
 
         gather_container.id = 'gather_container';
         gather_container.classList.add('location_box_style');

@@ -17,15 +17,28 @@ img {
 
 
 /* TEST */
-/* Style for the tab container */
-.tab-container {
-  display: flex;
-  border-bottom: 2px solid #ccc;
+
+/* scrolling */
+.tab-wrapper {
+  overflow-x: auto; /* Enables horizontal scrolling */
+  white-space: nowrap; /* Prevents line breaks so tabs stay in one line */
+  width: 100%; /* Fills the full width of the screen */
+  scrollbar-width: thin; /* (Optional) Makes the scrollbar thinner */
+  border-bottom: 1px solid #ccc;
+
 }
 
-/* Non-selected tabs default to gray */
+/* Center and style the tab container */
+.tab-container {
+  display: flex;
+  padding: 2px 0;
+}
+
+/* Style each tab */
 .tab {
-  padding: 10px 20px;
+  flex: 0 0 100px;
+  text-align: center; /* Centers text within each tab */
+  padding: 10px;
   cursor: pointer;
   font-weight: bold;
   color: #333;
@@ -45,15 +58,6 @@ img {
   background-color: #fff; /* White background for the selected tab */
   border-bottom: 2px solid white;
 }
-
-/* Content container */
-#content-container {
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-top: none;
-  min-height: 100px;
-}
-
 
 
 

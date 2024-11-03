@@ -11,7 +11,7 @@ import { elementsData, equipmentElements, inventoryElements, itemData, locations
 import * as gf from './general_functions.js';
 import { create_el } from './functions.js';
 import { removeItemTooltip, createItemElements } from './inventory.js';
-
+import * as e from './equipment.js';
 // Run first to initialize array
 export function update_character_array() {
     
@@ -36,32 +36,24 @@ export function update_character_array() {
     update_character_stats(false);
 }
 
+// WIP: rename to update_equipment
 export function update_character() {
 
-    let e_character_section = document.getElementById('character_section');
-    let e_character_container = document.getElementById('character_container');
+    let e_tab_player_equipment = document.getElementById('tab_player_equipment');
 
-    // Reset e_character_container elements
-    e_character_container.innerHTML = '';
-
-    if (trackingData[0].t_character_section) {
-        update_character_array();
+    // Reset elements
+    if (e_tab_player_equipment) {
+        e_tab_player_equipment.innerHTML = '';
     }
-
-    if (!trackingData[0].t_character_section) {
 
             let charData = saveData[1].savedCharacterData[0];
 
-            let char_title = document.createElement('div');
-            e_character_container.appendChild(char_title);
-            char_title.innerHTML = '<b>' + charData.char_name + '&nbsp;(Level ' + charData.char_level + ')</b>';
-            
             let char_equipment = document.createElement('div');
-            e_character_container.appendChild(char_equipment);
-            char_equipment.innerHTML = '<p><b>EQUIPMENT:</b></p>';
+            e_tab_player_equipment.appendChild(char_equipment);
+            char_equipment.innerHTML += '<b>EQUIPPED ITEMS</b><br><br>';
     
             // Equipment image with slots around image
-            create_el('char_equipment_container', 'div', char_equipment);
+            create_el('char_equipment_container', 'div', e_tab_player_equipment);
             create_el('div_top_box', 'div', 'char_equipment_container');
             div_top_box.classList.add('top-box');
             create_el('equip_slot_head', 'div', 'div_top_box');
@@ -79,7 +71,7 @@ export function update_character() {
             create_el('equip_slot_ring1', 'div', 'div_side_boxes_left');
             equip_slot_ring1.classList.add('item-box');
             create_el('char_equipment_image', 'img', 'char_equipment_container');
-            char_equipment_image.src = 'media/char_equip.png';
+            char_equipment_image.src = 'media/char_shadow.png';
             char_equipment_image.style.height = '240px';
             char_equipment_image.style.width = '80px';
             create_el('div_side_boxes_right', 'div', 'char_equipment_container');
@@ -152,31 +144,20 @@ export function update_character() {
             update_equipment();
             // Stats only
             update_character_stats(false);
-
-    } // END trackingData[0].t_character_section = true
 }
 
+// moving to e.update_stats()
 export function update_character_stats(updateElements) {
 
     if (updateElements) {
-        let e_character_stats_section = document.getElementById('character_stats_section');
-        let e_character_stats_container = document.getElementById('character_stats_container');
+        // Reset elements
+        let e_tab_player_stats = document.getElementById('tab_player_stats');
+        if (e_tab_player_stats) {
+            e_tab_player_stats.innerHTML = '';
+        }
 
-        // Hide character_container elements since calculations are still needed
-        if (!trackingData[0].t_character_stats_section) {
-            e_character_stats_container.style.display = 'none';
-            e_character_stats_section.addEventListener('click', () => {
-                gf.toggle_section('stats');
-            });
-        }
-        
-        let e_stats_info = document.getElementById('stats_info');
-        if (e_stats_info) {
-            e_stats_info.innerHTML = '';
-        }
-    
-        create_el('stats_info', 'div', e_character_stats_container);
-        stats_info.innerHTML += '<p><b>CURRENT STATS:</b></p>';
+        create_el('stats_info', 'div', e_tab_player_stats);
+        stats_info.innerHTML = '<p><b>CURRENT STATS:</b></p>';
 
         // Character stat information
         // Calculates ALL stat effects
@@ -499,7 +480,11 @@ export function update_character_stats(updateElements) {
                         let current_weapon_item_info = item_info.gains;
                         let current_weapon_dmg_min = current_weapon_item_info.find(w => w.stat === 'dmg_min');
                         let current_weapon_dmg_max = current_weapon_item_info.find(w => w.stat === 'dmg_max');
-                        let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt, current_weapon_dmg_min.amt, current_weapon_dmg_max.amt);
+                        
+let fetch_battleStats = e.update_battleStats(player_level, saveData[3].equippedData, player_level);
+let [pwr_weapon_min, pwr_weapon_max] = fetch_battleStats.calc_meleeAttack();
+                        
+                        //let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt, current_weapon_dmg_min.amt, current_weapon_dmg_max.amt);
                         trackingData[0].current_weapon_dmg_min = current_weapon_dmg_min.amt;
                         trackingData[0].current_weapon_dmg_max = current_weapon_dmg_max.amt;
                         let incr_dmg_min = Math.round((((pwr_weapon_min / current_weapon_dmg_min.amt) - 1) * 100) * 10) / 10;
@@ -567,7 +552,7 @@ export function update_character_stats(updateElements) {
 
 // calc not ready for ilvl !== 1
 // sets all ilvls to 1
-export function calculate_weapon_damage(itemLevel, statPower, minDmg, maxDmg) {
+/*export function calculate_weapon_damage(itemLevel, statPower, minDmg, maxDmg) {
 
     itemLevel = 1;
 
@@ -592,8 +577,9 @@ export function calculate_weapon_damage(itemLevel, statPower, minDmg, maxDmg) {
     }
 
     return [damage_min, damage_max];
-}
+}*/
 
+// WIP REPLACE update_battleStats from equipment.js
 export function update_equipment() {
     
     // Reset stats

@@ -41,7 +41,7 @@ export const elementsData = [
     css_class: 'location_box_style',
     },*/
     // character stats section
-    { id: 'character_stats_section',
+    /*{ id: 'character_stats_section',
     section_cat: true,
     type: 'div',
     parent_el: 'body',
@@ -54,7 +54,7 @@ export const elementsData = [
     type: 'div',
     parent_el: 'body',
     css_class: 'location_box_style',
-    },
+    },*/
     // battle section
     { id: 'battle_section',
     section_cat: true,
@@ -546,10 +546,8 @@ export var saveData = [
         { kills: 14 }, // max = 14 + 1
         { kills: 15 }, // placeholder
         ] },
-    // saveData[1].savedCharacterData
-    { savedCharacterData: [ // to be added to static characterData array
-        // savedCharacterData[0]
-        
+    // saveData[1].savedCharacterData[0]
+    { savedCharacterData: [
         // SC: Char created
         { char_created: true, 
         char_name: 'Legolas', 

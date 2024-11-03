@@ -9,6 +9,9 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Tooltips are displaying incorrect "base damage" and "damage per turn". This will be resolved with a soon to be implemented new equipment.js function (for battle calculations based on item and character/enemy stats).
 
 # Updates
+11-03-2024
+- Working on moving all stats over to new function from equipment.js. Integration not yet fully complete.
+- Decided all elements will be setup using tab layout, which will require recoding many functions, but worth the effort for style, layout, etc.
 
 11-01-2024
 - Updated equipment.js.

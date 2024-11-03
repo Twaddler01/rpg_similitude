@@ -12,7 +12,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 11-03-2024
 - Working on moving all stats over to new function from equipment.js. Integration not yet fully complete. There will likely be errors and log outputs at the moment.
 - Decided all elements will be setup using tab layout, which will require recoding many functions, but worth the effort for style, layout, etc.
-- New character creation needs future work. Right now. values are only for player level and display purposes. Will create select options for class/race and checks of proper values for player name, etc. Defaults if nothing is entered will be used for testing dynamics.
+- New character creation needs future work. Right now, values are only for player level and display purposes. Will create select options for class/race and checks of proper values for player name, etc. Defaults if nothing is entered will be used for testing dynamics.
 
 11-01-2024
 - Updated equipment.js.

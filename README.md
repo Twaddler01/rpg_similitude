@@ -10,7 +10,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 11-05-2024
-- Stats area completed. Stats are based solely on battleStats array, which should ensure easy and updated values verses the old method. Still needs final testing, but seems to be working well so far.
+- Stats area completed. Stats are based solely on battleStats array, which should ensure easy and updated values verses the old method. Still needs final testing, but seems to be working well so far. Next step is to ensure updates are applied when needed for new setup verses old setup.
 
 11-03-2024
 - Working on moving all stats over to new function from equipment.js. Integration not yet fully complete. There will likely be errors and log outputs at the moment.

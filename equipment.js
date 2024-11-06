@@ -3,10 +3,8 @@
 // To be used alongside character.js
 // stats related to player equipment/level
 
-import { saveData, itemData, characterData } from './data.js';
-//import * as gf from './general_functions.js';
-import { enemyStats, create_el } from './functions.js';
-//import { x } from './inventory.js';
+import { saveData, itemData } from './data.js';
+import { create_el } from './functions.js';
 
 // temporary
 let trackingData = [{}];
@@ -60,8 +58,6 @@ export function update_battleStats(pLevel, pEquipped, eLevel) {
                 stat.amt = stat.base;
             }
         }
-// LOG
-//console.log('(LVL/BASE) ' + stat.id + ': ' + stat.amt);
     });
     pEquipped.forEach(item => {
         let d_itemData = itemData.find(i => i.id === item.equipped);
@@ -78,10 +74,6 @@ export function update_battleStats(pLevel, pEquipped, eLevel) {
             });
         } 
     });
-// LOG
-//battleStats.forEach(stat => {
-//console.log('(EQUIP + LVL/BASE) ' + stat.id + ': ' + stat.amt);
-//});
 
 // PLAYER ARMOR DAMAGE REDUCTION
     function calc_armorMitigation() {
@@ -103,7 +95,6 @@ for (let lvl = 1; lvl <= 100; lvl++) {
     console.log('Level: ' + lvl + ' / ' + armor + ': ' + dmg_reduce);
 }*/
 
-//console.log('dmg_mit_armor: ' + dmg_mit_armor);
         return dmg_mit_armor;
     }
 
@@ -117,23 +108,17 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         return total_health;
     }
 
-
 // PLAYER HIT CHANCE -- hitChance, dexterity
     function calc_hitChance() {
         let hitChance = battleStats.find(s => s.id === 'hitChance');
         let base_hitChance = hitChance.base; // 0.9
-        // Reset to base
 
-//console.log('base_hitChance: ' + base_hitChance);
         // Calculate hit chance with equipmemt
         let dexterity = battleStats.find(s => s.id === 'dexterity');
-//console.log('dexterity: ' + dexterity.amt);
         // Left as decimal
         let calc_dexterity = dexterity.amt * 0.001;
         calc_dexterity += hitChance.amt;
-//console.log('NEW hitChance.amt: ' + base_hitChance);
 
-//console.log('enemyStats.lvl: ' + enemyStats[0].lvl);
         let enemyLevel_diff = eLevel - pLevel;
     
         // No difference in level
@@ -141,8 +126,6 @@ for (let lvl = 1; lvl <= 100; lvl++) {
 
         // If enemy is higher or lower level
         if (enemyLevel_diff > 0) {
-// NEW UPDATE:
-// The base probability an attack will not miss against enemies. Against higher level enemies, base hit chance decreases to 85% (without equipment benefits) for 1 level above, and decreases a further 5% for each additional enemy level above the player. For example, the base hit chance for an enemy 5 levels higher than you will be 90% - (5% x 5) or 65% total.
             calculated_hitChance -= (0.05 * enemyLevel_diff);
         } else if (enemyLevel_diff < 0) {
             // 2.5% increase hit for lower enemy levels
@@ -151,7 +134,6 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         }
 
         calculated_hitChance = Math.round(calculated_hitChance * 1000) / 1000;
-//console.log('Verses ENEMY hitChance: ' + calculated_hitChance);
         return calculated_hitChance;
     }
 
@@ -169,12 +151,9 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         crit_total += criticalStrikeChance_melee.amt;
 
         crit_total = Math.round(crit_total * 1000) / 1000;
-//console.log('(CALC) criticalStrikeChance_melee.amt: ' + criticalStrikeChance_melee.amt);
         // Final value
         return crit_total;
     }
-
-// WIP
 
 // PLAYER MAGIC CRIT -- criticalStrikeChance_magic, wisdom
     function calc_magicCriticalStrikeChance() {
@@ -190,7 +169,6 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         crit_total += criticalStrikeChance_magic.amt;
 
         crit_total = Math.round(crit_total * 1000) / 1000;
-//console.log('(CALC) criticalStrikeChance_melee.amt: ' + criticalStrikeChance_melee.amt);
         // Final value
         return crit_total;
     }
@@ -267,94 +245,9 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         // Round to one decimal place
         total_attack_min = Math.round(total_attack_min * 10) / 10;
         total_attack_max = Math.round(total_attack_max * 10) / 10;
-    
-//console.log('total_attack_min (RND): ' + total_attack_min);
-//console.log('total_attack_max (RND): ' + total_attack_max);
-    
-        return [total_attack_min, total_attack_max];
-    }
-
-
-
-
-
-/*
-// PLAYER MELEE ATTACK -- strength, power, dmg_min, dmg_max
-    // Both min and max attack
-    function calc_meleeAttack() {
-        let strength_stat = battleStats.find(s => s.id === 'strength');
-        let power_stat = battleStats.find(s => s.id === 'power');
-        let attackMinimum_stat = battleStats.find(s => s.id === 'dmg_min');
-        let attackMaximum_stat = battleStats.find(s => s.id === 'dmg_max');
-        
-        // Set to base
-        let base_attack_min = attackMinimum_stat.base;
-        let base_attack_max = attackMaximum_stat.base;
-        // Set to weapon only
-        let weapon_attack_min = attackMinimum_stat.amt;
-        let weapon_attack_max = attackMaximum_stat.amt;
-
-        // Base attack values
-        return base_attacks(base_attack_min, base_attack_max, weapon_attack_min, weapon_attack_max);
-
-//console.log('base_attack_min (BASE): ' + base_attack_min);
-//console.log('base_attack_max (BASE): ' + base_attack_max);
-
-        // Combine strength and attack power
-        // Strength +1% weapon attack each
-        let attack_str = strength_stat.amt * 0.01;
-        // Power +0.2 total attack per power
-        let attack_pwr = power_stat.amt * 0.2;
-
-console.log('weapon_attack_min (EQUIP): ' + weapon_attack_min);
-console.log('weapon_attack_max (EQUIP): ' + weapon_attack_max);
-
-        // Default: no weapon equipped
-        let total_attack_min = base_attack_min;
-        let total_attack_max = base_attack_max;
-        // Only if weapon is equipped
-        let equipped_items = saveData[3].equippedData;
-        let current_weapon = equipped_items.find(i => i.id === 'mh');
-        if (current_weapon && current_weapon.equipped) {
-            total_attack_min = weapon_attack_min * (1 + attack_str);
-            total_attack_min += attack_pwr;
-            total_attack_max = weapon_attack_max * (1 + attack_str);
-            total_attack_max += attack_pwr;
-        } else {
-            total_attack_min = base_attack_min * (1 + attack_str);
-            total_attack_min += attack_pwr;
-            total_attack_max = base_attack_max * (1 + attack_str);
-            total_attack_max += attack_pwr;
-        }
-
-        total_attack_min = Math.round(total_attack_min * 10) / 10;
-        total_attack_max = Math.round(total_attack_max * 10) / 10;
-
-console.log('total_attack_min (RND): ' + total_attack_min);
-console.log('total_attack_max (RND): ' + total_attack_max);
 
         return [total_attack_min, total_attack_max];
-        
     }
-
-// Base attacks only
-    function base_attacks(base_attack_min, base_attack_max, weapon_attack_min, weapon_attack_max) {
-            
-        let equipped_items = saveData[3].equippedData;
-        let current_weapon = equipped_items.find(i => i.id === 'mh');
-        if (current_weapon && current_weapon.equipped) {
-            base_attack_min = weapon_attack_min;
-            base_attack_max = weapon_attack_max;
-        }
-            
-        let base_attack_min_rnd = Math.round(base_attack_min * 10)/10;
-        let base_attack_max_rnd = Math.round(base_attack_max * 10)/10;
-
-console.log('___' + base_attack_min_rnd + ' / ' + base_attack_max_rnd)
-        // Either base_attack_min or weapon_attack_min (1 min / 1 max) are used, depend8ng on if a weapon is equipped
-        return [ base_attack_min_rnd, base_attack_max_rnd ];
-    }
-*/
 
 // PENDING
 // PLAYER MAGIC ATTACK -- intelligence, power, dmg_min, dmg_max
@@ -383,8 +276,6 @@ console.log('___' + base_attack_min_rnd + ' / ' + base_attack_max_rnd)
         let total_resource_magic = base_resource + resource_bonus;
         return total_resource_magic;
     }
-
-// EXTRAS FOR DISPLAYING
 
     return {
         calc_armorMitigation,
@@ -433,16 +324,16 @@ export function update_stats() {
     const total_health = fetch_battleStats.calc_totalHealth();
     const [f_base_min, f_base_max] = fetch_battleStats.base_attacks();
 
-console.log('STATS: ');
-console.log('hitChance: ' + hitChance);
-console.log('critChance_magic: ' + critChance_magic);
-console.log('critChance: ' + critChance);
-console.log('attack_min: ' + attack_min);
-console.log('attack_max: ' + attack_max);
-console.log('dmg_mit_armor: ' + dmg_mit_armor);
-console.log('resource_melee: ' + resource_melee);
-console.log('total_health: ' + total_health);
-console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
+    console.log('STATS: ');
+    console.log('hitChance: ' + hitChance);
+    console.log('critChance_magic: ' + critChance_magic);
+    console.log('critChance: ' + critChance);
+    console.log('attack_min: ' + attack_min);
+    console.log('attack_max: ' + attack_max);
+    console.log('dmg_mit_armor: ' + dmg_mit_armor);
+    console.log('resource_melee: ' + resource_melee);
+    console.log('total_health: ' + total_health);
+    //console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
 
     // Character stat descriptions
     let filtered_battleStats = battleStats.filter(s => s.dmg !== true);
@@ -455,8 +346,6 @@ console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
         let equipped_items = saveData[3].equippedData;
         let current_weapon = equipped_items.find(i => i.id === 'mh');
 
-        let strength_attack_incr = 0;
-
         switch (stat.id) {
             case 'armor': 
                 let c_dmg_mit_armor = dmg_mit_armor * 100;
@@ -467,7 +356,6 @@ console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
                 <br><b>Reduces damage received by ${Math.round((100 - c_dmg_mit_armor)*10)/10}%</b></span>`;
                 break;
             case 'strength':
-                strength_attack_incr = stat.amt;
                 let level_base = stat.base * player_level;
                 // Display
                 stats_effect = `<br><span style="color:lightgreen">Player level (${player_level}): +${level_base}
@@ -521,7 +409,6 @@ console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
                 <br><b>Increases magic critical strike chance by ${Math.round((stat.amt * 0.1)*10)/10}%</b>`;
                 break;
             case 'power':
-                //let fetch_battleStats = update_battleStats(player_level, saveData[3].equippedData, player_level);
                 let [pwr_weapon_min, pwr_weapon_max] = fetch_battleStats.calc_meleeAttack_pwr();
                 // (base is 0 in array atm)
                 let level_base_pwr = stat.base;
@@ -538,8 +425,6 @@ console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
                 // Add + only if greater than 0
                 let stat_pwr_0 = (stat.amt > 0) ? '+' + stat.amt : 0;
                 let stat_equip_pwr_0 = ((stat.amt - level_base_pwr) > 0) ? '+' + (stat.amt - level_base_pwr) : 0;
-                //stats_effect = '<br>dmg_min.amt: ' + dmg_min.amt + ' dmg_max.amt: ' + dmg_max.amt;
-                //stats_effect += '<br>pwr_weapon_min: ' + pwr_weapon_min + ' pwr_weapon_max: ' + pwr_weapon_max;
                 stats_effect = // `<br><span style="color:lightgreen">Player Base: ${level_base_pwr}
                 `<br><span style="color:lightgreen">Equipment bonus: ${stat_equip_pwr_0}
                 <br>Total Power: ${stat_pwr_0}
@@ -627,7 +512,6 @@ console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
                 stat_text += `Magic Critical Strike Chance base: 5%
                 <br>Magic Critical Strike Chance (Wisdom and Standalone): ${Math.round((critChance_magic*100)*10)/10}%
                 <br><b>Increases magic critical strike chance by <b>${Math.round((critChance_magic*100)*10)/10}%.</b></span>`;
-
                 break;
         }
         combined_stats.innerHTML += '<br>Combined ' + stat.label + '<br>' + stat_text + '</span>';

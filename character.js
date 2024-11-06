@@ -498,7 +498,8 @@ let [pwr_weapon_min, pwr_weapon_max] = fetch_battleStats.calc_meleeAttack();
                     } else {
                         trackingData[0].current_weapon_dmg_min = 1;
                         trackingData[0].current_weapon_dmg_max = 1.2;
-                        let [pwr_weapon_min, pwr_weapon_max] = calculate_weapon_damage(1, stat.amt, trackingData[0].current_weapon_dmg_min, trackingData[0].current_weapon_dmg_max);
+let fetch_battleStats = e.update_battleStats(player_level, saveData[3].equippedData, player_level);
+let [pwr_weapon_min, pwr_weapon_max] = fetch_battleStats.calc_meleeAttack();
                         trackingData[0].pwr_weapon_min = pwr_weapon_min;
                         trackingData[0].pwr_weapon_max = pwr_weapon_max;
                         let incr_dmg_min = Math.round((((pwr_weapon_min / trackingData[0].current_weapon_dmg_min) - 1) * 100) * 10) / 10;

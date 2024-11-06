@@ -312,6 +312,7 @@ export const itemData = [
     gains: [ 
         { stat: 'armor', lbl: 'Armor', amt: 10 },
         { stat: 'power', lbl: 'Power', amt: 5 },
+        { stat: 'hitChance', lbl: 'Chance to hit (%)', amt: 0.02 },
     ],
     cnt: 0,
     value: 0,

@@ -56,13 +56,13 @@ export const elementsData = [
     css_class: 'location_box_style',
     },*/
     // battle section
-    { id: 'battle_section',
+    /*{ id: 'battle_section',
     section_cat: true,
     type: 'div',
     parent_el: 'body',
     content: 'Battle Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>',
     css_class: 'h1_yellow_font',
-    }, 
+    }, */
     { id: 'battle_section_container',
     section_cat: true,
     type: 'div',
@@ -87,7 +87,7 @@ export const elementsData = [
         parent_el: 'battle_section_container',
         },
     // imventory section
-    { id: 'inventory_section',
+    /*{ id: 'inventory_section',
     section_cat: true,
     type: 'div',
     parent_el: 'body',
@@ -98,22 +98,22 @@ export const elementsData = [
     section_cat: true,
     type: 'div',
     parent_el: 'body',
-    },
+    },*/
     // section
-    { id: 'new_section',
+    /*{ id: 'new_section',
     section_cat: true,
     type: 'div',
     parent_el: 'body',
     content: 'NEW Section',
     css_class: 'h1_yellow_font',
-    },
+    },*/
 
     // section
     { id: 'test_section',
     section_cat: true,
     type: 'div',
     parent_el: 'body',
-    content: 'TEST Section',
+    content: 'TEST Section<br>',
     css_class: 'h1_yellow_font',
     },
 ];
@@ -438,6 +438,16 @@ export const locationsData = [
 ];
 
 export const characterData = [
+    // d_exp_filter = characterData.filter(c => c.type === 'exp');
+    // d_exp = d_exp_filter[0];
+    { /* experienceValues [] */ id: 'level_exp', type: 'exp', level_cap: 20, starting_val: 800, level_rate: 0.2 },
+    { id: 'player_stats', /* playerStats.total_armor, etc */ }, // See character_setup() 
+    // let playerStats = characterData.find(d => d.id === 'player_stats');
+    { id: 'player_combat_status', in_combat: false }, // See toggle_combat_status()
+];
+
+/* OLD
+export const characterData = [
     { id: 'armor', type: 'stat', amt: 100, label: 'Armor: ', lvl_mod: true, lvl_amt: 100, base: 100 }, // lvl_mod -> increases with level to lvl_amt
     { id: 'strength', type: 'stat', amt: 10, label: 'Strength: ', lvl_mod: true, lvl_amt: 10, base: 10 },
     { id: 'intelligence', type: 'stat', amt: 10, label: 'Intelligence: ', lvl_mod: true, lvl_amt: 10, base: 10 },
@@ -466,11 +476,12 @@ export const characterData = [
     // misc
     // d_exp_filter = characterData.filter(c => c.type === 'exp');
     // d_exp = d_exp_filter[0];
-    { /* experienceValues [] */ id: 'level_exp', type: 'exp', level_cap: 20, starting_val: 800, level_rate: 0.2 },
-    { id: 'player_stats', /* playerStats.total_armor, etc */ }, // See character_setup() 
+    { /* experienceValues [] */ /*id: 'level_exp', type: 'exp', level_cap: 20, starting_val: 800, level_rate: 0.2 },
+/*    { id: 'player_stats', /* playerStats.total_armor, etc */ /*}, // See character_setup() 
     // let playerStats = characterData.find(d => d.id === 'player_stats');
-    { id: 'player_combat_status', in_combat: false }, // See toggle_combat_status()
+/*    { id: 'player_combat_status', in_combat: false }, // See toggle_combat_status()
 ];
+*/
 
 export const encounterData = [
 

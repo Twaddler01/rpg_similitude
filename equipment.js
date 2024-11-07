@@ -1,9 +1,8 @@
 // equipment.js
 
-// To be used alongside character.js
 // stats related to player equipment/level
 
-import { saveData, itemData } from './data.js';
+import { saveData, itemData, characterData } from './data.js';
 import { create_el } from './functions.js';
 
 // temporary
@@ -40,10 +39,24 @@ const statDescriptions = [
     { id: 'criticalStrikeChance', label: 'Critical Strike Chance', type: 'desc', def: 'The probability a successful attack is critical. Critical strikes cause double the regular damage.' },
 ];
 
+// WIP inventory call for update_equipment() needs updating for EQUIPS, etc
+
 // Stat modifications
 // Updates for battles and equipmemt
-export function update_battleStats(pLevel, pEquipped, eLevel) {
+export function update_battleStats(eLevel) {
+
+    // Player data
+    let d_player_character = saveData[1].savedCharacterData[0];
+    let pLevel = d_player_character.char_level;
+
+    // Equipment
+    let pEquipped = saveData[3].equippedData;
     
+    // Enemy level = char_level if not specified
+    if (!eLevel) {
+        eLevel = pLevel;
+    }
+
     // Reset stats
     battleStats.forEach(stat => {
         // Only 'reg' stats scale with level
@@ -313,7 +326,7 @@ export function update_stats() {
     
     // Main calc function call
     // Assumes enemy level is equal with player
-    const fetch_battleStats = update_battleStats(player_level, saveData[3].equippedData, player_level);
+    const fetch_battleStats = update_battleStats(player_level);
     // Function methods of update_battleStats
     const hitChance = fetch_battleStats.calc_hitChance();
     const critChance = fetch_battleStats.calc_meleeCriticalStrikeChance();
@@ -323,7 +336,7 @@ export function update_stats() {
     const resource_melee = fetch_battleStats.calc_resource_melee();
     const total_health = fetch_battleStats.calc_totalHealth();
     const [f_base_min, f_base_max] = fetch_battleStats.base_attacks();
-
+/*
     console.log('STATS: ');
     console.log('hitChance: ' + hitChance);
     console.log('critChance_magic: ' + critChance_magic);
@@ -334,7 +347,7 @@ export function update_stats() {
     console.log('resource_melee: ' + resource_melee);
     console.log('total_health: ' + total_health);
     //console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
-
+*/
     // Character stat descriptions
     let filtered_battleStats = battleStats.filter(s => s.dmg !== true);
     filtered_battleStats.forEach(stat => {
@@ -526,4 +539,22 @@ export function update_stats() {
         let line_item = '<b>' + stat.label + ':</b> ' + stat.def + '<br>';
         stats_desc.innerHTML += line_item;
     });
+}
+
+// WIP battle.js ??
+export function fetch_playerStats(opt) {
+    let playerStats = characterData.find(d => d.id === 'player_stats');
+    let stats = update_battleStats();
+
+    playerStats.max_health = stats.calc_totalHealth();
+    // playerStats.cur_health
+    playerStats.max_resource = stats.calc_resource_melee();
+    // playerStats.cur_resource
+
+    if (opt === 'new') {
+        // Reset current health
+        playerStats.cur_health = playerStats.max_health;
+        // Reset current resource
+        playerStats.cur_resource = playerStats.max_resource;
+    }
 }

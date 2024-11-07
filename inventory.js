@@ -10,7 +10,13 @@ let selectedSlot = null;
 const inventorySlotListeners = {};
 export function update_inventory() {
 
-    let inventory_section = document.getElementById('inventory_section');
+    // Reset elements
+    let e_tab_player_inventory = document.getElementById('tab_player_inventory');
+    if (e_tab_player_inventory) {
+        e_tab_player_inventory.innerHTML = '';
+    }
+
+/*    let inventory_section = document.getElementById('inventory_section');
     let inventory_section_container = document.getElementById('inventory_section_container');
 
     if (!trackingData[0].t_inventory_section) {
@@ -21,7 +27,7 @@ export function update_inventory() {
         // Clear section data
         if (inventory_section_container) {
             inventory_section_container.innerHTML = '';
-        }
+        }*/
     
         // Clear all previous event listeners first
         Object.keys(inventorySlotListeners).forEach(slot_id => {
@@ -40,7 +46,8 @@ export function update_inventory() {
         let inv_parent = document.createElement('div');
         inv_parent.classList.add('inv_parent');
         inv_parent.id = 'inventory_parent';
-        inventory_section_container.appendChild(inv_parent);
+        // new
+        e_tab_player_inventory.appendChild(inv_parent);
         
         savedInventorySlots.forEach((slot_data, index)  => {
         
@@ -102,7 +109,7 @@ export function update_inventory() {
             updateLootCount('BASIC_GLOVES', 1);
             savedInventory[0].setup = true;
         }
-    } // END t_inventory_section
+    //} // END t_inventory_section
 }
 
 // Function to remove the event listener by slot_id
@@ -659,7 +666,6 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                             // Swap new iten with equipment slot item
                             equip_slot.equipped = item.id;
                             update_inventory();
-                            ch.update_character();
                             return;
                         }
 
@@ -673,7 +679,6 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                             empty_equip_slot.id = item.slot;
                             //console.log('check ids: ... equipped: ' + current_empty.equipped + '/ id: ' + current_empty.id)
                             update_inventory();
-                            ch.update_character();
                             //console.log(equip_slot);
                             return;
                         }

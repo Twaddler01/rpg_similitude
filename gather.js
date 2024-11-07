@@ -6,48 +6,18 @@ import { create_el, create_bar_elements } from './functions.js';
 
 export function update_gather() {
     
-    let gather_section = document.getElementById('gather_section');
-    let gather_container = document.getElementById('gather_container');
-    // Insert new divs before character_section
-    
-    //let character_section = document.getElementById('character_section');
-    let new_section = document.getElementById('new_section');
-
-    if (!gather_section) {
-        gather_section = document.createElement('div');
-        
-        
-        new_section.parentNode.insertBefore(gather_section, new_section);
-        //character_section.parentNode.insertBefore(gather_section, character_section);
-
-        gather_section.id = 'gather_section';
-        gather_section.classList.add('h1_yellow_font')
-        gather_section.innerHTML = 'Gather Section <span class="normal">[ SHOW ]</span>';
-        gather_section.addEventListener('click', () => {
-            // note: add to add_section_clicks() if needed to run function initially
-            toggle_section('gather');
-        });
-    }
+    let e_tab_player_gather = document.getElementById('tab_player_gather');
 
     // Clear any existing elements
-    if (gather_container) {
-        gather_container.innerHTML = '';
-    // Create container
-    } else {
-        gather_container = document.createElement('div');
-        
-        //character_section.parentNode.insertBefore(gather_container, character_section);
-        new_section.parentNode.insertBefore(gather_container, new_section);
-
-        gather_container.id = 'gather_container';
-        gather_container.classList.add('location_box_style');
+    if (e_tab_player_gather) {
+        e_tab_player_gather.innerHTML = '';
     }
 
-    // On toggle, load toggled action
-    if (trackingData[0].t_gather_section) {
-        let gather_messages_div = create_el('gather_messages_div', 'div', gather_container);
+
+
+        let gather_messages_div = create_el('gather_messages_div', 'div', e_tab_player_gather);
         gather_messages_div.classList.add('normal');
-        create_el('new_gather', 'div', gather_container);
+        create_el('new_gather', 'div', e_tab_player_gather);
         
         let saveData_gatherData = saveData[5].gatherData;
         gatherData.forEach(gather => {
@@ -93,7 +63,7 @@ export function update_gather() {
             
             function load_gather() {
 
-                let gather_ready_container = create_el('gather_ready_container', 'div', gather_container);
+                let gather_ready_container = create_el('gather_ready_container', 'div', e_tab_player_gather);
                 
                 // Skill label and XP bar
                 let gather_label = create_el('gather_label', 'div', gather_ready_container);
@@ -153,7 +123,7 @@ export function update_gather() {
                             let d_saved_gatherData_inventory = saved_gatherData.inventory;
                             let gather_inventory = d_saved_gatherData_inventory[index];
                             
-                            let gather_row = create_el('gather_row', 'div', gather_container);
+                            let gather_row = create_el('gather_row', 'div', e_tab_player_gather);
                             
                             let gather_table = create_el('gather_table', 'table', gather_row);
                             gather_table.style.width = '100%';
@@ -252,5 +222,4 @@ export function update_gather() {
                 }
             }
         });
-    }
 }

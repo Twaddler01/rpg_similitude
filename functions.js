@@ -4,7 +4,7 @@ import { elementsData, equipmentElements, inventoryElements, itemData, locations
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
-import { update_battleStats } from './equipment.js';
+import { update_battleStats, fetch_playerStats } from './equipment.js';
 
 // Reset saveData to defaults
 export async function clearSaveData() {
@@ -275,28 +275,21 @@ export function first_run() {
 
 export function update_locations() {
 
-    // Main containers
-    const location_container = document.getElementById('location_container');
-    let e_battle_section = document.getElementById('battle_section');
-
-    // Clear any existing elements
-    // Add title
-    if (location_container) {
-        location_container.innerHTML = '<b>CHOOSE BATTLE LOCATION:<p></p></b>';
-    }
-    
-    if (!trackingData[0].t_battle_section) {
-        // Event listener
-        location_container.style.display = 'none';
-        if (!e_battle_section.listenerAdded) {
-            e_battle_section.addEventListener('click', () => {
-                gf.toggle_section('battle');
-                e_battle_section.listenerAdded = true;
-            });
-        }
+    let e_tab_player_battle = document.getElementById('tab_player_battle');
+    if (e_tab_player_battle) {
+        e_tab_player_battle.innerHTML = '';
     }
 
-    // Update array data
+    // For choosing locations
+    create_el('location_container', 'div', e_tab_player_battle);
+    location_container.classList.add('location_box_style');
+    location_container.innerHTML = '<b>CHOOSE BATTLE LOCATION:<p></p></b>';
+
+    // Once battle starts
+    create_el('battle_ui_container', 'div', e_tab_player_battle);
+    battle_ui_container.style.backgroundColor = 'black';
+
+    // Update location array data
     for (let i = 0; i < locationsData.length; i++) {
     
         if (saveData[0] && saveData[0].killsData && saveData[0].killsData[i]) {
@@ -717,27 +710,7 @@ export function toggle_combat_status() {
         player_combat_status.style.display = 'block';
         player_battle_status_bars.style.border = 'solid 5px red';
         enemy_battle_status_bars.style.border = 'solid 5px red';
-
-// WIP: Hide all other elements completely?
-// create a floating combat div?
-// possible tabbing?
-
-        // Close all sections when in combat
-        if (trackingData[0].t_gather_section) {
-            gf.toggle_section('gather');
-        }
-        if (trackingData[0].t_character_stats_section) {
-            gf.toggle_section('stats');
-        }
-        if (!trackingData[0].t_character_section) {
-            gf.toggle_section('character');
-        }
-        if (trackingData[0].t_inventory_section) {
-            gf.toggle_section('inventory');
-        }
-        
         playerCombat.in_combat = true;
-        
         return;
     }
 }
@@ -798,7 +771,7 @@ export function update_xp() {
         e_experience_percent.innerHTML = fill_amt;
         e_experience_to_level.innerHTML = d_player_character.char_exp_to_level;
         // Update stats from level increase
-        ch.update_character();
+        //ch.update_character();
     }
 }
 
@@ -832,8 +805,14 @@ export function start_battle() {
     let d_player_character = saveData[1].savedCharacterData[0];
     let playerStats = characterData.find(d => d.id === 'player_stats');
 
+    fetch_playerStats('new');
+
     // Main battle container
-    let battle_section_container = document.getElementById('battle_section_container');
+    let battle_section_container = document.getElementById('tab_player_battle');
+
+//// ****
+// tab_player_battle
+    
 
     // All battle specific elements
     create_el('all_battle_ui_elements', 'div', battle_section_container);
@@ -1074,6 +1053,7 @@ export function start_battle() {
     //console.log(encounter);
     //console.log(random_enemy);
     if (encounter && random_enemy) {
+
         create_el('enemy_name', 'span', 'enemy_name_level');
         enemy_name.innerHTML = random_enemy.lbl;
         enemy_name.style.display = 'inline-block';
@@ -1235,29 +1215,31 @@ export function attack_box_button(elementId, enemy, encounter) {
     }
 }
 
-export const enemyStats = [];
-
 export function player_attack(enemy, encounter) {
 
     let playerStats = characterData.find(d => d.id === 'player_stats');
-    
+
     let d_player_character = saveData[1].savedCharacterData[0];
     let current_char_level = d_player_character.char_level;
 
 // Main function call
-let fetch_battleStats = update_battleStats(current_char_level, saveData[3].equippedData, enemy.lvl);
+let fetch_battleStats = update_battleStats(enemy.lvl);
 // Function methods
 let hitChance = fetch_battleStats.calc_hitChance();
 let critChance = fetch_battleStats.calc_meleeCriticalStrikeChance();
 let [attack_min, attack_max] = fetch_battleStats.calc_meleeAttack();
 let dmg_mit_armor = fetch_battleStats.calc_armorMitigation();
+
+// Future work
 let resource_melee = fetch_battleStats.calc_resource_melee();
+// Not needed here ?
 let total_health = fetch_battleStats.calc_totalHealth();
 
 // For use below
 let missChance = Math.round((1 - hitChance) * 1000) / 1000;
 let noCritChance = Math.round((1 - critChance) * 1000) / 1000;
 
+/*
 console.log('missChance: ' + missChance);
 console.log('noCritChance: ' + noCritChance);
 console.log('attack_min: ' + attack_min);
@@ -1265,36 +1247,36 @@ console.log('attack_max: ' + attack_max);
 console.log('dmg_mit_armor: ' + dmg_mit_armor);
 console.log('resource_melee: ' + resource_melee);
 console.log('total_health: ' + total_health);
+*/
 
-    //console.log(playerStats);
-    //console.log(enemy);
-    //console.log(encounter);
+//console.log(playerStats);
+//console.log(enemy);
+//console.log(encounter);
 
 // PLAYER TURN
 
     // While enemy is alive
     if (!enemy.dead) {
 
+//// WIP ****
 // STAT: Hit chance
         // Generate a random number to determine if the attack misses (10% chance)
         let randomMissChance = Math.random();
-        let player_miss_chance = 1 - (playerStats.total_hit_chance / 100);
         let turn_player_damage = 0;
         let turn_player_critical = false;
 
 // STAT: turn_player_damage
-        if (randomMissChance < player_miss_chance) {
+        if (randomMissChance < missChance) {
         // Attack missed
             //console.log('Attack missed...');
             turn_player_damage = 0;
         } else {
         // Attack hit
-            turn_player_damage = randomize(playerStats.pwr_weapon_min, playerStats.pwr_weapon_max, 0.1);
+            turn_player_damage = randomize(attack_min, attack_max, 0.1);
 
 // STAT: turn_player_critical
-            let player_attack_no_crit = 1 - (playerStats.total_crit_chance / 100);
             let randomCritChance = Math.random();
-            if (randomCritChance < player_attack_no_crit) {
+            if (randomCritChance < noCritChance) {
                 turn_player_critical = false;
             } else {
             // Critical hit
@@ -1320,8 +1302,7 @@ console.log('total_health: ' + total_health);
         } else {
             turn_enemy_damage = randomize(encounter.enemyDmg_min, encounter.enemyDmg_max, 0.1);
             // Player damage mitigation
-            let player_armor_reduct = 1 - (playerStats.total_armor_effect / 100);
-            turn_enemy_damage *= player_armor_reduct;
+            turn_enemy_damage *= dmg_mit_armor;
             //console.log(player_armor_reduct);
             turn_enemy_damage = Math.round(turn_enemy_damage * 10) / 10;
         }
@@ -1485,9 +1466,10 @@ console.log('total_health: ' + total_health);
                         // Reset player & elements
                         playerStats.dead = false;
                         playerStats.cur_health = playerStats.max_health;
-                        if (playerCombat.in_combat) {
+                        // WIP global to hide elements while player is dead/reviving
+                        /*if (playerCombat.in_combat) {
                             playerCombat.in_combat = false;
-                        }
+                        }*/
                         // Reset battle/location elements
                         reset_battle();
                     }

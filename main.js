@@ -165,10 +165,10 @@ function start_game() {
         f.first_run();
         //ch.update_equipment();
         //ch.update_character_stats(true);
-        f.update_locations();
-        inv.update_inventory();
+        //f.update_locations();
+        //inv.update_inventory();
         //gf.add_section_clicks();
-        g.update_gather();
+        //g.update_gather();
     }
     
     async function load_starting_elements_async() {
@@ -336,15 +336,18 @@ new_content.innerHTML = `
   <div class="tab-container">
     <div class="tab" onclick="showTabContent(1)">EQUIPMENT</div>
     <div class="tab" onclick="showTabContent(2)">STATS</div>
-    <div class="tab" onclick="showTabContent(3)">Tab 3</div>
-    <div class="tab" onclick="showTabContent(4)">Tab 4</div>
-    <div class="tab" onclick="showTabContent(5)">Tab 5</div>
+    <div class="tab" onclick="showTabContent(3)">INVENTORY</div>
+    <div class="tab" onclick="showTabContent(4)">BATTLE</div>
+    <div class="tab" onclick="showTabContent(5)">GATHER</div>
     <div class="tab" onclick="showTabContent(6)">Tab 6</div>
   </div>
 </div>
   <div id="content-container">
       <div id="tab_player_equipment" class="location_box_style"></div>
       <div id="tab_player_stats" class="location_box_style"></div>
+      <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
+      <div id="tab_player_battle"></div>
+      <div id="tab_player_gather" class="location_box_style"></div>
 
   </div>
 `;
@@ -390,7 +393,31 @@ window.showTabContent = function(tabNumber) {
     contentContainer.appendChild(tab2Content);
     // Load character stats
     e.update_stats();
-  } else {
+  } else if (tabNumber === 3) {
+    const tab3Content = document.createElement("div");
+    tab3Content.innerHTML = `
+      <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
+    `;
+    contentContainer.appendChild(tab3Content);
+    // Load inventory
+    inv.update_inventory();
+  } else if (tabNumber === 4) {
+    const tab4Content = document.createElement("div");
+    tab4Content.innerHTML = `
+      <div id="tab_player_battle"></div>
+    `;
+    contentContainer.appendChild(tab4Content);
+    // Load battle/location elements
+    f.update_locations();
+  } else if (tabNumber === 5) {
+    const tab5Content = document.createElement("div");
+    tab5Content.innerHTML = `
+      <div id="tab_player_gather" class="location_box_style"></div>
+    `;
+    contentContainer.appendChild(tab5Content);
+    // Load gather elements
+    g.update_gather();
+} else {
     // Other tab content can be handled here if needed
     const otherContent = document.createElement("div");
     otherContent.textContent = `Content for Tab ${tabNumber}`;

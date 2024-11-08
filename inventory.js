@@ -473,7 +473,8 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                 create_el('max_span', 'span', 'damage_lbl');
                 max_span.innerHTML = d_dmg_max.amt;
                 
-                // 'Damage per turn (with power)'' only printed after update_equipment()
+                // Damage per turn (with power)
+                
                 create_el('damage_pwr_lbl', 'div', 'item_tooltip_div');
                 damage_pwr_lbl.classList.add('item_tooltip_armor');
                 damage_pwr_lbl.innerHTML = 'Damage Per Turn: ';

@@ -7,6 +7,8 @@ import * as ch from './character.js';
 import * as inv from './inventory.js';
 import * as g from './gather.js';
 import * as e from './equipment.js';
+import * as b from './battle.js';
+
 //`
 
 // DEBUGGING INFO
@@ -408,7 +410,7 @@ window.showTabContent = function(tabNumber) {
     `;
     contentContainer.appendChild(tab4Content);
     // Load battle/location elements
-    f.update_locations();
+    b.update_locations();
   } else if (tabNumber === 5) {
     const tab5Content = document.createElement("div");
     tab5Content.innerHTML = `

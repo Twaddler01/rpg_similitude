@@ -6,12 +6,12 @@ https://twaddler01.github.io/rpg_similitude/
 https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Identified an intermittent css error on Chrome (Mobile) that throws error when applying a css classList. This is NOT an issue when using Firefox Mobile. For now, recommend using the Firefox browser until issue can be addressed. Likely a Github server-related error since code executes error free on Chrome locally. Another workaround on mobile is listed above by using an HTTP server (running a Node.js server in Termux also works fine on my Android device).
 # BUGS
-- Need update for "damage per turn" in TT.
 
 # Updates
 11-08-2024
 - Moved relevant functions to battle.js.
 - Adjusted various parts of "next attacks" to match new format of clearing/recreating elements.
+- Updated combat status to disable all tabs while in combat or while player is dead (until revived).
 
 11-06-2024
 - Updated stats for battles using equipment.js function. Needs adjustments for balance due to armor mitigation, player damage increase, etc but seems to be working well so far.

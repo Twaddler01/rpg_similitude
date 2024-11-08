@@ -344,14 +344,13 @@ new_content.innerHTML = `
     <div class="tab" onclick="showTabContent(6)">Tab 6</div>
   </div>
 </div>
-  <div id="content-container">
-      <div id="tab_player_equipment" class="location_box_style"></div>
-      <div id="tab_player_stats" class="location_box_style"></div>
-      <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
-      <div id="tab_player_battle"></div>
-      <div id="tab_player_gather" class="location_box_style"></div>
-
-  </div>
+<div id="content-container">
+  <div id="tab_player_equipment" class="location_box_style"></div>
+  <div id="tab_player_stats" class="location_box_style"></div>
+  <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
+  <div id="tab_player_battle"></div>
+  <div id="tab_player_gather" class="location_box_style"></div>
+</div>
 `;
 
 let d_char = saveData[1].savedCharacterData[0];
@@ -410,7 +409,7 @@ window.showTabContent = function(tabNumber) {
     `;
     contentContainer.appendChild(tab4Content);
     // Load battle/location elements
-    b.update_locations();
+    b.reset_battle();
   } else if (tabNumber === 5) {
     const tab5Content = document.createElement("div");
     tab5Content.innerHTML = `
@@ -432,4 +431,36 @@ window.showTabContent = function(tabNumber) {
 // Load default tab first
 showTabContent(1);
 
+}
+
+// Temporarily change background color and disable onclick for elements with the "tab" class
+export function disableTabs() {
+  const tabs = document.querySelectorAll('.tab');
+
+  tabs.forEach((tab) => {
+    // Change background color
+    tab.style.backgroundColor = 'black';
+
+    // Temporarily store the original onclick function
+    tab.dataset.originalOnClick = tab.getAttribute('onclick');
+
+    // Disable the onclick event by removing it
+    tab.removeAttribute('onclick');
+  });
+}
+
+// Restore original background color and re-enable onclick for elements with the "tab" class
+export function restoreTabs() {
+  const tabs = document.querySelectorAll('.tab');
+
+  tabs.forEach((tab) => {
+    // Restore background color (set it to empty if you want it to revert to CSS styling)
+    tab.style.backgroundColor = '';
+
+    // Restore the onclick function
+    if (tab.dataset.originalOnClick) {
+      tab.setAttribute('onclick', tab.dataset.originalOnClick);
+      delete tab.dataset.originalOnClick;
+    }
+  });
 }

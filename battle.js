@@ -6,6 +6,7 @@ import { create_el, randomize } from './functions.js';
 import { update_battleStats } from './equipment.js';
 import { toggleElement } from './general_functions.js';
 import { updateLootCount } from './inventory.js';
+import { disableTabs, restoreTabs } from './main.js';
 
 export function fetch_playerStats(opt) {
     let playerStats = characterData.find(d => d.id === 'player_stats');
@@ -363,6 +364,8 @@ export function toggle_combat_status() {
         player_battle_status_bars.style.border = 'solid 5px #333';
         enemy_battle_status_bars.style.border = 'solid 5px #333';
         playerCombat.in_combat = false;
+        // Enable elements once out of combat
+        restoreTabs();
         return;
     }
 
@@ -373,6 +376,8 @@ export function toggle_combat_status() {
         player_battle_status_bars.style.border = 'solid 5px red';
         enemy_battle_status_bars.style.border = 'solid 5px red';
         playerCombat.in_combat = true;
+        // Disable elements while im combat
+        disableTabs();
         return;
     }
 }
@@ -439,6 +444,20 @@ export function update_xp() {
 }
 
 export function reset_battle() {
+    // Clear encounter combat and player combat
+    let encounter = null;
+    let enemy_loc = trackingData[0].loc;
+    let enemy_lvl = trackingData[0].lvl;
+    if (enemy_loc === 0) {
+        encounter = encounterData.find(e => e.id === 'beginner_0');
+    } else {
+        encounter = encounterData.find(e => e.id === 'group_lvl_' + enemy_lvl && e.loc === enemy_loc && e.lvl === enemy_lvl);
+    }
+    if (encounter && encounter.in_combat) {
+        encounter.in_combat = false;
+        let playerCombat = characterData.find(c => c.id === 'player_combat_status');
+        playerCombat.in_combat = false;
+    }
     // Clear attack flag
     trackingData[0].next_attack = false;
     // Clear combat_log flag
@@ -754,7 +773,7 @@ export function start_battle() {
 
         // Insert combat log
         let e_tab_player_battle = document.getElementById('tab_player_battle');
-        create_el('combat_log_container', 'div', e_tab_player_battle);
+        create_el('combat_log_container', 'div', all_battle_ui_elements);
     }
 
     toggleElement('h', 'new_battle_button');
@@ -1130,6 +1149,7 @@ e_locations_status.innerHTML = `You defeated <b>${enemy.lbl}</b> in <b>${trackin
 
         // WIP on player death element, reset
         if (playerStats.dead) {
+            disableTabs();
             new_div.innerHTML += `<p><span class="material-symbols-outlined">skull</span><span style="color:yellow;font-weight:bold;">&nbsp;You have died.</span></p>`;
             let e_player_turn_attack = document.getElementById('player_turn_attack');
             e_player_turn_attack.removeEventListener('click', ELHandler_player_turn_attack);
@@ -1149,10 +1169,8 @@ e_locations_status.innerHTML = `You defeated <b>${enemy.lbl}</b> in <b>${trackin
                         // Reset player & elements
                         playerStats.dead = false;
                         playerStats.cur_health = playerStats.max_health;
-                        // WIP global to hide elements while player is dead/reviving
-                        /*if (playerCombat.in_combat) {
-                            playerCombat.in_combat = false;
-                        }*/
+                        // Enable tabs again
+                        restoreTabs();
                         // Reset battle/location elements
                         reset_battle();
                     }

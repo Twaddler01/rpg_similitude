@@ -4,6 +4,7 @@ import { elementsData, equipmentElements, inventoryElements, itemData, locations
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import { create_el, add_message } from './functions.js';
+import { update_battleStats } from './equipment.js';
 
 let selectedSlot = null;
 // Create a global object to store listeners by slot_id
@@ -459,31 +460,33 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                 damage_lbl.classList.add('item_tooltip_armor');
                 // Damage per item
                 // WIP replace with calculate function
-                let d_dmg_min = item_gains.find(i => i.stat === 'dmg_min');
-                let d_dmg_max = item_gains.find(i => i.stat === 'dmg_max');
+                //let d_dmg_min = item_gains.find(i => i.stat === 'dmg_min');
+                //let d_dmg_max = item_gains.find(i => i.stat === 'dmg_max');
                 //let [base_weapon_min, base_weapon_max]  = calculate_weapon_damage(1, 0);
                 //console.log(base_weapon_min + ' : ' + base_weapon_max);
-                
+                const fetch_battleStats = update_battleStats();
+                const [f_base_min, f_base_max] = fetch_battleStats.base_attacks();
+
                 // Weapon base damage
                 damage_lbl.innerHTML = 'Base damage: ';
                 create_el('min_span', 'span', 'damage_lbl');
-                min_span.innerHTML = d_dmg_min.amt;
+                min_span.innerHTML = f_base_min;
                 create_el('sep', 'span', 'damage_lbl');
                 sep.innerHTML = '&nbsp;-&nbsp;';
                 create_el('max_span', 'span', 'damage_lbl');
-                max_span.innerHTML = d_dmg_max.amt;
+                max_span.innerHTML = f_base_max;
                 
                 // Damage per turn (with power)
-                
+                const [attack_min, attack_max] = fetch_battleStats.calc_meleeAttack();
                 create_el('damage_pwr_lbl', 'div', 'item_tooltip_div');
                 damage_pwr_lbl.classList.add('item_tooltip_armor');
                 damage_pwr_lbl.innerHTML = 'Damage Per Turn: ';
                 create_el('min_span_pwr', 'span', 'damage_pwr_lbl');
-                min_span_pwr.innerHTML = trackingData[0].pwr_weapon_min;
+                min_span_pwr.innerHTML = attack_min;
                 create_el('sep2', 'span', 'damage_pwr_lbl');
                 sep2.innerHTML = '&nbsp;-&nbsp;';
                 create_el('max_span_pwr', 'span', 'damage_pwr_lbl');
-                max_span_pwr.innerHTML = trackingData[0].pwr_weapon_max;
+                max_span_pwr.innerHTML = attack_max;
             }
         });
     }

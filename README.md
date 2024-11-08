@@ -8,6 +8,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 # BUGS
 
 # Updates
+11-08-2024
+- Moved relevant functions to battle.js.
+- Adjusted "next attacks" to match new format of clearing/recreating elements.
+
 11-06-2024
 - Updated stats for battles using equipment.js function. Needs adjustments for balance due to armor mitigation, player damage increase, etc but seems to be working well so far.
 - Added all other sections to tabs. Still need to move messages above tabs, but not sure how this design will go as of yet.

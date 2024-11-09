@@ -12,6 +12,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Moved relevant functions to battle.js.
 - Adjusted various parts of "next attacks" to match new format of clearing/recreating elements.
 - Updated combat status to disable all tabs while in combat or while player is dead (until revived).
+- Added a messages display area and corresponding function and array. Only player level-ups are integrated at this time.
 
 11-06-2024
 - Updated stats for battles using equipment.js function. Needs adjustments for balance due to armor mitigation, player damage increase, etc but seems to be working well so far.

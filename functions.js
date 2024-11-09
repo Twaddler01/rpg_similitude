@@ -708,44 +708,34 @@ export function create_bar_elements(id, parentId, textInside, valueTotal, barCol
 }
 
 let message_cnt = 0;
+
 export function add_message(message, color) {
+    const stored_messages = saveData[6].storedMessages;
 
-    let stored_messages = saveData[6].storedMessages;
-
-    // Increment the message count
-    message_cnt++;
-
-    // Default color is white
-    if (!color) {
-        color = 'white';
-    }
+    // Default color to white if not provided
+    color = color || 'white';
 
     // Get the container where messages are displayed
-    let messages_container = document.getElementById('game_messages');
-    let currentDateTime = new Date().toLocaleString();
+    const messages_container = document.getElementById('game_messages');
+    const currentDateTime = new Date().toLocaleString();
 
-    // Store the raw data (message, timestamp, color)
-    let newMessageData = {
+    // Prepare the new message data with timestamp, color, and message text
+    const newMessageData = {
         message: message,
         color: color,
         timestamp: currentDateTime
     };
 
-    // If the container is showing 'No messages.', initialize it
-    if (messages_container.innerHTML === 'No messages.') {
-        messages_container.innerHTML = formatMessage(newMessageData);
-    } else {
-        // Prepend the new message data to the stored_messages array
-        stored_messages.unshift(newMessageData);
+    // Append the new message data to the beginning of stored_messages
+    stored_messages.unshift(newMessageData);
 
-        // If we have more than 20 messages, remove the oldest one
-        if (stored_messages.length > 20) {
-            stored_messages.pop(); // Removes the last message (oldest)
-        }
-
-        // Update the message container with the last 20 messages
-        messages_container.innerHTML = stored_messages.map(formatMessage).join('<br>');
+    // Trim stored_messages to the most recent 20 messages if needed
+    if (stored_messages.length > 20) {
+        stored_messages.pop(); // Removes the oldest message
     }
+
+    // Format each message and append it to the container (newest on top)
+    messages_container.innerHTML = stored_messages.map(formatMessage).join('<br>');
 }
 
 // Helper function to format a message as HTML

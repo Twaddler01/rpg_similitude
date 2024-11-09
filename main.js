@@ -332,7 +332,7 @@ new_content.innerHTML = `
 <div style="position: relative;">
   <div id="scrollable-container">
     <div id="game_messages_lbl"><b>MESSAGES</b></div>
-      <div id="game_messages">No messages.</div>
+      <div id="game_messages">Welcome to RPG Similitude!</div>
     </div>
   <div id="scroll-gradient"></div>
 </div>

@@ -585,9 +585,6 @@ export function toggle_section(section) {
                 e_inventory_section.innerHTML = 'Inventory Section <span class="normal">[ HIDE ]</span>';
             }
         }
-    /*} else {
-        add_message('You are in combat. You must finish your current battle first.');
-    }*/
 }
 
 export function add_section_clicks() {

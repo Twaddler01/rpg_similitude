@@ -1,5 +1,4 @@
 // battle.js
-// need to move all other battle functions over from functions.js
 
 import { characterData, saveData, locationsData, trackingData, encounterData, itemData } from './data.js';
 import { create_el, randomize } from './functions.js';
@@ -7,6 +6,7 @@ import { update_battleStats } from './equipment.js';
 import { toggleElement } from './general_functions.js';
 import { updateLootCount } from './inventory.js';
 import { disableTabs, restoreTabs } from './main.js';
+import { add_message } from './functions.js';
 
 export function fetch_playerStats(opt) {
     let playerStats = characterData.find(d => d.id === 'player_stats');
@@ -717,11 +717,7 @@ export function start_battle() {
         
         //// WIP more array data needed
     }
-    
-    
-    //console.log('encounter/enemy?\n');
-    //console.log(encounter);
-    //console.log(random_enemy);
+
     if (encounter && random_enemy) {
 
         create_el('enemy_name', 'span', 'enemy_name_level');
@@ -932,7 +928,6 @@ console.log('total_health: ' + total_health);
     // While enemy is alive
     if (!enemy.dead) {
 
-//// WIP ****
 // STAT: Hit chance
         // Generate a random number to determine if the attack misses (10% chance)
         let randomMissChance = Math.random();
@@ -1033,7 +1028,7 @@ console.log('total_health: ' + total_health);
         if (turn_enemy_damage === 0 && !enemy.dead) {
             new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#F7EB00;">&nbsp;Level ' + enemy.lvl + ' enemy ' + enemy.lbl + '\'s attack against you missed!</span></p>';
         } else if (!enemy.dead) {
-// need enemy crit, special abilities
+// WIP need enemy crit, special abilities
             new_div.innerHTML += '<p><span class="material-symbols-outlined">heart_minus</span><span style="color:#FF9393;">&nbsp;Level ' + enemy.lvl + ' enemy ' + enemy.lbl + '\'s physical attack inflicts ' + turn_enemy_damage + ' damage to you.</span></p>';
         }
 
@@ -1052,6 +1047,7 @@ console.log('total_health: ' + total_health);
             
             if (d_player_character.char_level > 1 && d_player_character.char_level !== current_char_level) {
                 new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;Congratulations! You have reached level ' + d_player_character.char_level + '!';
+                add_message('Congratulations! You have reached level ' + d_player_character.char_level + '!');
             }
 
             // Check if any drops are present
@@ -1106,48 +1102,29 @@ console.log('total_health: ' + total_health);
     
             // reset combat log
             encounter.log_cnt = 0;
-            
-
-
 
 // AUTO PREPARE NEXT ATTACK
-// Other resets are performed in reset_battle()
-encounter.in_combat = false;
 
-// Reset eventListener for next attack without full element reset
-let e_player_turn_attack = document.getElementById('player_turn_attack');
-e_player_turn_attack.removeEventListener('click', ELHandler_player_turn_attack);
-
-// WIP BUG Resets combat too early
-ELHandler_player_next_turn = function() {
-    EL_player_next_turn(e_player_turn_attack);
-    
-};
-e_player_turn_attack.addEventListener('click', ELHandler_player_next_turn);
-
-toggleElement('s', 'change_location_button');
-let e_locations_status = document.getElementById('locations_status');
-e_locations_status.innerHTML = `You defeated <b>${enemy.lbl}</b> in <b>${trackingData[0].location}</b> Level <b>${trackingData[0].lvl}</b>`;
-
-
-
-
-
-/*
-            update_locations();
+            // Other resets are performed in reset_battle()
+            encounter.in_combat = false;
+            
+            // Reset eventListener for next attack without full element reset
+            let e_player_turn_attack = document.getElementById('player_turn_attack');
+            e_player_turn_attack.removeEventListener('click', ELHandler_player_turn_attack);
+            
+            // WIP BUG Resets combat too early
+            ELHandler_player_next_turn = function() {
+                EL_player_next_turn(e_player_turn_attack);
+                
+            };
+            e_player_turn_attack.addEventListener('click', ELHandler_player_next_turn);
+            
             toggleElement('s', 'change_location_button');
-            playerStats.cur_health = playerStats.max_health;
-            trackingData[0].next_attack = true;
-            trackingData[0].combat_log_created = false;
-            selectLevel(trackingData[0].loc, trackingData[0].location, trackingData[0].lvl, trackingData[0].kills);
-*/
-
-
-
+            let e_locations_status = document.getElementById('locations_status');
+            e_locations_status.innerHTML = `You defeated <b>${enemy.lbl}</b> in <b>${trackingData[0].location}</b> Level <b>${trackingData[0].lvl}</b>`;
 
         } // end if (enemy.dead)
 
-        // WIP on player death element, reset
         if (playerStats.dead) {
             disableTabs();
             new_div.innerHTML += `<p><span class="material-symbols-outlined">skull</span><span style="color:yellow;font-weight:bold;">&nbsp;You have died.</span></p>`;
@@ -1184,17 +1161,11 @@ e_locations_status.innerHTML = `You defeated <b>${enemy.lbl}</b> in <b>${trackin
 
 // Function for next turn USE ATTACK
 function EL_player_next_turn(e_player_turn_attack) {
-    console.log('EL_player_next_turn');
     toggleElement('h', 'change_location_button');
-    
     trackingData[0].combat_log_created = false;
-
-    //e_player_turn_attack.removeEventListener('click', ELHandler_player_next_turn);
     update_locations();
     trackingData[0].next_attack = true;
     selectLevel(trackingData[0].loc, trackingData[0].location, trackingData[0].lvl, trackingData[0].kills);
-
-
 }
 
 export function add_loot(enemy, count, gold_min, gold_max) {

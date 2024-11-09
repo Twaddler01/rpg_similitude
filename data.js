@@ -621,11 +621,11 @@ export var saveData = [
         { id: 'ring2', equipped: null },
         { id: 'mh', equipped: 'MH_TEST_DAGGER' },
         { id: 'oh', equipped: null },
-        ] },
+    ] },
     // saveData[4].currencyData[0]
     { currencyData: [
         { id: 'GOLD', cnt: 800, name: 'Gold' },
-        ] },
+    ] },
     // saveData[5].gatherData
     { gatherData: [
         { id: 'herbgather', learned: false, lvl: 1, xp_amt: 0,
@@ -644,13 +644,15 @@ export var saveData = [
         ] },
         { id: 'oremine', learned: false, lvl: 1, xp_amt: 0, 
         inventory: [ 
-            { id: 'copper', cnt: 0 }
+        { id: 'copper', cnt: 0 }
         ] },
         { id: 'tailor', learned: false, lvl: 1, xp_amt: 0, 
         inventory: [ 
-            { id: 'basic_cloth', cnt: 0 }
-        ] }
-    ] }
+        { id: 'basic_cloth', cnt: 0 }
+        ] },
+    ] },
+    // saveData[6].storedMessages
+    { storedMessages: [] }
 ];
 
 // Matches indices of saveData[5].gatherData

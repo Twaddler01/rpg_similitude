@@ -31,7 +31,6 @@ function new_game() {
     
     filteredEl.forEach(el => {
         if (el.id) {
-            //console.log(el.id);
             el.remove();
         }
     });
@@ -311,12 +310,7 @@ function loaded_DOM() {
     });
 }
 
-
-
-
-
-
-
+// Setup tab layout
 function layout_loadTabs() {
 
 // Find the title_section element
@@ -334,6 +328,15 @@ new_content.innerHTML = `
   <div id="playerInfo_name"><b>noname</b></div>
   <div id="playerInfo_level">Level nolevel norace noclass</div>
 </div>
+
+<div style="position: relative;">
+  <div id="scrollable-container">
+    <div id="game_messages_lbl"><b>MESSAGES</b></div>
+      <div id="game_messages">No messages.</div>
+    </div>
+  <div id="scroll-gradient"></div>
+</div>
+
 <div class="tab-wrapper">
   <div class="tab-container">
     <div class="tab" onclick="showTabContent(1)">EQUIPMENT</div>
@@ -353,11 +356,26 @@ new_content.innerHTML = `
 </div>
 `;
 
+// Display player info
 let d_char = saveData[1].savedCharacterData[0];
 let playerInfo_name = document.getElementById('playerInfo_name');
 playerInfo_name.innerHTML = '<b>' + d_char.char_name + '</b>';
 let playerInfo_level = document.getElementById('playerInfo_level');
 playerInfo_level.innerHTML = 'Level ' + d_char.char_level + '&nbsp;' + d_char.char_race + '&nbsp;' + d_char.char_class;
+
+// Message scrolling behavior
+const container = document.getElementById("scrollable-container");
+const gradient = document.getElementById("scroll-gradient");
+
+container.addEventListener("scroll", () => {
+  const isAtBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
+
+  if (isAtBottom) {
+    gradient.style.opacity = "0"; // Hide gradient when at the bottom
+  } else {
+    gradient.style.opacity = "1"; // Show gradient when scrolling up
+  }
+});
 
 // Attach showTabContent to the window to ensure global accessibility
 window.showTabContent = function(tabNumber) {

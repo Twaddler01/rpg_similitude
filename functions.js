@@ -62,11 +62,22 @@ export function create_el(newId, type, parentId, content) {
     return new_el;
 }
 
+let add_message_cnt_test = -1;
 export function first_run() {
 
     let test_section = document.getElementById('test_section');
 
-    // Function to create a button and add click functionality
+
+// test add_message()
+
+    create_el('message_test_btn', 'button', test_section);
+    message_test_btn.innerHTML = 'ADD NEW MESSAGE';
+    message_test_btn.addEventListener('click', () => {
+        add_message_cnt_test++;
+        add_message('This is message num: ' + add_message_cnt_test);
+    });
+
+// **** Function to create a button and add click functionality
     function add_test_action(name, buttonTxt, action) {
         const button = create_el(name, 'button', test_section); // Assuming create_el creates & returns the element
         button.innerHTML = buttonTxt;
@@ -696,9 +707,48 @@ export function create_bar_elements(id, parentId, textInside, valueTotal, barCol
     };
 }
 
-export function add_message(message) {
-    let messages_section_container = document.getElementById('messages_section_container');
+let message_cnt = 0;
+export function add_message(message, color) {
+
+    let stored_messages = saveData[6].storedMessages;
+
+    // Increment the message count
+    message_cnt++;
+
+    // Default color is white
+    if (!color) {
+        color = 'white';
+    }
+
+    // Get the container where messages are displayed
+    let messages_container = document.getElementById('game_messages');
     let currentDateTime = new Date().toLocaleString();
-    messages_section_container.innerHTML = '' ? '<br>' : '';
-    messages_section_container.innerHTML += `<span style="color: gray;">(${currentDateTime})</span><br><span style="color: red;">${message}</span>`;
+
+    // Store the raw data (message, timestamp, color)
+    let newMessageData = {
+        message: message,
+        color: color,
+        timestamp: currentDateTime
+    };
+
+    // If the container is showing 'No messages.', initialize it
+    if (messages_container.innerHTML === 'No messages.') {
+        messages_container.innerHTML = formatMessage(newMessageData);
+    } else {
+        // Prepend the new message data to the stored_messages array
+        stored_messages.unshift(newMessageData);
+
+        // If we have more than 20 messages, remove the oldest one
+        if (stored_messages.length > 20) {
+            stored_messages.pop(); // Removes the last message (oldest)
+        }
+
+        // Update the message container with the last 20 messages
+        messages_container.innerHTML = stored_messages.map(formatMessage).join('<br>');
+    }
+}
+
+// Helper function to format a message as HTML
+function formatMessage(messageData) {
+    return `<span style="font-size:10px; color:gray; vertical-align:bottom;">(${messageData.timestamp})</span><br><span style="color:${messageData.color};">${messageData.message}</span>`;
 }

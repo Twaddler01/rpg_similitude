@@ -18,17 +18,21 @@ img {
 #scrollable-container {
   position: relative;
   overflow-y: auto;
-  height: 80px;
+  height: 75px;
+  border-left: 1px solid #ccc;
   border-top: 1px solid #ccc;
+  border-right: 1px solid #ccc;
   padding: 5px;
+  padding-bottom: 20px; /* Add padding to prevent content from overlapping gradient */
+  box-sizing: border-box; /* Ensures padding and border are included in the element's width/height */
   background: blue;
 }
 
 #scroll-gradient {
   position: absolute;
-  bottom: 0;  /* Fix the gradient at the bottom of the container */
-  left: 0;
-  width: 100%;
+  bottom: 1px; /* Offset to sit just above the container's bottom border */
+  left: 1px;   /* Offset for left border */
+  right: 1px;  /* Offset for right border */
   height: 20px; /* Height of the gradient */
   background: linear-gradient(to top, rgba(0, 0, 255, 0.8), transparent);
   pointer-events: none; /* Allow clicks to pass through the gradient */

@@ -54,6 +54,7 @@ export function update_character() {
     
     // Equipment image with slots around image
     create_el('char_equipment_container', 'div', e_tab_player_equipment);
+    char_equipment_container.style.height = '700px';
     create_el('div_top_box', 'div', 'char_equipment_container');
     div_top_box.classList.add('top-box');
     create_el('equip_slot_head', 'div', 'div_top_box');

@@ -17,6 +17,7 @@ gf.logExport();
 gf.htmlExport();
 
 // Add array updates
+f.load_items();
 init_gatherData();
 init_trackingData();
 f.setup_encounters(1);
@@ -37,7 +38,7 @@ function new_game() {
 
 // Title
 f.create_el('title_section', 'div', 'body');
-title_section.classList.add('h1');
+title_section.style.fontSize = '20px';
 title_section.innerHTML = 'RPG Similitude: Just another RPG.';
 
 f.create_el('new_character_container', 'div', 'body');
@@ -163,13 +164,7 @@ function start_game() {
     gf.add_allElements();
 
     function load_starting_elements() {
-        f.first_run();
-        //ch.update_equipment();
-        //ch.update_character_stats(true);
-        //f.update_locations();
-        //inv.update_inventory();
-        //gf.add_section_clicks();
-        //g.update_gather();
+        //f.add_test_section();
     }
     
     async function load_starting_elements_async() {
@@ -192,26 +187,26 @@ function start_game() {
     }
 }
 
+// New Game WIP needs to be moved
 let test_section = document.getElementById('test_section');
-
-// WIP new game
-let new_game_btn = document.createElement('button');
-test_section.appendChild(new_game_btn);
-new_game_btn.innerHTML = 'new_game()';
-new_game_btn.addEventListener('click', () => {
-    // Reset trackingData
-    trackingData.length = 0;
-    init_trackingData();
-    // Flag as second run since doc loaded
-    trackingData[0].init_run = false;
-
-    async function new_game_async() {
-        await f.clearSaveData();
-        new_game();
-    }
-    new_game_async();
-});
-
+if (test_section) {
+    let new_game_btn = document.createElement('button');
+    test_section.appendChild(new_game_btn);
+    new_game_btn.innerHTML = 'new_game()';
+    new_game_btn.addEventListener('click', () => {
+        // Reset trackingData
+        trackingData.length = 0;
+        init_trackingData();
+        // Flag as second run since doc loaded
+        trackingData[0].init_run = false;
+    
+        async function new_game_async() {
+            await f.clearSaveData();
+            new_game();
+        }
+        new_game_async();
+    });
+}
 /*f.create_el('test_bar_btn', 'button', test_section);
 test_bar_btn.innerHTML = 'BAR TEST';
 let skillBar = f.create_bar_elements('test_bar_0', 'test_section', 'AMOUNT', 200, 'green');
@@ -324,17 +319,17 @@ let new_content = document.createElement('div');
 new_content.id = 'new_content';
 title_section.insertAdjacentElement('afterend', new_content);
 new_content.innerHTML = `
-<div style="border-top: 1px solid #ccc; padding: 5px;">
-  <div id="playerInfo_name"><b>noname</b></div>
-  <div id="playerInfo_level">Level nolevel norace noclass</div>
-</div>
-
 <div style="position: relative;">
   <div id="scrollable-container">
     <div id="game_messages_lbl"><b>MESSAGES</b></div>
       <div id="game_messages">Welcome to RPG Similitude!</div>
     </div>
   <div id="scroll-gradient"></div>
+</div>
+
+<div style="border: 1px solid #ccc; padding: 5px;">
+  <div id="playerInfo_name"><b>noname</b></div>
+  <div id="playerInfo_level">Level nolevel norace noclass</div>
 </div>
 
 <div class="tab-wrapper">

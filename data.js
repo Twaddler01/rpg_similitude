@@ -2,120 +2,14 @@
 
 // for element creation
 export const elementsData = [
-    // section_cat: true -> section-attached elements only
-    // fetch_cat: true -> get parent from DOM only (child elements)
-    // hidden: true -> to hide immediately
-    // css_class: '' -> add css class to div
-    // css_class2: '' -> add on a 2nd css class
-    // on_click: true -> add click event to id
-
-    // section
-    { id: 'messages_section',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    content: 'Game Messages',
-    css_class: 'h1_yellow_font',
-    },
-        // attach (messages_section)
-        { id: 'messages_section_container',
-        section_cat: true,
-        fetch_cat: true,
-        type: 'div',
-        parent_el: 'messages_section',
-        css_class: 'location_box_style',
-        },
-    // character equipment section
-    /*{ id: 'character_section',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    content: 'Character Section <span class="normal">[ SHOW ]</span>',
-    css_class: 'h1_yellow_font',
-    on_click: true,
-    },
-    { id: 'character_container',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    css_class: 'location_box_style',
-    },*/
-    // character stats section
-    /*{ id: 'character_stats_section',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    content: 'Character Stats <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>',
-    css_class: 'h1_yellow_font',
-    on_click: true,
-    },
-    { id: 'character_stats_container',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    css_class: 'location_box_style',
-    },*/
-    // battle section
-    /*{ id: 'battle_section',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    content: 'Battle Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>',
-    css_class: 'h1_yellow_font',
-    }, */
-    { id: 'battle_section_container',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    },
-        // attach (battle_section_container)
-        { id: 'location_container',
-        section_cat: true,
-        fetch_cat: true,
-        type: 'div',
-        parent_el: 'battle_section_container',
-        css_class: 'location_box_style',
-        },
-        // attach (location_container)
-        // update_locations() -> 'attack_box_button'
-        // update_locations() -> 'change_location_button'
-        // attach (battle_section_container)
-        { id: 'battle_ui_container',
-        section_cat: true,
-        fetch_cat: true,
-        type: 'div',
-        parent_el: 'battle_section_container',
-        },
-    // imventory section
-    /*{ id: 'inventory_section',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    content: 'Inventory Section <span class="normal">[ SHOW ]</span><div id="space" style="background-color:#333;width:100%;padding:5px"></div>',
-    css_class: 'h1_yellow_font',
-    },
-    { id: 'inventory_section_container',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    },*/
-    // section
-    /*{ id: 'new_section',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    content: 'NEW Section',
-    css_class: 'h1_yellow_font',
-    },*/
-
-    // section
-    { id: 'test_section',
+    // test section
+/*    { id: 'test_section',
     section_cat: true,
     type: 'div',
     parent_el: 'body',
     content: 'TEST Section<br>',
     css_class: 'h1_yellow_font',
-    },
+    },*/
 ];
 
 export const equipmentElements = [

@@ -88,7 +88,7 @@ export function update_locations() {
     player_turn_attack.style.display = 'none';
 
     const message = document.createElement('div');
-    test_section.appendChild(message);
+    location_container.appendChild(message);
     message.id = 'message';
     message.className = 'normal';
 
@@ -1264,45 +1264,4 @@ export function add_global_drop(dropId) {
             //console.log(i + 1);
         }
     }
-    
 }
-
-// Add items to encounterData global drops
-function inject_items_to_global_drop(arrayId, dropId) {
-    let globalDrops = encounterData.filter(e => e.cat === 'global_drops');
-    let drop_id = globalDrops.find(d => d.id === dropId);
-    let drops = drop_id.drops;
-    // Use as object for key-value pairs
-    let storedData = {};
-
-    arrayId.forEach(item => {
-        storedData[item.id] = 0.04;
-    });
-    
-    Object.assign(drops, storedData);
-}
-
-// Load JSON item data into itemData array
-async function import_createdItems_JSON(type, filename, arrayId) {
-
-    if (type === 'item') {
-        const response = await fetch('data/' + filename);
-        const data = await response.json();
-
-        data.forEach(item => {
-            arrayId.push(item);
-        });
-        
-        return data;
-    }
-}
-
-export async function load_items() {
-    // Import JSON data to itemData
-    const d_items_starterSet = await import_createdItems_JSON('item', 'starterSet.json', itemData);
-    const d_items_basicWeapons = await import_createdItems_JSON('item', 'basicWeapons.json', itemData);
-    // Place JSON data into GLOBAL_DROP1
-    inject_items_to_global_drop(d_items_starterSet, 'GLOBAL_DROP1');
-    inject_items_to_global_drop(d_items_basicWeapons, 'GLOBAL_DROP0');
-}
-load_items();

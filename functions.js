@@ -63,18 +63,24 @@ export function create_el(newId, type, parentId, content) {
 }
 
 let add_message_cnt_test = -1;
-export function first_run() {
+export function add_test_section() {
 
-    let test_section = document.getElementById('test_section');
-
+    // Create main test_section div
+    let test_section = document.createElement('div');
+    document.body.appendChild(test_section);
+    test_section.id = 'test_section';
 
 // test add_message()
-
     create_el('message_test_btn', 'button', test_section);
     message_test_btn.innerHTML = 'ADD NEW MESSAGE';
     message_test_btn.addEventListener('click', () => {
         add_message_cnt_test++;
         add_message('This is message num: ' + add_message_cnt_test);
+
+// *** CAN BE USED AS LOG BUTTON HERE
+//console.log(itemData.length);
+//console.log(JSON.stringify(itemData, null, 2));
+
     });
 
 // **** Function to create a button and add click functionality
@@ -182,7 +188,6 @@ export function first_run() {
     });
 
 // add 1 kill instantly to selected level
-
     let selected_kill = document.createElement('button');
     test_section.appendChild(selected_kill);
     selected_kill.innerHTML = '+1 Kill to Current Level';
@@ -216,18 +221,26 @@ export function first_run() {
         //update_locations();
     });
 
-// Add loot button
+// Add loot buttons
+    function add_loot_buttons() {
+        let loot_container = document.createElement('div');
+        test_section.appendChild(loot_container);
+        loot_container.style.fontSize = '10px';
 
-    let filtered_itemData = itemData.filter(i => i.id !== 'GOLD');
-    filtered_itemData.forEach(item => {
-        let add_loot = document.createElement('button');
-        test_section.appendChild(add_loot);
-        add_loot.innerHTML = 'Add Loot:' + item.id;
-        
-        add_loot.addEventListener('click', () => {
-            inv.updateLootCount(item.id, 1);
+        let filtered_itemData = itemData.filter(i => i.id !== 'GOLD');
+        filtered_itemData.forEach(item => {
+            let add_loot = document.createElement('button');
+            loot_container.appendChild(add_loot);
+            add_loot.innerHTML = item.id;
+            add_loot.style.backgroundColor = 'yellow';
+            add_loot.addEventListener('click', () => {
+                inv.updateLootCount(item.id, 1);
+            });
         });
-    });
+    }
+    setTimeout(() => {
+        add_loot_buttons();
+    }, 2000);
     
 // Add gold button
     let add_gold = document.createElement('button');
@@ -708,7 +721,6 @@ export function create_bar_elements(id, parentId, textInside, valueTotal, barCol
 }
 
 let message_cnt = 0;
-
 export function add_message(message, color) {
     const stored_messages = saveData[6].storedMessages;
 
@@ -741,4 +753,51 @@ export function add_message(message, color) {
 // Helper function to format a message as HTML
 function formatMessage(messageData) {
     return `<span style="font-size:10px; color:gray; vertical-align:bottom;">(${messageData.timestamp})</span><br><span style="color:${messageData.color};">${messageData.message}</span>`;
+}
+
+// Load JSON item data into itemData array
+async function import_createdItems_JSON(type, filename, arrayId) {
+
+    if (type === 'item') {
+        const response = await fetch('data/' + filename);
+        const data = await response.json();
+
+        data.forEach(item => {
+            arrayId.push(item);
+        });
+        
+        return data;
+    }
+}
+
+// Add items to encounterData global drops
+function inject_items_to_global_drop(arrayId, dropId) {
+    let globalDrops = encounterData.filter(e => e.cat === 'global_drops');
+    let drop_id = globalDrops.find(d => d.id === dropId);
+    let drops = drop_id.drops;
+    // Use as object for key-value pairs
+    let storedData = {};
+
+    arrayId.forEach(item => {
+        storedData[item.id] = 0.04;
+    });
+    
+    Object.assign(drops, storedData);
+}
+
+export async function load_items() {
+    // Temporary arrays to store each JSON set individually
+    const d_items_starterSet = [];
+    const d_items_basicWeapons = [];
+
+    // Load each JSON into its respective temporary array
+    await import_createdItems_JSON('item', 'starterSet.json', d_items_starterSet);
+    await import_createdItems_JSON('item', 'basicWeapons.json', d_items_basicWeapons);
+
+    // Push items into the main itemData array
+    itemData.push(...d_items_starterSet, ...d_items_basicWeapons);
+
+    // Inject items from each set to their respective global drops
+    inject_items_to_global_drop(d_items_starterSet, 'GLOBAL_DROP1');
+    inject_items_to_global_drop(d_items_basicWeapons, 'GLOBAL_DROP0');
 }

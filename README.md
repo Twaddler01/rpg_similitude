@@ -8,6 +8,11 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 # BUGS
 
 # Updates
+11-09-2024
+- Cleaned up some elements and commented out test_section unless needed. Will be phasing out elementsData next.
+- Need a starting tab area for first load to give overview and options to create new game or load existing game.
+- An autosave feature would be beneficial to store JSON changes of saveData. Will soon test this option instead of using browser storage. Since ultimate goal is app development, will likely use Node.js soon for a server/client utilization instead.
+
 11-08-2024
 - Moved relevant functions to battle.js.
 - Adjusted various parts of "next attacks" to match new format of clearing/recreating elements.

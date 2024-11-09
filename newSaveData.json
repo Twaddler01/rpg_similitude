@@ -340,5 +340,14 @@
         ]
       }
     ]
+  },
+  {
+    "storedMessages": [
+      {
+        "message": "Welcome to RPG Similitude!",
+        "color": "white",
+        "timestamp": "The Beginning"
+      }
+    ]
   }
 ]

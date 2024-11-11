@@ -74,7 +74,7 @@ export function update_character() {
     create_el('char_equipment_image', 'img', 'char_equipment_container');
     char_equipment_image.src = 'media/char_shadow.png';
     char_equipment_image.style.height = '240px';
-    char_equipment_image.style.width = '80px';
+    char_equipment_image.style.width = '120px';
     create_el('div_side_boxes_right', 'div', 'char_equipment_container');
     div_side_boxes_right.classList.add('side-boxes', 'right');
     create_el('equip_slot_hands', 'div', 'div_side_boxes_right');

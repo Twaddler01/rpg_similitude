@@ -17,7 +17,7 @@ export async function clearSaveData() {
     });
 }
 
-function downloadSaveData() {
+export function downloadSaveData() {
     //const filteredSaveData = exportFilteredSaveData(baselineData, saveData);
     
     // Convert to JSON and create a blob for download
@@ -127,56 +127,6 @@ export function add_test_section() {
                 //console.log(el.outerHTML);
             //}
         });
-    });
-
-// import saveData from textarea
-    function resetSaveData(newArray) {
-        //try {
-            saveData.length = 0;
-            const parsedData = JSON.parse(newArray);
-            parsedData.forEach(item => saveData.push(item));
-            
-            // Reset starting inventory flag
-            let savedInventory = saveData[2].inventoryData;
-            savedInventory[0].setup = true
-            
-            
-            /*console.log('saveData successfully overwritten:', saveData);
-        } catch (error) {
-            console.error('Error parsing or overwriting saveData:', error);
-        }*/
-    }
-
-    create_el('importSaveBtn', 'button', test_section);
-    importSaveBtn.innerHTML = 'Import SaveData';
-    create_el('savedata_section', 'div', test_section);
-    
-    importSaveBtn.addEventListener('click', () => {
-        let import_save_container = document.getElementById('import_save_container');
-        if (!import_save_container) {
-            import_save_container = document.createElement('div');
-            savedata_section.appendChild(import_save_container);
-            import_save_container.id = 'import_save_container';
-            create_el('ta_box', 'textarea', import_save_container);
-            ta_box.rows = 10;
-            ta_box.style.width = '100%';
-            create_el('submit_import_save', 'button', import_save_container);
-            submit_import_save.innerHTML = 'SUBMIT';
-            create_el('reset_import_save', 'button', import_save_container);
-            reset_import_save.innerHTML = 'RESET';
-            create_el('export_save', 'button', import_save_container);
-            export_save.innerHTML = 'Export saveData';
-            export_save.addEventListener('click', () => { downloadSaveData() });
-            reset_import_save.addEventListener('click', () => { ta_box.value = '' });
-        
-            submit_import_save.addEventListener('click', () => {
-                const taData = ta_box.value;
-                resetSaveData(taData);
-                console.log(saveData);
-            });
-        } else {
-            savedata_section.innerHTML = '';
-        }
     });
 
 // download saveData

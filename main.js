@@ -8,13 +8,228 @@ import * as inv from './inventory.js';
 import * as g from './gather.js';
 import * as e from './equipment.js';
 import * as b from './battle.js';
-
+import * as m from './main_tab.js';
+import * as d from './database.js';
 //`
 
 // DEBUGGING INFO
 
 gf.logExport();
 gf.htmlExport();
+
+async function test_JSON() {
+
+    const response = await fetch('test.json');
+    const parsedData = await response.json();
+    parsedData.forEach(item => {
+        console.log(item);
+    });
+}
+//test_JSON();
+/*
+let dbInstance = null;  // Global variable to store the database instance
+async function initDatabase() {
+    // Close the existing database connection if it’s open
+    if (dbInstance) {
+        dbInstance.close();
+        console.log('Closed existing database connection');
+    }
+
+    const dbRequest = indexedDB.open('GameDatabase', 1);
+
+    // Handle database creation and object store setup
+    dbRequest.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('saveStates')) {
+            db.createObjectStore('saveStates', { keyPath: 'slotId' });
+            console.log('saveStates object store created');
+        }
+    };
+
+    dbRequest.onsuccess = async (event) => {
+        dbInstance = event.target.result;  // Store the database instance globally
+
+        // Listen for a version change event to close the database gracefully
+        dbInstance.onversionchange = () => {
+            dbInstance.close();
+            console.log('Database connection closed due to version change');
+        };
+
+        try {
+            // Fetch the JSON data
+            const response = await fetch('test.json');
+            if (!response.ok) throw new Error('Failed to fetch JSON data');
+            const jsonData = await response.json();
+
+            // Start a new transaction for adding data to the store
+            const transaction = dbInstance.transaction(['saveStates'], 'readwrite');
+            const store = transaction.objectStore('saveStates');
+
+            // Add data to the store
+            jsonData.forEach(slot => {
+                const checkRequest = store.get(slot.slotId);
+                
+                checkRequest.onsuccess = () => {
+                    if (checkRequest.result) {
+                        // If an entry with this slotId exists, use put to update it
+                        const updateRequest = store.put(slot);
+                        updateRequest.onsuccess = () => console.log('Slot updated:', slot);
+                        updateRequest.onerror = (error) => console.error('Error updating slot:', error);
+                    } else {
+                        // If no entry exists, add the new entry
+                        const addRequest = store.add(slot);
+                        addRequest.onsuccess = () => console.log('Slot added:', slot);
+                        addRequest.onerror = (error) => console.error('Error adding slot:', error);
+                    }
+                };
+            
+                checkRequest.onerror = (error) => console.error('Error checking for existing slot:', error);
+            });        
+          
+        } catch (error) {
+          console.error('Failed to load JSON data:', error);
+        }
+    };
+
+    dbRequest.onerror = (event) => {
+        console.error('Database error:', event.target.errorCode);
+    };
+
+    return new Promise((resolve, reject) => {
+        const dbRequest = indexedDB.open('GameDatabase', 1);
+
+        dbRequest.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('saveStates')) {
+                db.createObjectStore('saveStates', { keyPath: 'slotId' });
+                console.log('saveStates object store created');
+            }
+        };
+
+        dbRequest.onsuccess = (event) => {
+            const db = event.target.result;
+
+            // Close the database after initialization if needed
+            db.onversionchange = () => db.close();
+
+            // Resolve promise to signal init completion
+            resolve();
+        };
+
+        dbRequest.onerror = (event) => {
+            console.error('Error initializing database:', event.target.errorCode);
+            reject(event.target.errorCode);
+        };
+    });
+}
+// Call `initDatabase` to run the function
+//initDatabase();
+
+// Call `initDatabase` and, after completion, call `displaySaveSlots`
+//initDatabase().then(() => d.displaySaveSlots()).catch(error => console.error('Initialization error:' + error));
+
+// Now call `initDatabase`, then call `displaySaveSlots` after init completes
+initDatabase()
+    .then(() => d.displaySaveSlots())
+    .catch(error => console.error('Initialization error:' + error));
+*/
+
+let dbInstance = null; // Global variable to store the database instance
+
+function initDatabase() {
+    return new Promise((resolve, reject) => {
+        // Close the existing database connection if it’s open
+        if (dbInstance) {
+            dbInstance.close();
+            console.log('Closed existing database connection');
+        }
+
+        const dbRequest = indexedDB.open('GameDatabase', 1);
+
+        // Handle database creation and object store setup
+        dbRequest.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('saveStates')) {
+                db.createObjectStore('saveStates', { keyPath: 'slotId' });
+                console.log('saveStates object store created');
+            }
+        };
+
+        dbRequest.onsuccess = async (event) => {
+            dbInstance = event.target.result; // Store the database instance globally
+
+            // Listen for a version change event to close the database gracefully
+            dbInstance.onversionchange = () => {
+                dbInstance.close();
+                console.log('Database connection closed due to version change');
+            };
+
+            try {
+                // Fetch the JSON data
+                const response = await fetch('test.json');
+                if (!response.ok) throw new Error('Failed to fetch JSON data');
+                const jsonData = await response.json();
+
+                // Start a new transaction for adding data to the store
+                const transaction = dbInstance.transaction(['saveStates'], 'readwrite');
+                const store = transaction.objectStore('saveStates');
+
+                // Add data to the store
+                jsonData.forEach(slot => {
+                    const checkRequest = store.get(slot.slotId);
+
+                    checkRequest.onsuccess = () => {
+                        if (checkRequest.result) {
+                            // If an entry with this slotId exists, use put to update it
+                            const updateRequest = store.put(slot);
+                            updateRequest.onsuccess = () => console.log('Slot updated:', slot);
+                            updateRequest.onerror = (error) => console.error('Error updating slot:', error);
+                        } else {
+                            // If no entry exists, add the new entry
+                            const addRequest = store.add(slot);
+                            addRequest.onsuccess = () => console.log('Slot added:', slot);
+                            addRequest.onerror = (error) => console.error('Error adding slot:', error);
+                        }
+                    };
+
+                    checkRequest.onerror = (error) => console.error('Error checking for existing slot:', error);
+                });
+
+                // Resolve once transaction completes
+                transaction.oncomplete = () => {
+                    console.log('Transaction completed');
+                    resolve(); // Resolve the promise here
+                };
+
+                transaction.onerror = (error) => {
+                    console.error('Transaction failed:', error);
+                    reject(error); // Reject if transaction fails
+                };
+                
+            } catch (error) {
+                console.error('Failed to load JSON data:', error);
+                reject(error);
+            }
+        };
+
+        dbRequest.onerror = (event) => {
+            console.error('Error initializing database:', event.target.errorCode);
+            reject(event.target.errorCode);
+        };
+    });
+}
+
+// Now call `initDatabase`, then call `displaySaveSlots` after init completes
+initDatabase()
+    .then(() => d.displaySaveSlots())
+    .catch(error => console.error('Initialization error:' + error));
+
+
+
+
+
+
+
 
 // Add array updates
 f.load_items();
@@ -25,7 +240,7 @@ f.setup_encounters(1);
 
 new_game();
 
-function new_game() {
+export function new_game() {
 
     let all_el = document.querySelectorAll('body, body *');
     let filteredEl = Array.from(all_el).filter(e => e.id !== 'js-console' && e.id !== 'exportButton' && e.id !== 'exportHTMLButton');
@@ -36,126 +251,125 @@ function new_game() {
         }
     });
 
-// Title
-f.create_el('title_section', 'div', 'body');
-title_section.style.fontSize = '20px';
-title_section.innerHTML = 'RPG Similitude: Just another RPG.';
-
-f.create_el('new_character_container', 'div', 'body');
-new_character_container.classList.add('location_box_style');
-new_character_container.style.paddingBottom = '40px';
-
-let d_character = saveData[1].savedCharacterData[0];
-
-// Check and flag if character is created or not
-if (d_character.char_name && d_character.char_race && d_character.char_class) {
-    d_character.char_created = true;
-} else {
-    d_character.char_created = false;
-}
-
-// To remove elements from character creation
-function del_new_character_container() {
-    let e_new_character_container = document.getElementById('new_character_container');
-    new_character_container.parentNode.removeChild(new_character_container);
-}
-
-// New game, setup character data
-if (!d_character.char_created) {
-
-    let e_new_content = document.getElementById('new_content');
-    if (e_new_content) {
-        e_new_content.remove();
+    // Title
+    f.create_el('title_section', 'div', 'body');
+    title_section.style.fontSize = '20px';
+    title_section.innerHTML = 'RPG Similitude: Just another RPG.';
+    
+    f.create_el('new_character_container', 'div', 'body');
+    new_character_container.classList.add('location_box_style');
+    new_character_container.style.paddingBottom = '40px';
+    
+    let d_character = saveData[1].savedCharacterData[0];
+    
+    // Check and flag if character is created or not
+    if (d_character.char_name && d_character.char_race && d_character.char_class) {
+        d_character.char_created = true;
+    } else {
+        d_character.char_created = false;
     }
-
-    // Create new character
-    let new_char_entry = document.createElement('div');
-    new_character_container.appendChild(new_char_entry);
+    
+    // To remove elements from character creation
+    function del_new_character_container() {
+        let e_new_character_container = document.getElementById('new_character_container');
+        new_character_container.parentNode.removeChild(new_character_container);
+    }
+    
+    // New game, setup character data
+    if (!d_character.char_created) {
+    
+        let e_new_content = document.getElementById('new_content');
+        if (e_new_content) {
+            e_new_content.remove();
+        }
+    
+        // Create new character
+        let new_char_entry = document.createElement('div');
+        new_character_container.appendChild(new_char_entry);
+            
+        let character_entry = document.createElement('span');
+        new_char_entry.appendChild(character_entry);
+        character_entry.classList.add('location_box_style');
+        character_entry.innerHTML = '<p><b>CREATE A NEW CHARACTER:</b></p>';
+            
+        let input_name_lbl = document.createElement('div');
+        new_char_entry.appendChild(input_name_lbl);
+        input_name_lbl.innerHTML = 'Name of Character:';
+                
+        let input_name = document.createElement('input');
+        input_name.placeholder = 'Enter character name';
+        new_char_entry.appendChild(input_name);
+                
+        let input_race_lbl = document.createElement('div');
+        new_char_entry.appendChild(input_race_lbl);
+        input_race_lbl.innerHTML = 'Character Race:';
+                
+        let input_race = document.createElement('input');
+        input_race.placeholder = 'Enter character race';
+        new_char_entry.appendChild(input_race);
+                
+        let input_class_lbl = document.createElement('div');
+        new_char_entry.appendChild(input_class_lbl);
+        input_class_lbl.innerHTML = 'Character Class:';
+                
+        let input_class = document.createElement('input');
+        input_class.placeholder = 'Enter character class';
+        new_char_entry.appendChild(input_class);
+                
+        let submit_btn = document.createElement('button');
+        new_char_entry.appendChild(submit_btn);
+        submit_btn.innerHTML = 'SUBMIT';
+        submit_btn.addEventListener('click', () => {
+            let charName = input_name.value;
+            let charRace = input_race.value;
+            let charClass = input_class.value;
         
-    let character_entry = document.createElement('span');
-    new_char_entry.appendChild(character_entry);
-    character_entry.classList.add('location_box_style');
-    character_entry.innerHTML = '<p><b>CREATE A NEW CHARACTER:</b></p>';
+            let confirm_div = document.createElement('div');
+            new_char_entry.appendChild(confirm_div);
         
-    let input_name_lbl = document.createElement('div');
-    new_char_entry.appendChild(input_name_lbl);
-    input_name_lbl.innerHTML = 'Name of Character:';
-            
-    let input_name = document.createElement('input');
-    input_name.placeholder = 'Enter character name';
-    new_char_entry.appendChild(input_name);
-            
-    let input_race_lbl = document.createElement('div');
-    new_char_entry.appendChild(input_race_lbl);
-    input_race_lbl.innerHTML = 'Character Race:';
-            
-    let input_race = document.createElement('input');
-    input_race.placeholder = 'Enter character race';
-    new_char_entry.appendChild(input_race);
-            
-    let input_class_lbl = document.createElement('div');
-    new_char_entry.appendChild(input_class_lbl);
-    input_class_lbl.innerHTML = 'Character Class:';
-            
-    let input_class = document.createElement('input');
-    input_class.placeholder = 'Enter character class';
-    new_char_entry.appendChild(input_class);
-            
-    let submit_btn = document.createElement('button');
-    new_char_entry.appendChild(submit_btn);
-    submit_btn.innerHTML = 'SUBMIT';
-    submit_btn.addEventListener('click', () => {
-        let charName = input_name.value;
-        let charRace = input_race.value;
-        let charClass = input_class.value;
-    
-        let confirm_div = document.createElement('div');
-        new_char_entry.appendChild(confirm_div);
-    
-        let print_input = document.createElement('div');
-        confirm_div.appendChild(print_input);
-        print_input.innerHTML = `Your name is ${charName} and you are a ${charRace} ${charClass}. Confirm?`;
-    
-        let confirm_yes = document.createElement('button');
-        confirm_div.appendChild(confirm_yes);
-        confirm_yes.innerHTML = 'YES';
-        confirm_yes.addEventListener('click', () => {
-            if (charName === '') {
-                charName = 'John Doe';
-                charRace = 'Human';
-                charClass = 'Fighter';
-            }
-            saveData[1].savedCharacterData[0].char_name = charName;
-            saveData[1].savedCharacterData[0].char_race = charRace;
-            saveData[1].savedCharacterData[0].char_class = charClass;
-            new_char_entry.innerHTML = '';
-            // flag character as created
-            d_character.char_created = true;
-            del_new_character_container();
-            start_game();
+            let print_input = document.createElement('div');
+            confirm_div.appendChild(print_input);
+            print_input.innerHTML = `Your name is ${charName} and you are a ${charRace} ${charClass}. Confirm?`;
+        
+            let confirm_yes = document.createElement('button');
+            confirm_div.appendChild(confirm_yes);
+            confirm_yes.innerHTML = 'YES';
+            confirm_yes.addEventListener('click', () => {
+                if (charName === '') {
+                    charName = 'John Doe';
+                    charRace = 'Human';
+                    charClass = 'Fighter';
+                }
+                saveData[1].savedCharacterData[0].char_name = charName;
+                saveData[1].savedCharacterData[0].char_race = charRace;
+                saveData[1].savedCharacterData[0].char_class = charClass;
+                new_char_entry.innerHTML = '';
+                // flag character as created
+                d_character.char_created = true;
+                del_new_character_container();
+                start_game();
+            });
+        
+            let confirm_no = document.createElement('button');
+            confirm_div.appendChild(confirm_no);
+            confirm_no.innerHTML = 'NO';
+            confirm_no.addEventListener('click', () => {
+                confirm_div.innerHTML = '';
+                input_name.value = '';
+                input_race.value = '';
+                input_class.value = '';
+                return;
+            });
         });
     
-        let confirm_no = document.createElement('button');
-        confirm_div.appendChild(confirm_no);
-        confirm_no.innerHTML = 'NO';
-        confirm_no.addEventListener('click', () => {
-            confirm_div.innerHTML = '';
-            input_name.value = '';
-            input_race.value = '';
-            input_class.value = '';
-            return;
-        });
-    });
-
-} else {
-    trackingData[0].char_was_loaded = true;
-    del_new_character_container();
-    start_game();
-}
-
+    } else {
+        trackingData[0].char_was_loaded = true;
+        del_new_character_container();
+        start_game();
+    }
 } // END new_game()
 
-// Start main game area
+// Setup new game layout
 function start_game() {
 
     layout_loadTabs();
@@ -186,66 +400,6 @@ function start_game() {
         load_starting_elements_async();
     }
 }
-
-// New Game WIP needs to be moved
-let test_section = document.getElementById('test_section');
-if (test_section) {
-    let new_game_btn = document.createElement('button');
-    test_section.appendChild(new_game_btn);
-    new_game_btn.innerHTML = 'new_game()';
-    new_game_btn.addEventListener('click', () => {
-        // Reset trackingData
-        trackingData.length = 0;
-        init_trackingData();
-        // Flag as second run since doc loaded
-        trackingData[0].init_run = false;
-    
-        async function new_game_async() {
-            await f.clearSaveData();
-            new_game();
-        }
-        new_game_async();
-    });
-}
-/*f.create_el('test_bar_btn', 'button', test_section);
-test_bar_btn.innerHTML = 'BAR TEST';
-let skillBar = f.create_bar_elements('test_bar_0', 'test_section', 'AMOUNT', 200, 'green');
-let progress = 200;
-test_bar_btn.addEventListener('click', () => {
-    progress -= 10;
-    skillBar.updateValue(progress);
-});*/
-
-
-
-
-
-
-
-/*
-// Function to load saveData asynchronously
-async function loadSaveData() {
-    const response = await fetch('newSaveData.json');
-    const data = await response.json();
-    saveData = data;
-    console.log('saveData loaded:', saveData);
-}
-
-// Make load_starting_elements async so we can await data loading
-async function load_starting_elements() {
-    // Load saveData first
-    await loadSaveData();
-
-    // Now proceed with the rest of the initial setup
-    f.first_run();
-    f.update_locations();  // Now saveData should be available
-    inv.update_inventory();
-    gf.add_section_clicks();
-}
-
-// Call the load_starting_elements function when needed
-load_starting_elements();
-*/
 
 // MAX LOCALSTORAGE SIZE (5 MB)
 /* To monitor the size, you can use 
@@ -334,20 +488,23 @@ new_content.innerHTML = `
 
 <div class="tab-wrapper">
   <div class="tab-container">
-    <div class="tab" onclick="showTabContent(1)">EQUIPMENT</div>
-    <div class="tab" onclick="showTabContent(2)">STATS</div>
-    <div class="tab" onclick="showTabContent(3)">INVENTORY</div>
-    <div class="tab" onclick="showTabContent(4)">BATTLE</div>
-    <div class="tab" onclick="showTabContent(5)">GATHER</div>
-    <div class="tab" onclick="showTabContent(6)">Tab 6</div>
+    <div class="tab" onclick="showTabContent(1)">MAIN</div>
+    <div class="tab" onclick="showTabContent(2)">EQUIPMENT</div>
+    <div class="tab" onclick="showTabContent(3)">STATS</div>
+    <div class="tab" onclick="showTabContent(4)">INVENTORY</div>
+    <div class="tab" onclick="showTabContent(5)">BATTLE</div>
+    <div class="tab" onclick="showTabContent(6)">GATHER</div>
+    <div class="tab" onclick="showTabContent(7)">Tab 7</div>
   </div>
 </div>
 <div id="content-container">
+  <div id="tab_main" class="location_box_style"></div>
   <div id="tab_player_equipment" class="location_box_style"></div>
   <div id="tab_player_stats" class="location_box_style"></div>
   <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
   <div id="tab_player_battle"></div>
   <div id="tab_player_gather" class="location_box_style"></div>
+  <!-- <div id="tab_7" class="location_box_style"></div> -->
 </div>
 `;
 
@@ -390,8 +547,16 @@ window.showTabContent = function(tabNumber) {
   activeTab.classList.add("active");
 
   // TAB 1 on page load
-  // Generate content specifically for Tab 1
+  // Generate content for each tab
   if (tabNumber === 1) {
+    const tab0Content = document.createElement("div");
+    tab0Content.innerHTML = `
+      <div id="tab_main" class="location_box_style"></div>
+    `;
+    contentContainer.appendChild(tab0Content);
+    // Load main
+    m.init_main_tab();
+  } else if (tabNumber === 2) {
     const tab1Content = document.createElement("div");
     tab1Content.innerHTML = `
       <div id="tab_player_equipment" class="location_box_style"></div>
@@ -399,7 +564,7 @@ window.showTabContent = function(tabNumber) {
     contentContainer.appendChild(tab1Content);
     // Load character equipment
     ch.update_character();
-  } else if (tabNumber === 2) {
+  } else if (tabNumber === 3) {
     const tab2Content = document.createElement("div");
     tab2Content.innerHTML = `
       <div id="tab_player_stats" class="location_box_style"></div>
@@ -407,7 +572,7 @@ window.showTabContent = function(tabNumber) {
     contentContainer.appendChild(tab2Content);
     // Load character stats
     e.update_stats();
-  } else if (tabNumber === 3) {
+  } else if (tabNumber === 4) {
     const tab3Content = document.createElement("div");
     tab3Content.innerHTML = `
       <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
@@ -415,7 +580,7 @@ window.showTabContent = function(tabNumber) {
     contentContainer.appendChild(tab3Content);
     // Load inventory
     inv.update_inventory();
-  } else if (tabNumber === 4) {
+  } else if (tabNumber === 5) {
     const tab4Content = document.createElement("div");
     tab4Content.innerHTML = `
       <div id="tab_player_battle"></div>
@@ -423,7 +588,7 @@ window.showTabContent = function(tabNumber) {
     contentContainer.appendChild(tab4Content);
     // Load battle/location elements
     b.reset_battle();
-  } else if (tabNumber === 5) {
+  } else if (tabNumber === 6) {
     const tab5Content = document.createElement("div");
     tab5Content.innerHTML = `
       <div id="tab_player_gather" class="location_box_style"></div>

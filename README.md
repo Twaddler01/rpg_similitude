@@ -9,7 +9,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 11-11-2024
-- In process of moving all array data over to the IndexedDB format. This will require revamping a lot of functions, but trying to simplify it with new dynamic functions for database modifications. The database will ensure game can be saved, modified, and played more efficiently that using temporary array assignments. JSON will be used to create a new game to setup proper structure easily, then modifications can be easily made keeping the structure essentially the same as the array was.
+- In process of moving all array data over to the IndexedDB format. This will require revamping a lot of functions, but trying to simplify it with new dynamic functions for database modifications. The database will ensure game can be saved, modified, and played more efficiently than using temporary array assignments. JSON will be used to create a new game to setup proper structure initially, then modifications can be easily made, while keeping the structure essentially the same as the array once was.
 - This setup will allow for saved data "slots" and better functionality once code is ready for app development.
 
 11-09-2024

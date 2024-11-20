@@ -1,23 +1,534 @@
 [
-    {
-        "slotId": 1,
-        "state": "New Game",
-        "playerName": "Player1",
-        "level": 1,
-        "score": 0
-    },
-    {
-        "slotId": 2,
-        "state": "New Game",
-        "playerName": "Player2",
-        "level": 1,
-        "score": 0
-    },
-    {
-        "slotId": 3,
-        "state": "Load Game",
-        "playerName": "Player3",
-        "level": 5,
-        "score": 1200
+  {
+    "slotId": 1,
+    "state": "Load Game",
+    "data": {
+      "killsData": [
+        { "kills": 5 }, { "kills": 5 }, { "kills": 5 }, { "kills": 5 },
+        { "kills": 5 }, { "kills": 5 }, { "kills": 5 }, { "kills": 5 },
+        { "kills": 5 }, { "kills": 5 }, { "kills": 5 }, { "kills": 5 },
+        { "kills": 5 }, { "kills": 5 }, { "kills": 5 }, { "kills": 5 },
+        { "kills": 5 }
+      ],
+      "savedCharacterData": [
+        {
+          "char_name": "Legolas",
+          "char_race": "Human",
+          "char_class": "Fighter",
+          "char_level": 1,
+          "char_exp": 0
+        }
+      ],
+      "inventoryData": [
+        {
+          "setup": true,
+          "full": false
+        },
+        {
+          "type": "slot",
+          "slot_id": 1,
+          "contents": "TOOTH",
+          "cnt": 2
+        },
+        {
+          "type": "slot",
+          "slot_id": 2,
+          "contents": "BASIC_HELMET",
+          "cnt": 1
+        },
+        {
+          "type": "slot",
+          "slot_id": 3,
+          "contents": "BETTER_BOOTS",
+          "cnt": 1
+        },
+        {
+          "type": "slot",
+          "slot_id": 4,
+          "contents": "CLOTH_BASIC",
+          "cnt": 3
+        },
+        {
+          "type": "slot",
+          "slot_id": 5,
+          "contents": "BASIC_GLOVES",
+          "cnt": 1
+        },
+        {
+          "type": "slot",
+          "slot_id": 6,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 7,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 8,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 9,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 10,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 11,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 12,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 13,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 14,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 15,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 16,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 17,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 18,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 19,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 20,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        }
+      ],
+      "equippedData": [
+        {
+          "id": "head",
+          "equipped": "BASIC_HELMET",
+          "slot": "head"
+        },
+        {
+          "id": "equip_slot_EMPTY_shoulders",
+          "equipped": null,
+          "slot": "shoulders"
+        },
+        {
+          "id": "equip_slot_EMPTY_hands",
+          "equipped": null,
+          "slot": "hands"
+        },
+        {
+          "id": "equip_slot_EMPTY_neck",
+          "equipped": null,
+          "slot": "neck"
+        },
+        {
+          "id": "equip_slot_EMPTY_waist",
+          "equipped": null,
+          "slot": "waist"
+        },
+        {
+          "id": "chest",
+          "equipped": "BASIC_CHESTPIECE",
+          "slot": "chest"
+        },
+        {
+          "id": "equip_slot_EMPTY_legs",
+          "equipped": null,
+          "slot": "legs"
+        },
+        {
+          "id": "equip_slot_EMPTY_wrist",
+          "equipped": null,
+          "slot": "wrist"
+        },
+        {
+          "id": "feet",
+          "equipped": "BASIC_BOOTS",
+          "slot": "feet"
+        },
+        {
+          "id": "equip_slot_EMPTY_ring1",
+          "equipped": null,
+          "slot": "ring1"
+        },
+        {
+          "id": "equip_slot_EMPTY_ring2",
+          "equipped": null,
+          "slot": "ring2"
+        },
+        {
+          "id": "mh",
+          "equipped": "MH_TEST_DAGGER",
+          "slot": "mh"
+        },
+        {
+          "id": "equip_slot_EMPTY_oh",
+          "equipped": null,
+          "slot": "oh"
+        }
+      ],
+      "currencyData": [
+        {
+          "id": "GOLD",
+          "cnt": 200,
+          "name": "Gold"
+        }
+      ],
+      "gatherData": [
+        {
+          "id": "herbgather",
+          "learned": true,
+          "lvl": 1,
+          "xp_amt": 0,
+          "inventory": [
+            { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 },
+            { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 },
+            { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 }
+          ]
+        },
+        {
+          "id": "oremine",
+          "learned": true,
+          "lvl": 1,
+          "xp_amt": 0,
+          "inventory": [
+            {
+              "id": "copper",
+              "cnt": 0
+            }
+          ]
+        },
+        {
+          "id": "tailor",
+          "learned": true,
+          "lvl": 1,
+          "xp_amt": 0,
+          "inventory": [
+            {
+              "id": "basic_cloth",
+              "cnt": 0
+            }
+          ]
+        }
+      ],
+      "storedMessages": [
+        {
+          "message": "Welcome to RPG Similitude! (a loaded game)",
+          "color": "white",
+          "timestamp": "The Save Slot 2"
+        }
+      ]
     }
+  },
+  {
+    "slotId": 2,
+    "state": "New Game", 
+    "data": {
+      "killsData": [
+        { "kills": 0 }, { "kills": 0 }, { "kills": 0 }, { "kills": 0 },
+        { "kills": 0 }, { "kills": 0 }, { "kills": 0 }, { "kills": 0 },
+        { "kills": 0 }, { "kills": 0 }, { "kills": 0 }, { "kills": 0 },
+        { "kills": 0 }, { "kills": 0 }, { "kills": 0 }, { "kills": 0 },
+        { "kills": 0 }
+      ],
+      "savedCharacterData": [
+        {
+          "char_name": null,
+          "char_race": null,
+          "char_class": null,
+          "char_level": 1,
+          "char_exp": 0
+        }
+      ],
+      "inventoryData": [
+        {
+          "setup": true,
+          "full": false
+        },
+        {
+          "type": "slot",
+          "slot_id": 1,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 2,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 3,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 4,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 5,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 6,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 7,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 8,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 9,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 10,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 11,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 12,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 13,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 14,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 15,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 16,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 17,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 18,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 19,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        },
+        {
+          "type": "slot",
+          "slot_id": 20,
+          "contents": "[ EMPTY ]",
+          "cnt": 0
+        }
+      ],
+      "equippedData": [
+        {
+          "id": "equip_slot_EMPTY_head",
+          "equipped": null,
+          "slot": "head"
+        },
+        {
+          "id": "equip_slot_EMPTY_shoulders",
+          "equipped": null,
+          "slot": "shoulders"
+        },
+        {
+          "id": "equip_slot_EMPTY_hands",
+          "equipped": null,
+          "slot": "hands"
+        },
+        {
+          "id": "equip_slot_EMPTY_neck",
+          "equipped": null,
+          "slot": "neck"
+        },
+        {
+          "id": "equip_slot_EMPTY_waist",
+          "equipped": null,
+          "slot": "waist"
+        },
+        {
+          "id": "equip_slot_EMPTY_chest",
+          "equipped": null,
+          "slot": "chest"
+        },
+        {
+          "id": "equip_slot_EMPTY_legs",
+          "equipped": null,
+          "slot": "legs"
+        },
+        {
+          "id": "equip_slot_EMPTY_wrist",
+          "equipped": null,
+          "slot": "wrist"
+        },
+        {
+          "id": "equip_slot_EMPTY_feet",
+          "equipped": null,
+          "slot": "feet"
+        },
+        {
+          "id": "equip_slot_EMPTY_ring1",
+          "equipped": null,
+          "slot": "ring1"
+        },
+        {
+          "id": "equip_slot_EMPTY_ring2",
+          "equipped": null,
+          "slot": "ring2"
+        },
+        {
+          "id": "mh",
+          "equipped": "MH_BASIC_DAGGER",
+          "slot": "mh"
+        },
+        {
+          "id": "equip_slot_EMPTY_oh",
+          "equipped": null,
+          "slot": "oh"
+        }
+      ],
+      "currencyData": [
+        {
+          "id": "GOLD",
+          "cnt": 0,
+          "name": "Gold"
+        }
+      ],
+      "gatherData": [
+        {
+          "id": "herbgather",
+          "learned": true,
+          "lvl": 1,
+          "xp_amt": 0,
+          "inventory": [
+            { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 },
+            { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 },
+            { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 }
+          ]
+        },
+        {
+          "id": "oremine",
+          "learned": false,
+          "lvl": 1,
+          "xp_amt": 0,
+          "inventory": [
+            {
+              "id": "copper",
+              "cnt": 0
+            }
+          ]
+        },
+        {
+          "id": "tailor",
+          "learned": false,
+          "lvl": 1,
+          "xp_amt": 0,
+          "inventory": [
+            {
+              "id": "basic_cloth",
+              "cnt": 0
+            }
+          ]
+        }
+      ],
+      "storedMessages": [
+        {
+          "message": "Welcome to RPG Similitude!",
+          "color": "white",
+          "timestamp": "The Beginning (Slot 1)"
+        }
+      ]
+    }
+  }
 ]

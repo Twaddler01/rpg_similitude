@@ -17,6 +17,12 @@ import * as d from './database.js';
 gf.logExport();
 gf.htmlExport();
 
+// DB FLAG
+export const dbState = {
+    slot_selected: null,
+    game_type_load: null
+};
+
 async function test_JSON() {
 
     const response = await fetch('test.json');
@@ -26,119 +32,12 @@ async function test_JSON() {
     });
 }
 //test_JSON();
-/*
-let dbInstance = null;  // Global variable to store the database instance
-async function initDatabase() {
-    // Close the existing database connection if it’s open
-    if (dbInstance) {
-        dbInstance.close();
-        console.log('Closed existing database connection');
-    }
 
-    const dbRequest = indexedDB.open('GameDatabase', 1);
-
-    // Handle database creation and object store setup
-    dbRequest.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains('saveStates')) {
-            db.createObjectStore('saveStates', { keyPath: 'slotId' });
-            console.log('saveStates object store created');
-        }
-    };
-
-    dbRequest.onsuccess = async (event) => {
-        dbInstance = event.target.result;  // Store the database instance globally
-
-        // Listen for a version change event to close the database gracefully
-        dbInstance.onversionchange = () => {
-            dbInstance.close();
-            console.log('Database connection closed due to version change');
-        };
-
-        try {
-            // Fetch the JSON data
-            const response = await fetch('test.json');
-            if (!response.ok) throw new Error('Failed to fetch JSON data');
-            const jsonData = await response.json();
-
-            // Start a new transaction for adding data to the store
-            const transaction = dbInstance.transaction(['saveStates'], 'readwrite');
-            const store = transaction.objectStore('saveStates');
-
-            // Add data to the store
-            jsonData.forEach(slot => {
-                const checkRequest = store.get(slot.slotId);
-                
-                checkRequest.onsuccess = () => {
-                    if (checkRequest.result) {
-                        // If an entry with this slotId exists, use put to update it
-                        const updateRequest = store.put(slot);
-                        updateRequest.onsuccess = () => console.log('Slot updated:', slot);
-                        updateRequest.onerror = (error) => console.error('Error updating slot:', error);
-                    } else {
-                        // If no entry exists, add the new entry
-                        const addRequest = store.add(slot);
-                        addRequest.onsuccess = () => console.log('Slot added:', slot);
-                        addRequest.onerror = (error) => console.error('Error adding slot:', error);
-                    }
-                };
-            
-                checkRequest.onerror = (error) => console.error('Error checking for existing slot:', error);
-            });        
-          
-        } catch (error) {
-          console.error('Failed to load JSON data:', error);
-        }
-    };
-
-    dbRequest.onerror = (event) => {
-        console.error('Database error:', event.target.errorCode);
-    };
-
-    return new Promise((resolve, reject) => {
-        const dbRequest = indexedDB.open('GameDatabase', 1);
-
-        dbRequest.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains('saveStates')) {
-                db.createObjectStore('saveStates', { keyPath: 'slotId' });
-                console.log('saveStates object store created');
-            }
-        };
-
-        dbRequest.onsuccess = (event) => {
-            const db = event.target.result;
-
-            // Close the database after initialization if needed
-            db.onversionchange = () => db.close();
-
-            // Resolve promise to signal init completion
-            resolve();
-        };
-
-        dbRequest.onerror = (event) => {
-            console.error('Error initializing database:', event.target.errorCode);
-            reject(event.target.errorCode);
-        };
-    });
-}
-// Call `initDatabase` to run the function
-//initDatabase();
-
-// Call `initDatabase` and, after completion, call `displaySaveSlots`
-//initDatabase().then(() => d.displaySaveSlots()).catch(error => console.error('Initialization error:' + error));
-
-// Now call `initDatabase`, then call `displaySaveSlots` after init completes
-initDatabase()
-    .then(() => d.displaySaveSlots())
-    .catch(error => console.error('Initialization error:' + error));
-*/
-
-let dbInstance = null; // Global variable to store the database instance
-
+export var dbInstance = null; // Global variable for the database instance
+export const dbReady = initDatabase(); // Global promise for database readiness
+// Function to initialize the database
 function initDatabase() {
     return new Promise((resolve, reject) => {
-        // Close the existing database connection if it’s open
         if (dbInstance) {
             dbInstance.close();
             console.log('Closed existing database connection');
@@ -146,7 +45,6 @@ function initDatabase() {
 
         const dbRequest = indexedDB.open('GameDatabase', 1);
 
-        // Handle database creation and object store setup
         dbRequest.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains('saveStates')) {
@@ -156,56 +54,41 @@ function initDatabase() {
         };
 
         dbRequest.onsuccess = async (event) => {
-            dbInstance = event.target.result; // Store the database instance globally
-
-            // Listen for a version change event to close the database gracefully
+            dbInstance = event.target.result;
             dbInstance.onversionchange = () => {
                 dbInstance.close();
                 console.log('Database connection closed due to version change');
             };
 
             try {
-                // Fetch the JSON data
-                const response = await fetch('test.json');
+                const response = await fetch('./data/newSaveData.json');
                 if (!response.ok) throw new Error('Failed to fetch JSON data');
                 const jsonData = await response.json();
 
-                // Start a new transaction for adding data to the store
                 const transaction = dbInstance.transaction(['saveStates'], 'readwrite');
                 const store = transaction.objectStore('saveStates');
 
-                // Add data to the store
                 jsonData.forEach(slot => {
                     const checkRequest = store.get(slot.slotId);
-
                     checkRequest.onsuccess = () => {
                         if (checkRequest.result) {
-                            // If an entry with this slotId exists, use put to update it
-                            const updateRequest = store.put(slot);
-                            updateRequest.onsuccess = () => console.log('Slot updated:', slot);
-                            updateRequest.onerror = (error) => console.error('Error updating slot:', error);
+                            store.put(slot);
                         } else {
-                            // If no entry exists, add the new entry
-                            const addRequest = store.add(slot);
-                            addRequest.onsuccess = () => console.log('Slot added:', slot);
-                            addRequest.onerror = (error) => console.error('Error adding slot:', error);
+                            store.add(slot);
                         }
                     };
-
-                    checkRequest.onerror = (error) => console.error('Error checking for existing slot:', error);
                 });
 
-                // Resolve once transaction completes
                 transaction.oncomplete = () => {
-                    console.log('Transaction completed');
+                    //console.log('Transaction completed');
                     resolve(); // Resolve the promise here
                 };
 
                 transaction.onerror = (error) => {
                     console.error('Transaction failed:', error);
-                    reject(error); // Reject if transaction fails
+                    reject(error);
                 };
-                
+
             } catch (error) {
                 console.error('Failed to load JSON data:', error);
                 reject(error);
@@ -219,17 +102,12 @@ function initDatabase() {
     });
 }
 
-// Now call `initDatabase`, then call `displaySaveSlots` after init completes
+// Call `initDatabase`, then call `displaySaveSlots` after init completes
 initDatabase()
-    .then(() => d.displaySaveSlots())
-    .catch(error => console.error('Initialization error:' + error));
-
-
-
-
-
-
-
+    .then(() => {
+        d.displaySaveSlots(); // Run displaySaveSlots first
+    })
+    .catch(error => console.error('Initialization error: ' + error));
 
 // Add array updates
 f.load_items();
@@ -238,10 +116,7 @@ init_trackingData();
 f.setup_encounters(1);
 //console.log(JSON.stringify(encounterData, null, 2));
 
-new_game();
-
-export function new_game() {
-
+export function clear_game_elements() {
     let all_el = document.querySelectorAll('body, body *');
     let filteredEl = Array.from(all_el).filter(e => e.id !== 'js-console' && e.id !== 'exportButton' && e.id !== 'exportHTMLButton');
     
@@ -250,33 +125,40 @@ export function new_game() {
             el.remove();
         }
     });
+}
+
+export function new_game() {
+
+    clear_game_elements();
 
     // Title
     f.create_el('title_section', 'div', 'body');
     title_section.style.fontSize = '20px';
-    title_section.innerHTML = 'RPG Similitude: Just another RPG.';
+    title_section.innerHTML = '<b>RPG Similitude: Just another RPG.</b>';
     
-    f.create_el('new_character_container', 'div', 'body');
-    new_character_container.classList.add('location_box_style');
-    new_character_container.style.paddingBottom = '40px';
-    
-    let d_character = saveData[1].savedCharacterData[0];
-    
-    // Check and flag if character is created or not
-    if (d_character.char_name && d_character.char_race && d_character.char_class) {
-        d_character.char_created = true;
-    } else {
-        d_character.char_created = false;
-    }
-    
+// Get new template from slot 2
+// Needs added to d.loadGame()
+//d.fetchDB('saveStates', 2, 'slotId');
+
+let e_new_content = document.getElementById('new_content');
+if (e_new_content) {
+  e_new_content.remove();
+}
+
+
+f.create_el('new_character_container', 'div', 'body');
+new_character_container.classList.add('location_box_style');
+new_character_container.style.paddingBottom = '40px';
+
     // To remove elements from character creation
     function del_new_character_container() {
-        let e_new_character_container = document.getElementById('new_character_container');
+        let new_character_container = document.getElementById('new_character_container');
         new_character_container.parentNode.removeChild(new_character_container);
     }
-    
+
+
     // New game, setup character data
-    if (!d_character.char_created) {
+    if (!dbState.game_type_load) {
     
         let e_new_content = document.getElementById('new_content');
         if (e_new_content) {
@@ -340,12 +222,23 @@ export function new_game() {
                     charRace = 'Human';
                     charClass = 'Fighter';
                 }
+            const updatedCharacterData = [ {
+                char_name: charName,
+                char_race: charRace,
+                char_class: charClass,
+                char_level: 1,
+                char_exp: 0
+            } ];
+            
+            // Update the character data in the database
+            d.updateSlotData(2, 'savedCharacterData', updatedCharacterData);
+
                 saveData[1].savedCharacterData[0].char_name = charName;
                 saveData[1].savedCharacterData[0].char_race = charRace;
                 saveData[1].savedCharacterData[0].char_class = charClass;
                 new_char_entry.innerHTML = '';
                 // flag character as created
-                d_character.char_created = true;
+                dbState.game_type_load = true;
                 del_new_character_container();
                 start_game();
             });
@@ -367,6 +260,8 @@ export function new_game() {
         del_new_character_container();
         start_game();
     }
+
+
 } // END new_game()
 
 // Setup new game layout
@@ -460,7 +355,7 @@ function loaded_DOM() {
 }
 
 // Setup tab layout
-function layout_loadTabs() {
+export function layout_loadTabs() {
 
 // Find the title_section element
 const title_section = document.getElementById('title_section');
@@ -481,7 +376,7 @@ new_content.innerHTML = `
   <div id="scroll-gradient"></div>
 </div>
 
-<div style="border: 1px solid #ccc; padding: 5px;">
+<div id="playerInfo_div" style="border: 1px solid #ccc; padding: 5px;">
   <div id="playerInfo_name"><b>noname</b></div>
   <div id="playerInfo_level">Level nolevel norace noclass</div>
 </div>

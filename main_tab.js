@@ -2,29 +2,29 @@
 
 import { trackingData, init_trackingData } from './data.js';
 import { clearSaveData, create_el, downloadSaveData } from './functions.js';
-import { new_game } from './main.js';
-//import { displaySaveSlots } from './database.js';
+import { new_game, dbState } from './main.js';
+import { displaySaveSlots } from './database.js';
 
 // Setup elements and run functions
 export function init_main_tab() {
     let e_tab_main = document.getElementById('tab_main');
     e_tab_main.innerHTML = `
-          <p><b>GAME OPTIONS</b></p>
+          <p><b>CHANGE GAME SLOTS</b></p>
+         `;
+ /*       <div id="idb_slots"></div>
+          <p><b>GAME OPTIONS (old)</b></p>
           <div id="new_game_div"></div>
           <p><b>LOAD</b></p>
           <div id="load_JSON_text"></div>
           <p><b>SAVE</b></p>
           <div id="save_JSON"></div>
-
-          <p><b>IndexedDB</b></p>
-          <div id="idb"></div>
-
-        `;
-    new_game_btn();
-    load_game_from_text();
-    
-    // IDB
-    //displaySaveSlots();
+        `;*/
+    //if (!dbState.db_init) {
+      displaySaveSlots();
+    //}
+    //new_game_btn();
+    //load_game_from_text();
+    //dbState.db_init = true;
 }
 
 // Reset to new game

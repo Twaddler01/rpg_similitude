@@ -61,36 +61,58 @@ function initDatabase() {
             };
 
             try {
-                const response = await fetch('./data/newSaveData.json');
-                if (!response.ok) throw new Error('Failed to fetch JSON data');
-                const jsonData = await response.json();
-
-                const transaction = dbInstance.transaction(['saveStates'], 'readwrite');
+                const transaction = dbInstance.transaction(['saveStates'], 'readonly');
                 const store = transaction.objectStore('saveStates');
 
-                jsonData.forEach(slot => {
-                    const checkRequest = store.get(slot.slotId);
-                    checkRequest.onsuccess = () => {
-                        if (checkRequest.result) {
-                            store.put(slot);
+                const getAllRequest = store.getAll();
+                getAllRequest.onsuccess = async () => {
+                    const existingSlots = getAllRequest.result;
+
+                    if (existingSlots.length > 0) {
+                        //console.log('Database already contains data. No new data loaded.');
+                        resolve();
+                        return; // Exit early since data already exists
+                    }
+
+                    //console.log('Database is empty. Loading newSaveData.json...');
+                    const response = await fetch('./data/newSaveData.json');
+                    if (!response.ok) throw new Error('Failed to fetch JSON data');
+                    const jsonData = await response.json();
+
+                    // Write slots from JSON only if the database is empty
+                    const writeTransaction = dbInstance.transaction(['saveStates'], 'readwrite');
+                    const writeStore = writeTransaction.objectStore('saveStates');
+
+                    jsonData.forEach(slot => {
+                        writeStore.add(slot);
+                    });
+
+                    writeTransaction.oncomplete = () => {
+                        console.log('Initial data loaded into database.');
+                        resolve();
+                    };
+
+                    writeTransaction.onerror = (error) => {
+                        console.error('Error writing initial data:', error);
+
+                        // Check if this is the first error (using a flag stored in sessionStorage)
+                        if (!sessionStorage.getItem('dbReloaded')) {
+                            console.log('Reloaded the page due to an error.');
+                            sessionStorage.setItem('dbReloaded', 'true');
+                            location.reload(); // Reload the page
                         } else {
-                            store.add(slot);
+                            console.error('Reload already attempted. Not reloading again. This error can occur if using private or "incognito" browsing mode. Please try again in a regular browser window.');
+                            reject(error); // Reject the promise if reload is not attempted
                         }
                     };
-                });
-
-                transaction.oncomplete = () => {
-                    //console.log('Transaction completed');
-                    resolve(); // Resolve the promise here
                 };
 
-                transaction.onerror = (error) => {
-                    console.error('Transaction failed:', error);
+                getAllRequest.onerror = (error) => {
+                    console.error('Error checking existing data:', error);
                     reject(error);
                 };
-
             } catch (error) {
-                console.error('Failed to load JSON data:', error);
+                console.error('Failed to initialize database:', error);
                 reject(error);
             }
         };
@@ -105,7 +127,16 @@ function initDatabase() {
 // Call `initDatabase`, then call `displaySaveSlots` after init completes
 initDatabase()
     .then(() => {
-        d.displaySaveSlots(); // Run displaySaveSlots first
+        //d.displaySaveSlots(); // Run displaySaveSlots first
+
+        // Use test data instead (comment out displaySaveSlots call)
+        function use_test_data() {
+            d.loadFirstSlotFromNewSave();
+            dbState.game_type_load = true;
+            dbState.slot_selected = 1;
+            new_game();
+        }
+        use_test_data();
     })
     .catch(error => console.error('Initialization error: ' + error));
 
@@ -119,7 +150,7 @@ f.setup_encounters(1);
 export function clear_game_elements() {
     let all_el = document.querySelectorAll('body, body *');
     let filteredEl = Array.from(all_el).filter(e => e.id !== 'js-console' && e.id !== 'exportButton' && e.id !== 'exportHTMLButton');
-    
+
     filteredEl.forEach(el => {
         if (el.id) {
             el.remove();
@@ -140,8 +171,8 @@ export async function new_game() {
     if (e_new_content) {
       e_new_content.remove();
     }
-    
-    
+
+
     f.create_el('new_character_container', 'div', 'body');
     new_character_container.classList.add('location_box_style');
     new_character_container.style.paddingBottom = '40px';
@@ -155,45 +186,45 @@ export async function new_game() {
 
     // New game, setup character data
     if (!dbState.game_type_load) {
-    
+
         let e_new_content = document.getElementById('new_content');
         if (e_new_content) {
             e_new_content.remove();
         }
-    
+
         // Create new character
         let new_char_entry = document.createElement('div');
         new_character_container.appendChild(new_char_entry);
-            
+
         let character_entry = document.createElement('span');
         new_char_entry.appendChild(character_entry);
         character_entry.classList.add('location_box_style');
         character_entry.innerHTML = '<p><b>CREATE A NEW CHARACTER:</b></p>';
-            
+
         let input_name_lbl = document.createElement('div');
         new_char_entry.appendChild(input_name_lbl);
         input_name_lbl.innerHTML = 'Name of Character:';
-                
+
         let input_name = document.createElement('input');
         input_name.placeholder = 'Enter character name';
         new_char_entry.appendChild(input_name);
-                
+
         let input_race_lbl = document.createElement('div');
         new_char_entry.appendChild(input_race_lbl);
         input_race_lbl.innerHTML = 'Character Race:';
-                
+
         let input_race = document.createElement('input');
         input_race.placeholder = 'Enter character race';
         new_char_entry.appendChild(input_race);
-                
+
         let input_class_lbl = document.createElement('div');
         new_char_entry.appendChild(input_class_lbl);
         input_class_lbl.innerHTML = 'Character Class:';
-                
+
         let input_class = document.createElement('input');
         input_class.placeholder = 'Enter character class';
         new_char_entry.appendChild(input_class);
-                
+
         let submit_btn = document.createElement('button');
         new_char_entry.appendChild(submit_btn);
         submit_btn.innerHTML = 'SUBMIT';
@@ -201,14 +232,14 @@ export async function new_game() {
             let charName = input_name.value;
             let charRace = input_race.value;
             let charClass = input_class.value;
-        
+
             let confirm_div = document.createElement('div');
             new_char_entry.appendChild(confirm_div);
-        
+
             let print_input = document.createElement('div');
             confirm_div.appendChild(print_input);
             print_input.innerHTML = `Your name is ${charName} and you are a ${charRace} ${charClass}. Confirm?`;
-        
+
             let confirm_yes = document.createElement('button');
             confirm_div.appendChild(confirm_yes);
             confirm_yes.innerHTML = 'YES';
@@ -225,7 +256,7 @@ export async function new_game() {
                     char_level: 1,
                     char_exp: 0
                 } ];
-                
+
                 // Update the character data in the database
                 d.updateSlotData(dbState.slot_selected, 'state', 'Load Game');
                 d.updateSlotData(dbState.slot_selected, 'savedCharacterData', updatedCharacterData);
@@ -236,7 +267,7 @@ export async function new_game() {
                 del_new_character_container();
                 start_game();
             });
-        
+
             let confirm_no = document.createElement('button');
             confirm_div.appendChild(confirm_no);
             confirm_no.innerHTML = 'NO';
@@ -248,7 +279,7 @@ export async function new_game() {
                 return;
             });
         });
-    
+
     } else {
         trackingData[0].char_was_loaded = true;
         del_new_character_container();
@@ -269,7 +300,7 @@ function start_game() {
     function load_starting_elements() {
         //f.add_test_section();
     }
-    
+
     async function load_starting_elements_async() {
         await f.clearSaveData();
         load_starting_elements();
@@ -291,11 +322,11 @@ function start_game() {
 }
 
 // MAX LOCALSTORAGE SIZE (5 MB)
-/* To monitor the size, you can use 
-JSON.stringify(array).length to get 
-an approximate count of characters being 
-stored. Keep in mind that each character 
-takes up 2 bytes in UTF-16 encoding, 
+/* To monitor the size, you can use
+JSON.stringify(array).length to get
+an approximate count of characters being
+stored. Keep in mind that each character
+takes up 2 bytes in UTF-16 encoding,
 which is commonly used by JavaScript.
 */
 //console.log(JSON.stringify(saveData).length * 2);
@@ -494,8 +525,8 @@ window.showTabContent = async function(tabNumber) {
     otherContent.textContent = `Content for Tab ${tabNumber}`;
     contentContainer.appendChild(otherContent);
   }
-  
-    
+
+
 };
 
 // Load default tab first

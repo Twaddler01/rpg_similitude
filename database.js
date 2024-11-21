@@ -3,6 +3,49 @@
 import { dbInstance, dbState, new_game, layout_loadTabs, clear_game_elements } from './main.js';
 import { create_el } from './functions.js';
 
+export async function loadFirstSlotFromNewSave() {
+    try {
+        const response = await fetch('./data/newSaveData.json');
+        if (!response.ok) {
+            throw new Error('Failed to load newSaveData.json');
+        }
+        const saveData = await response.json();
+
+        if (!Array.isArray(saveData) || saveData.length === 0) {
+            throw new Error('newSaveData.json is empty or invalid.');
+        }
+
+        const firstSlot = saveData[0]; // Only take the first slot
+
+        const dbRequest = indexedDB.open('GameDatabase', 1);
+
+        dbRequest.onsuccess = (event) => {
+            const db = event.target.result;
+
+            // Open a transaction and object store
+            const transaction = db.transaction(['saveStates'], 'readwrite');
+            const store = transaction.objectStore('saveStates');
+
+            // Add or overwrite slot 1
+            const updateRequest = store.put(firstSlot);
+
+            updateRequest.onsuccess = () => {
+                console.log('First slot from newSaveData.json successfully loaded.');
+            };
+
+            updateRequest.onerror = (event) => {
+                console.error('Error updating slot:', event.target.errorCode);
+            };
+        };
+
+        dbRequest.onerror = (event) => {
+            console.error('Error opening database:', event.target.errorCode);
+        };
+    } catch (error) {
+        console.error('Error loading first slot from newSaveData.json:', error);
+    }
+}
+
 export function displaySaveSlots() {
     //console.log('displaySaveSlots function started');
 
@@ -26,7 +69,7 @@ export function displaySaveSlots() {
         idb_slots = create_el('idb_slots', 'div', parent_id);
         idb_slots.classList.add('location_box_style');
     }
-    
+
     const dbRequest = indexedDB.open('GameDatabase', 1);
 
     dbRequest.onsuccess = (event) => {
@@ -48,10 +91,10 @@ export function displaySaveSlots() {
                 idb_slots.innerHTML = '<p><b>CHOOSE A SLOT</b></p>';
 
                 slots.forEach((slot, index) => {
-                    
+
                     let slot_container_div = document.createElement('div');
                     idb_slots.appendChild(slot_container_div);
-                    
+
                     let slot_id = document.createElement('span');
                     slot_container_div.appendChild(slot_id);
                     slot_id.innerHTML = 'SLOT' + slot.slotId + ':&nbsp;';
@@ -76,7 +119,7 @@ export function displaySaveSlots() {
                         button.onclick = () => loadGame(slot.slotId, slot);
                         slot_container_div.appendChild(button);
                     }
-                    
+
                     // To clear a slot
                     if (slot.data?.savedCharacterData?.[0]?.char_name !== null) {
                         let spacer = document.createElement('span');
@@ -89,16 +132,16 @@ export function displaySaveSlots() {
                         function delete_slot_confirm(slotNum) {
                             slot_container_div.style.color = 'red';
                             slot_container_div.innerHTML = 'Are you sure you want to delete all of the data for <b>SLOT ' + slotNum + '</b>? THIS ACTION CANNOT BE UNDONE! ';
-                        
+
                             create_el('con_yes', 'button', slot_container_div);
                             con_yes.innerHTML = 'YES';
                             con_yes.onclick = () => delete_slot(slotNum);
-                                
+
                             create_el('con_no', 'button', slot_container_div);
                             con_no.innerHTML = 'NO';
                             con_no.onclick = () => displaySaveSlots();
                         }
-                        
+
                         // Delete slot
                         // load slotId 1 from saveTemplate.json and replace slotNum with this saveTemplate data
                         function delete_slot(slotNum) {
@@ -113,34 +156,34 @@ export function displaySaveSlots() {
                                 .then((templateData) => {
                                     // Extract the first slot from the template
                                     const firstSlotTemplate = templateData[0];
-                        
+
                                     if (!firstSlotTemplate) {
                                         throw new Error('Template is empty or invalid.');
                                     }
-                        
+
                                     // Open the IndexedDB connection
                                     const dbRequest = indexedDB.open('GameDatabase', 1);
-                        
+
                                     dbRequest.onsuccess = (event) => {
                                         const db = event.target.result;
-                        
+
                                         // Open a transaction and access the store
                                         const transaction = db.transaction(['saveStates'], 'readwrite');
                                         const store = transaction.objectStore('saveStates');
-                        
+
                                         // Retrieve the slot to update
                                         const getSlotRequest = store.get(slotNum);
-                        
+
                                         getSlotRequest.onsuccess = () => {
                                             const slot = getSlotRequest.result;
-                        
+
                                             if (slot) {
                                                 // Update the slot's data with the first slot from the template
                                                 slot.data = firstSlotTemplate.data;
                                                 slot.state = firstSlotTemplate.state;
-                        
+
                                                 const updateRequest = store.put(slot);
-                        
+
                                                 updateRequest.onsuccess = () => {
                                                     console.log(`Slot ${slotNum} cleared and updated with template.`);
                                                     // Refresh the UI
@@ -150,7 +193,7 @@ export function displaySaveSlots() {
                                                     }
                                                     displaySaveSlots();
                                                 };
-                        
+
                                                 updateRequest.onerror = (event) => {
                                                     console.error('Error updating slot:', event.target.errorCode);
                                                 };
@@ -158,12 +201,12 @@ export function displaySaveSlots() {
                                                 console.error(`Slot ${slotNum} not found.`);
                                             }
                                         };
-                        
+
                                         getSlotRequest.onerror = (event) => {
                                             console.error('Error retrieving slot:', event.target.errorCode);
                                         };
                                     };
-                        
+
                                     dbRequest.onerror = (event) => {
                                         console.error('Error opening database in delete_slot:', event.target.errorCode);
                                     };

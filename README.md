@@ -10,6 +10,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 # Updates
 11-20-2024
 - In process of converting code to SLOT format. Right now, code is between array (old method) and IndexedDB (new method). This will potentially use temporary arrays and direct updates to the database following JSON templates.
+- Updated through STATS tab so far with async data used with database.
 
 11-11-2024
 - In process of moving all array data over to the IndexedDB format. This will require revamping a lot of functions, but trying to simplify it with new dynamic functions for database modifications. The database will ensure game can be saved, modified, and played more efficiently than using temporary array assignments. JSON will be used to create a new game to setup proper structure initially, then modifications can be easily made, while keeping the structure essentially the same as the array once was.

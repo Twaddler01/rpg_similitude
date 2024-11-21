@@ -320,15 +320,14 @@ export function updateSlotData(slotId, section, newValues) {
             const slot = getSlotRequest.result;
 
             if (slot) {
-                // Update the specific section with new values
-                if (section === 'killsData' && Array.isArray(newValues)) {
-                    // Overwrite the killsData array
-                    slot.data.killsData = newValues;
-                } else if (section === 'savedCharacterData' && Array.isArray(newValues)) {
-                    // Overwrite the savedCharacterData array
-                    slot.data.savedCharacterData = newValues;
+                if (section === 'state') {
+                    // Update the "state" directly
+                    slot.state = newValues;
+                } else if (section in slot.data) {
+                    // Dynamically update any section in slot.data
+                    slot.data[section] = newValues;
                 } else {
-                    console.error('Invalid section or newValues format.');
+                    console.error(`Section "${section}" not found in slot data.`);
                     return;
                 }
 
@@ -336,7 +335,7 @@ export function updateSlotData(slotId, section, newValues) {
                 const updateRequest = store.put(slot);
 
                 updateRequest.onsuccess = () => {
-                    console.log(`Slot ${slotId} successfully updated.`);
+                    console.log(`Slot ${slotId} successfully updated in section "${section}".`);
                 };
 
                 updateRequest.onerror = (event) => {
@@ -369,36 +368,100 @@ const newCharacterData = [
 updateSlotData(2, 'savedCharacterData', newCharacterData);
 */
 
-// Enhanced function to fetch specific data from the IndexedDB
-export function fetchDB(key, subKey = null, dataPath = null) {
-    if (!dbInstance) {
-        console.error('Database is not initialized');
-        return;
-    }
+export function getSlotData(slotId, section) {
+    return new Promise((resolve, reject) => {
+        const dbRequest = indexedDB.open('GameDatabase', 1);
 
-    const transaction = dbInstance.transaction([key], 'readonly');
-    const store = transaction.objectStore(key);
+        dbRequest.onsuccess = (event) => {
+            const db = event.target.result;
 
-    const request = subKey ? store.get(subKey) : store.get(0); // Get by subKey or first entry
-    request.onsuccess = function(event) {
-        let result = event.target.result;
-        if (!result) {
-            console.log('No data found');
-            return;
-        }
+            // Open a transaction in readonly mode
+            const transaction = db.transaction(['saveStates'], 'readonly');
+            const store = transaction.objectStore('saveStates');
 
-        // If a dataPath is provided (like 'slotId' or 'data.savedCharacterData')
-        if (dataPath) {
-            const data = dataPath.split('.').reduce((obj, key) => obj && obj[key], result);
-            console.log(`Fetched data for ${dataPath}:` + data);
-        } else {
-            // Default output if no dataPath provided
-            console.log('Fetched data:' + result);
-        }
-    };
-    request.onerror = function() {
-        console.error('Failed to fetch data');
-    };
+            // Retrieve the slot by its slotId
+            const getSlotRequest = store.get(slotId);
+
+            getSlotRequest.onsuccess = () => {
+                const slot = getSlotRequest.result;
+
+                if (slot) {
+                    if (section === 'state') {
+                        // Return the "state" directly
+                        resolve(slot.state);
+                    } else if (section in slot.data) {
+                        // Dynamically return any section in slot.data
+                        const data = slot.data[section];
+                        resolve(data);
+                    } else {
+                        reject(new Error(`Section "${section}" not found in slot data.`));
+                    }
+                } else {
+                    reject(new Error(`Slot with slotId ${slotId} not found.`));
+                }
+            };
+
+            getSlotRequest.onerror = (event) => {
+                reject(new Error('Error retrieving slot: ' + event.target.errorCode));
+            };
+        };
+
+        dbRequest.onerror = (event) => {
+            reject(new Error('Error opening database in getSlotData: ' + event.target.errorCode));
+        };
+    });
 }
-// fetchDB('yourStoreName', 2, 'slotId');
-// fetchDB('yourStoreName', 2, 'data.savedCharacterData');
+/*
+// Get 'state' only
+getSlotData(2, 'state')
+    .then((state) => {
+        console.log('Game State:', state);
+    })
+    .catch((error) => {
+        console.error(error.message);
+    });
+// Get 'killsData' or other sections
+getSlotData(1, 'killsData')
+    .then((killsData) => {
+        console.log('Kills Data:', killsData);
+    })
+    .catch((error) => {
+        console.error(error.message);
+    });
+// Use with await in functions
+async function displayCharacterData(slotId) {
+    try {
+        const characterData = await getSlotData(slotId, 'savedCharacterData');
+        const charName = characterData[0]?.char_name || 'Unknown';
+        console.log('Character Name:', charName);
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+displayCharacterData(3);
+*/
+
+//DEBUG
+/*
+console.log('before equippedItems');
+let equippedItems;
+try {
+    equippedItems = await d.getSlotData(dbState.slot_selected, 'equippedData');
+} catch (error) {
+    console.error('Error fetching equipped items:' + error);
+    return; // Exit if it fails
+}
+console.log(JSON.stringify(equippedItems));
+*/
+
+/*
+// REPLACE forEach with aysnc data
+    for (const stat of filtered_battleStats) {
+        // Output
+        let stats_effect = `<span style="color:lightgreen">(Base)</span>`;
+
+        // Player mh weapon
+        const current_weapon = equipped_items.find(i => i.id === 'mh');
+        console.log(`Stat: ${stat.name}, Current Weapon: ${current_weapon ? current_weapon.name : 'None'}`);
+    }
+*/

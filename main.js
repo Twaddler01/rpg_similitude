@@ -127,7 +127,7 @@ export function clear_game_elements() {
     });
 }
 
-export function new_game() {
+export async function new_game() {
 
     clear_game_elements();
 
@@ -135,20 +135,16 @@ export function new_game() {
     f.create_el('title_section', 'div', 'body');
     title_section.style.fontSize = '20px';
     title_section.innerHTML = '<b>RPG Similitude: Just another RPG.</b>';
+
+    let e_new_content = document.getElementById('new_content');
+    if (e_new_content) {
+      e_new_content.remove();
+    }
     
-// Get new template from slot 2
-// Needs added to d.loadGame()
-//d.fetchDB('saveStates', 2, 'slotId');
-
-let e_new_content = document.getElementById('new_content');
-if (e_new_content) {
-  e_new_content.remove();
-}
-
-
-f.create_el('new_character_container', 'div', 'body');
-new_character_container.classList.add('location_box_style');
-new_character_container.style.paddingBottom = '40px';
+    
+    f.create_el('new_character_container', 'div', 'body');
+    new_character_container.classList.add('location_box_style');
+    new_character_container.style.paddingBottom = '40px';
 
     // To remove elements from character creation
     function del_new_character_container() {
@@ -222,20 +218,18 @@ new_character_container.style.paddingBottom = '40px';
                     charRace = 'Human';
                     charClass = 'Fighter';
                 }
-            const updatedCharacterData = [ {
-                char_name: charName,
-                char_race: charRace,
-                char_class: charClass,
-                char_level: 1,
-                char_exp: 0
-            } ];
-            
-            // Update the character data in the database
-            d.updateSlotData(2, 'savedCharacterData', updatedCharacterData);
+                const updatedCharacterData = [ {
+                    char_name: charName,
+                    char_race: charRace,
+                    char_class: charClass,
+                    char_level: 1,
+                    char_exp: 0
+                } ];
+                
+                // Update the character data in the database
+                d.updateSlotData(dbState.slot_selected, 'state', 'Load Game');
+                d.updateSlotData(dbState.slot_selected, 'savedCharacterData', updatedCharacterData);
 
-                saveData[1].savedCharacterData[0].char_name = charName;
-                saveData[1].savedCharacterData[0].char_race = charRace;
-                saveData[1].savedCharacterData[0].char_class = charClass;
                 new_char_entry.innerHTML = '';
                 // flag character as created
                 dbState.game_type_load = true;
@@ -355,7 +349,7 @@ function loaded_DOM() {
 }
 
 // Setup tab layout
-export function layout_loadTabs() {
+export async function layout_loadTabs() {
 
 // Find the title_section element
 const title_section = document.getElementById('title_section');
@@ -404,7 +398,10 @@ new_content.innerHTML = `
 `;
 
 // Display player info
-let d_char = saveData[1].savedCharacterData[0];
+
+// OLD... let d_char = saveData[1].savedCharacterData[0];
+// Only has 1 index at 0
+let d_char = (await d.getSlotData(dbState.slot_selected, 'savedCharacterData'))[0];
 let playerInfo_name = document.getElementById('playerInfo_name');
 playerInfo_name.innerHTML = '<b>' + d_char.char_name + '</b>';
 let playerInfo_level = document.getElementById('playerInfo_level');
@@ -425,7 +422,7 @@ container.addEventListener("scroll", () => {
 });
 
 // Attach showTabContent to the window to ensure global accessibility
-window.showTabContent = function(tabNumber) {
+window.showTabContent = async function(tabNumber) {
   const contentContainer = document.getElementById("content-container");
 
   // Clear previous content

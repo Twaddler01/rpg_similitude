@@ -10,7 +10,7 @@ import { update_battleStats, fetch_playerStats } from './equipment.js';
 export async function clearSaveData() {
 
     saveData.length = 0;
-    const response = await fetch('newSaveData.json');
+    const response = await fetch('./data/newSaveData.json');
     const parsedData = await response.json();
     parsedData.forEach(item => {
         saveData.push(item);

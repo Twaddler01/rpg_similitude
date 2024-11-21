@@ -4,6 +4,8 @@
 
 import { saveData, itemData, characterData } from './data.js';
 import { create_el } from './functions.js';
+import { dbState } from './main.js';
+import * as d from './database.js';
 
 // temporary
 let trackingData = [{}];
@@ -43,15 +45,19 @@ const statDescriptions = [
 
 // Stat modifications
 // Updates for battles and equipmemt
-export function update_battleStats(eLevel) {
+export async function update_battleStats(eLevel) {
 
     // Player data
-    let d_player_character = saveData[1].savedCharacterData[0];
-    let pLevel = d_player_character.char_level;
+    //OLD let d_player_character = saveData[1].savedCharacterData[0];
+    const d_player_character = (await d.getSlotData(dbState.slot_selected, 'savedCharacterData'))[0];
+
+    //OLD let pLevel = d_player_character.char_level;
+    const pLevel = await d_player_character.char_level;
 
     // Equipment
-    let pEquipped = saveData[3].equippedData;
-    
+    //OLD let pEquipped = saveData[3].equippedData;
+    let pEquipped = await d.getSlotData(dbState.slot_selected, 'equippedData');
+
     // Enemy level = char_level if not specified
     if (!eLevel) {
         eLevel = pLevel;
@@ -226,7 +232,7 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         let weapon_attack_min = attackMinimum_stat.amt;
         let weapon_attack_max = attackMaximum_stat.amt;
         
-        let equipped_items = saveData[3].equippedData;
+        let equipped_items = pEquipped;
         let current_weapon = equipped_items.find(i => i.id === 'mh');
         
         // Use weapon stats if equipped
@@ -307,35 +313,33 @@ for (let lvl = 1; lvl <= 100; lvl++) {
 }
 
 // TAB: Display player / equipmemt stats
-export function update_stats() {
-    
-    // Reset elements
-    let e_tab_player_stats = document.getElementById('tab_player_stats');
-    if (e_tab_player_stats) {
-        e_tab_player_stats.innerHTML = '';
-    }
-
-    create_el('stats_info', 'div', e_tab_player_stats);
-    stats_info.innerHTML = '<b>CURRENT STATS</b><br><br>';
+export async function update_stats() {
 
 // Equipment stats
 
+try {
+
     // Player data
-    let d_player_character = saveData[1].savedCharacterData[0];
+    //OLD let d_player_character = saveData[1].savedCharacterData[0];
+    //OLD let player_level = d_player_character.char_level;
+    let d_player_character = (await d.getSlotData(dbState.slot_selected, 'savedCharacterData'))[0];
     let player_level = d_player_character.char_level;
-    
+
     // Main calc function call
     // Assumes enemy level is equal with player
-    const fetch_battleStats = update_battleStats(player_level);
+
+    const fetch_battleStats = await update_battleStats(player_level);
+
     // Function methods of update_battleStats
-    const hitChance = fetch_battleStats.calc_hitChance();
-    const critChance = fetch_battleStats.calc_meleeCriticalStrikeChance();
-    const critChance_magic = fetch_battleStats.calc_magicCriticalStrikeChance();
-    const [attack_min, attack_max] = fetch_battleStats.calc_meleeAttack();
-    const dmg_mit_armor = fetch_battleStats.calc_armorMitigation();
-    const resource_melee = fetch_battleStats.calc_resource_melee();
-    const total_health = fetch_battleStats.calc_totalHealth();
-    const [f_base_min, f_base_max] = fetch_battleStats.base_attacks();
+    const hitChance = await fetch_battleStats.calc_hitChance();
+    const critChance = await fetch_battleStats.calc_meleeCriticalStrikeChance();
+    const critChance_magic = await fetch_battleStats.calc_magicCriticalStrikeChance();
+    const [attack_min, attack_max] = await fetch_battleStats.calc_meleeAttack();
+    const dmg_mit_armor = await fetch_battleStats.calc_armorMitigation();
+    const resource_melee = await fetch_battleStats.calc_resource_melee();
+    const total_health = await fetch_battleStats.calc_totalHealth();
+    const [f_base_min, f_base_max] = await fetch_battleStats.base_attacks();
+
 /*
     console.log('STATS: ');
     console.log('hitChance: ' + hitChance);
@@ -348,16 +352,27 @@ export function update_stats() {
     console.log('total_health: ' + total_health);
     //console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
 */
+
+    //OLD let equipped_items = saveData[3].equippedData;
+    const equipped_items = await d.getSlotData(dbState.slot_selected, 'equippedData');
+    // Player mh weapon
+    const current_weapon = equipped_items.find(i => i.id === 'mh');
+
+    // Reset elements
+    let e_tab_player_stats = document.getElementById('tab_player_stats');
+    if (e_tab_player_stats) {
+        e_tab_player_stats.innerHTML = '';
+    }
+
+    create_el('stats_info', 'div', e_tab_player_stats);
+    stats_info.innerHTML = '<b>CURRENT STATS</b><br><br>';
+
     // Character stat descriptions
     let filtered_battleStats = battleStats.filter(s => s.dmg !== true);
     filtered_battleStats.forEach(stat => {
 
         // Output
         let stats_effect = `<span style="color:lightgreen">(Base)</span>`;
-
-        // Player mh weapon
-        let equipped_items = saveData[3].equippedData;
-        let current_weapon = equipped_items.find(i => i.id === 'mh');
 
         switch (stat.id) {
             case 'armor': 

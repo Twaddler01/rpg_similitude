@@ -8,12 +8,15 @@
 import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
 
 // general functions needed
+import { dbState } from './main.js';
 import * as gf from './general_functions.js';
 import { create_el } from './functions.js';
 import { removeItemTooltip, createItemElements } from './inventory.js';
 import * as e from './equipment.js';
+import * as d from './database.js';
+
 // Run first to initialize array
-export function update_character_array() {
+/*export function update_character_array() {
     
     // Get equipment ids
     let equippedItems = saveData[3].equippedData;
@@ -34,10 +37,10 @@ export function update_character_array() {
     update_equipment();
     // Stats only
     update_character_stats(false);
-}
+}*/
 
 // WIP: rename to update_equipment
-export function update_character() {
+export async function update_character() {
 
     let e_tab_player_equipment = document.getElementById('tab_player_equipment');
 
@@ -45,8 +48,6 @@ export function update_character() {
     if (e_tab_player_equipment) {
         e_tab_player_equipment.innerHTML = '';
     }
-
-    let charData = saveData[1].savedCharacterData[0];
 
     let char_equipment = document.createElement('div');
     e_tab_player_equipment.appendChild(char_equipment);
@@ -94,7 +95,7 @@ export function update_character() {
     create_el('equip_slot_oh', 'div', 'div_bottom_boxes');
     equip_slot_oh.classList.add('item-box');
 
-    let equippedItems = saveData[3].equippedData;
+    const equippedItems = await d.getSlotData(dbState.slot_selected, 'equippedData');
 
     // Update from character equipment array
     equippedItems.forEach(slot_data => {
@@ -140,11 +141,6 @@ export function update_character() {
             });
         }
     });
-    
-    // Add stats for equipmemt from equipped items
-    //update_equipment();
-    // Stats only
-    //update_character_stats(false);
 }
 
 // moving to e.fetch_playerStats

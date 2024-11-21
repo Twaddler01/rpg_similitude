@@ -10,6 +10,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 # Updates
 11-21-2024
 - Updated inventory.js to utilize the indexedDB database. Only a little left to migrate over!
+- Created temporary function to load an existing character slot template for testing purposes.
 
 11-20-2024
 - In process of converting code to SLOT format. Right now, code is between array (old method) and IndexedDB (new method). This will potentially use temporary arrays and direct updates to the database following JSON templates.

@@ -124,7 +124,7 @@ export async function update_character() {
             // new tt
             slot_container.addEventListener('click', (equip_tt) => {
                 removeItemTooltip('equipment');
-                createItemElements(slot_container, slot_data, equipmentElements, 'equipment');
+                createItemElements(slot_container, slot_data, equipmentElements, 'equipment', equippedItems);
                     
                 // Add event listeners to hide the tooltip
                 setTimeout(() => {
@@ -141,6 +141,9 @@ export async function update_character() {
             });
         }
     });
+    
+    // Update database
+    await d.updateSlotData(dbState.slot_selected, 'equippedData', equippedItems);
 }
 
 // moving to e.fetch_playerStats

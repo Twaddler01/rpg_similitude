@@ -316,9 +316,6 @@ for (let lvl = 1; lvl <= 100; lvl++) {
 export async function update_stats() {
 
 // Equipment stats
-
-try {
-
     // Player data
     //OLD let d_player_character = saveData[1].savedCharacterData[0];
     //OLD let player_level = d_player_character.char_level;

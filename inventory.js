@@ -1,15 +1,19 @@
 // inventory.js
 
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
+import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, trackingData } from './data.js';
+// saveData
+
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import { create_el, add_message } from './functions.js';
 import { update_battleStats } from './equipment.js';
+import * as d from './database.js'
+import { dbState } from './main.js';
 
 let selectedSlot = null;
 // Create a global object to store listeners by slot_id
 const inventorySlotListeners = {};
-export function update_inventory() {
+export async function update_inventory() {
 
     // Reset elements
     let e_tab_player_inventory = document.getElementById('tab_player_inventory');
@@ -17,18 +21,6 @@ export function update_inventory() {
         e_tab_player_inventory.innerHTML = '';
     }
 
-/*    let inventory_section = document.getElementById('inventory_section');
-    let inventory_section_container = document.getElementById('inventory_section_container');
-
-    if (!trackingData[0].t_inventory_section) {
-        inventory_section.addEventListener('click', () => {
-            gf.toggle_section('inventory');
-        });
-    } else {
-        // Clear section data
-        if (inventory_section_container) {
-            inventory_section_container.innerHTML = '';
-        }*/
     
         // Clear all previous event listeners first
         Object.keys(inventorySlotListeners).forEach(slot_id => {
@@ -39,7 +31,9 @@ export function update_inventory() {
             delete inventorySlotListeners[slot_id];
         });
         
-        let savedInventory = saveData[2].inventoryData;
+        //OLD let savedInventory = saveData[2].inventoryData;
+        let savedInventory = await d.getSlotData(dbState.slot_selected, 'inventoryData');
+
         let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
         let d_inventoryElements = inventoryElements.filter(i => i.type === 'slot');
         
@@ -82,7 +76,7 @@ export function update_inventory() {
             }
             
             function inventorySlotClicks() {
-                handleSlotClick(slot_container, slot_img, slot_counter, slot_data, d_inventoryElements);
+                handleSlotClick(slot_container, slot_img, slot_counter, slot_data, d_inventoryElements, savedInventory);
             }
             slot_container.addEventListener('click', inventorySlotClicks);
             
@@ -124,8 +118,9 @@ export function removeInventorySlotListener(slot_id) {
     }
 }
 
-export function updateLootCount(itemId, quantity, requestedSlot) {
-    let savedInventory = saveData[2].inventoryData;
+export async function updateLootCount(itemId, quantity, requestedSlot) {
+    //OLD let savedInventory = saveData[2].inventoryData;
+    let savedInventory = await d.getSlotData(dbState.slot_selected, 'inventoryData');
     let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
     let d_inventoryElements = inventoryElements.filter(i => i.type === 'slot'); // For updating element ids
     let lootItem = itemData.find(i => i.id === itemId);
@@ -147,6 +142,8 @@ export function updateLootCount(itemId, quantity, requestedSlot) {
                 let e_slot_img = document.getElementById(d_inventoryElements[i].e_slot_img);
                 e_slot_img.style.display = 'block';
                 e_slot_img.src = lootItem.img;
+                // Update database
+                await d.updateSlotData(dbState.slot_selected, 'inventoryData', savedInventory);
                 break;
             }
 
@@ -159,6 +156,7 @@ export function updateLootCount(itemId, quantity, requestedSlot) {
                     e_slot_counter.innerHTML = slot_data.cnt;
                 }
                 itemFound = true;
+                await d.updateSlotData(dbState.slot_selected, 'inventoryData', savedInventory);
                 break;
             }
         }
@@ -181,6 +179,7 @@ export function updateLootCount(itemId, quantity, requestedSlot) {
                         e_slot_img.src = lootItem.img;
                     }
                     // (e_slot_counter is hidden for single items)
+                    await d.updateSlotData(dbState.slot_selected, 'inventoryData', savedInventory);
                     break;
                 }
             }
@@ -205,22 +204,26 @@ export function updateLootCount(itemId, quantity, requestedSlot) {
             add_message('Inventory is full.');
         }
     }
-    
+
     if (lootItem && lootItem.id === 'GOLD') {
     // If the loot item is gold, add it here
-        let d_gold = saveData[4].currencyData[0];
+        //OLF let d_gold = saveData[4].currencyData[0];
+        let d_currencyData = await d.getSlotData(dbState.slot_selected, 'currencyData');
+        let d_gold = d_currencyData[0];
+
         if (d_gold) {
             d_gold.cnt += quantity;
             let e_check = document.getElementById('gold_container');
             if (e_check) {
                 update_gold();
             }
+            await d.updateSlotData(dbState.slot_selected, 'currencyData', d_currencyData);
         }
     }
 }
 
 // Function to handle various slot click situations
-export function handleSlotClick(slot_container, slotImg, slotCounter, slot_data, d_inventoryElements) {
+export async function handleSlotClick(slot_container, slotImg, slotCounter, slot_data, d_inventoryElements, savedInventory) {
 
     // Clear all tooltips found in inventory
     removeItemTooltip('inventory');
@@ -244,7 +247,7 @@ export function handleSlotClick(slot_container, slotImg, slotCounter, slot_data,
         if (selectedSlot.slot_container === slot_container) {
             // If the selected slot is clicked again, show tooltip, reset
             // Show tooltip
-            createItemElements(slot_container, slot_data, d_inventoryElements, 'inventory');
+            createItemElements(slot_container, slot_data, d_inventoryElements, 'inventory', savedInventory);
             // Reset
             selectedSlot = null;
             slot_container.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
@@ -276,6 +279,9 @@ export function handleSlotClick(slot_container, slotImg, slotCounter, slot_data,
 
             // Reset the selectedSlot
             selectedSlot = null;
+
+            // Update database
+            await d.updateSlotData(dbState.slot_selected, 'inventoryData', savedInventory);
 
         } else if (slot_data.contents !== '[ EMPTY ]') {
             // Swap the items between the two slots
@@ -317,6 +323,9 @@ export function handleSlotClick(slot_container, slotImg, slotCounter, slot_data,
         
             // Reset the selectedSlot
             selectedSlot = null;
+            
+            // Update database
+            await d.updateSlotData(dbState.slot_selected, 'inventoryData', savedInventory);
         }
     }
     applyTransparencyToEmptySlots();
@@ -328,8 +337,9 @@ export function handleSlotClick(slot_container, slotImg, slotCounter, slot_data,
 }
 
 // Ensure empty slots have the transparent background
-function applyTransparencyToEmptySlots() {
-    let savedInventory = saveData[2].inventoryData;
+async function applyTransparencyToEmptySlots() {
+    //OLD let savedInventory = saveData[2].inventoryData;
+    let savedInventory = await d.getSlotData(dbState.slot_selected, 'inventoryData');
     let slot = savedInventory.filter(i => i.type === 'slot');
 
     for (let i = 1; i <= slot.size; i++) {
@@ -353,10 +363,11 @@ function applyTransparencyToEmptySlots() {
 // applyTransparencyToEmptySlots();
 
 // Setup gold elements, purchases, etc
-export function update_gold() {
+export async function update_gold() {
     let inventory_section = document.getElementById('inventory_section_container');
-    let d_gold = saveData[4].currencyData[0];
-
+    //OLD let d_gold = saveData[4].currencyData[0];
+    let d_currencyData = await d.getSlotData(dbState.slot_selected, 'currencyData');
+    let d_gold = d_currencyData[0];
     let e_gold_container = document.getElementById('gold_container');
 
     if (e_gold_container) {
@@ -380,7 +391,7 @@ export function update_gold() {
 }
 
 // Setup each tooltip box
-function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
+async function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type, savedInventory) {
 
     // Clear all elements
     let e_tooltip_container_div = document.getElementById(tooltip_container_div);
@@ -514,8 +525,11 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
 
     if (item.value > 0) {
         
-        function sell_item(all) {
-            let d_gold = saveData[4].currencyData[0];
+        async function sell_item(all) {
+            //OLD let d_gold = saveData[4].currencyData[0];
+            let d_currencyData = await d.getSlotData(dbState.slot_selected, 'currencyData');
+            let d_gold = d_currencyData[0];
+
             if (all === 'all') {
                 d_gold.cnt += (item.value * slot_data.cnt);
                 slot_data.cnt = 0;
@@ -527,6 +541,8 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                     slot_data.contents = '[ EMPTY ]';
                 }
             }
+            await d.updateSlotData(dbState.slot_selected, 'currencyData', d_currencyData);
+            await d.updateSlotData(dbState.slot_selected, 'inventoryData', savedInventory);
             update_gold();
             update_inventory();
         }
@@ -548,6 +564,8 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
             create_el('sell_action2', 'button', 'sell_price_container_2');
             sell_action2.innerHTML = '<span class="light_small" style="color:black">Sell (ALL)</span>';
             sell_action2.addEventListener('click', () => {
+                // Clear inventory event listener to prevent item movement on click after change
+                removeInventorySlotListener(slot_data.slot_id);
                 sell_item('all');
             });
         }
@@ -557,7 +575,9 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
         
         // Destroy item option
         // Only available if not clicked from equipment slot and has no sell price
-        let saveDataEquip = saveData[3].equippedData;
+        //OLD let saveDataEquip = saveData[3].equippedData;
+        let saveDataEquip = await d.getSlotData(dbState.slot_selected, 'equippedData');
+
         let equipped_item = saveDataEquip.find(i => i.equipped === item.id);
         let e_equipment_id = document.getElementById('equipment_tooltip_container_' + item.id);
         let nosell_inventory_item = e_equipment_id && equipped_item ? false : true;
@@ -587,6 +607,7 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                 confirm_yes.addEventListener('click', () => {
                     slot_data.contents = '[ EMPTY ]';
                     slot_data.cnt = 0;
+                    d.updateSlotData(dbState.slot_selected, 'inventoryData', savedInventory);
                     update_inventory();
                 });
                 create_el('confirm_no', 'button', 'destroy_sect');
@@ -602,10 +623,12 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
     // Setup equip buttons
     if (tt_type === 'equipment') {
         // Get equipped items
-        let saveDataEquip = saveData[3].equippedData;
+        //OLD let saveDataEquip = saveData[3].equippedData;
+        let saveDataEquip = await d.getSlotData(dbState.slot_selected, 'equippedData');
 
         // Find equipped item in saveData array
-        saveDataEquip.forEach(saveItem => {
+        //OLD saveDataEquip.forEach(saveItem => {
+        for (const saveItem of saveDataEquip) {
 
             //let matched_item_equipped = itemData.find(i => i.id === saveItem.equipped && i.slot === item.slot);
             let e_equipment_slot = document.getElementById('equip_slot_' + item.slot);
@@ -620,16 +643,21 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                 create_el('unequip_btn', 'button', 'equip_actions');
                 unequip_btn.innerHTML = 'REMOVE';
                 unequip_btn.addEventListener('click', () => {
-                    swap_equipment(item.id, 'remove');
+                    swap_equipment(item.id, 'remove', saveItem, saveDataEquip);
                 });
             }
-        });
+        //OLD });
+        }
     }
     
     if (tt_type === 'inventory') {
         // Get inventory items
-        let saveDataInv = saveData[2].inventoryData;
-        let saveDataEquip = saveData[3].equippedData;
+        //OLD let saveDataInv = saveData[2].inventoryData;
+        let saveDataInv = await d.getSlotData(dbState.slot_selected, 'inventoryData');
+
+        //OLD let saveDataEquip = saveData[3].equippedData;
+        let saveDataEquip = await d.getSlotData(dbState.slot_selected, 'equippedData');
+
         // Find equipment items in inventoryData array
         saveDataInv.forEach(ei => {
             let d_EquipItemData = itemData.find(i => i.id === ei.contents && i.type === 'armor' || i.id === ei.contents && i.type === 'weapon');
@@ -646,10 +674,8 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                     equip_actions2.innerHTML = '<b>Equipment Actions:</b> ';
                     create_el('equip_btn', 'button', 'equip_actions2');
                     equip_btn.innerHTML = 'EQUIP';
-                    equip_btn.addEventListener('click', () => {
-                        
-                        // Store current item data first
-                        let item_clicked = item;
+                    equip_btn.addEventListener('click', async () => {
+                        // Get slot id clicked
                         let item_slot_clicked = slot_data.slot_id;
                         // Clear all previous event listeners first
                         Object.keys(inventorySlotListeners).forEach(slot_id => {
@@ -665,10 +691,14 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                         if (equip_slot && equip_slot.equipped) {
                             // Clear inventory slot accessed
                             slot_data.contents = '[ EMPTY ]';
-                            // Add equipped item back to same inventory slot
-                            updateLootCount(equip_slot.equipped, 1, item_slot_clicked);
+                            // Store old item
+                            let old_item = equip_slot.equipped;
                             // Swap new iten with equipment slot item
                             equip_slot.equipped = item.id;
+                            // Add equipped item back to same inventory slot
+                            await updateLootCount(old_item, 1, item_slot_clicked);
+                            // Update database
+                            await d.updateSlotData(dbState.slot_selected, 'equippedData', saveDataEquip);
                             update_inventory();
                             return;
                         }
@@ -682,6 +712,9 @@ function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type) {
                             empty_equip_slot.equipped = item.id;
                             empty_equip_slot.id = item.slot;
                             //console.log('check ids: ... equipped: ' + current_empty.equipped + '/ id: ' + current_empty.id)
+                            // Update database
+                            d.updateSlotData(dbState.slot_selected, 'inventoryData', saveDataInv);
+                            d.updateSlotData(dbState.slot_selected, 'equippedData', saveDataEquip);
                             update_inventory();
                             //console.log(equip_slot);
                             return;
@@ -730,7 +763,7 @@ export function removeItemTooltip(type) {
     }
 }
 
-export function createItemElements(slot_container, slot_data, elements, type) {
+export function createItemElements(slot_container, slot_data, elements, type, savedInventory) {
 
     if (type === 'inventory') {
 
@@ -757,7 +790,7 @@ export function createItemElements(slot_container, slot_data, elements, type) {
             tooltip_container_div.style.pointerEvents = 'auto'; // Allow interactions with the tooltip
             
             let item = itemData.find(i => i.id === slot_data.contents);
-            setup_tooltip_div(tooltip_container_div.id, item, slot_data, 'inventory');
+            setup_tooltip_div(tooltip_container_div.id, item, slot_data, 'inventory', savedInventory);
         }
     }
     if (type === 'equipment') {
@@ -779,7 +812,7 @@ export function createItemElements(slot_container, slot_data, elements, type) {
 
             let item = itemData.find(i => i.id === slot_data.equipped);
             if (item) {
-                setup_tooltip_div(tooltip_container_div.id, item, slot_data, 'equipment');
+                setup_tooltip_div(tooltip_container_div.id, item, slot_data, 'equipment', savedInventory);
             }
         }
 
@@ -787,29 +820,28 @@ export function createItemElements(slot_container, slot_data, elements, type) {
 }
 
 // Swap equipment as equipped/unequipped after clicking 'EQUIP'/'REMOVE'
-export function swap_equipment(item, action) {
+export async function swap_equipment(item, action, saveItem, saveDataEquip) {
 
     let d_itemData = itemData.find(i => i.id === item);
-    let saveDataEquipAll = saveData[3].equippedData;
-    let saveDataEquip = saveDataEquipAll.filter(e => e.equipped !== null);
-    let equipped_item = saveDataEquip.find(i => i.equipped === d_itemData.id);
     let equipped_item_container = 'equipment_tooltip_container_' + d_itemData.id;
     let e_equipped_item_container = document.getElementById(equipped_item_container);
 
     // Remove: remove item from equipped
-    if (action === 'remove' && e_equipped_item_container && equipped_item && equipped_item.equipped === item) {
+    if (action === 'remove' && e_equipped_item_container && saveItem && saveItem.equipped === item) {
 
         // Remember item
         let item_to_remove = item;
         let d_itemData_item_to_remove = itemData.find(i => i.id === item_to_remove);
-        // Clear item from equippes
-        equipped_item.equipped = null;
+        // Clear item from equipped
+        saveItem.equipped = null;
 
         // Add previously equipped item back into inventory
         if (item_to_remove) {
             updateLootCount(item_to_remove, 1);
         }
-        
+
+        // Update database
+        await d.updateSlotData(dbState.slot_selected, 'equippedData', saveDataEquip);
         // Reload character equipment & stats
         ch.update_character();
     }

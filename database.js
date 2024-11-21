@@ -2,100 +2,6 @@
 
 import { dbInstance, dbState, new_game, layout_loadTabs, clear_game_elements } from './main.js';
 import { create_el } from './functions.js';
-//import { trackingData, init_trackingData } from './data.js';
-//import { new_game } from './main.js';
-
-/*
-// Works currently / page refesh will update db
-let dbInstance = null; // Global variable to store the database instance
-function initDatabase() {
-    return new Promise((resolve, reject) => {
-        // Close the existing database connection if it’s open
-        if (dbInstance) {
-            dbInstance.close();
-            console.log('Closed existing database connection');
-        }
-
-        const dbRequest = indexedDB.open('GameDatabase', 1);
-
-        // Handle database creation and object store setup
-        dbRequest.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains('saveStates')) {
-                db.createObjectStore('saveStates', { keyPath: 'slotId' });
-                console.log('saveStates object store created');
-            }
-        };
-
-        dbRequest.onsuccess = async (event) => {
-            dbInstance = event.target.result; // Store the database instance globally
-
-            // Listen for a version change event to close the database gracefully
-            dbInstance.onversionchange = () => {
-                dbInstance.close();
-                console.log('Database connection closed due to version change');
-            };
-
-            try {
-                // Fetch the JSON data
-                const response = await fetch('test.json');
-                if (!response.ok) throw new Error('Failed to fetch JSON data');
-                const jsonData = await response.json();
-
-                // Start a new transaction for adding data to the store
-                const transaction = dbInstance.transaction(['saveStates'], 'readwrite');
-                const store = transaction.objectStore('saveStates');
-
-                // Add data to the store
-                jsonData.forEach(slot => {
-                    const checkRequest = store.get(slot.slotId);
-
-                    checkRequest.onsuccess = () => {
-                        if (checkRequest.result) {
-                            // If an entry with this slotId exists, use put to update it
-                            const updateRequest = store.put(slot);
-                            updateRequest.onsuccess = () => console.log('Slot updated:', slot);
-                            updateRequest.onerror = (error) => console.error('Error updating slot:', error);
-                        } else {
-                            // If no entry exists, add the new entry
-                            const addRequest = store.add(slot);
-                            addRequest.onsuccess = () => console.log('Slot added:', slot);
-                            addRequest.onerror = (error) => console.error('Error adding slot:', error);
-                        }
-                    };
-
-                    checkRequest.onerror = (error) => console.error('Error checking for existing slot:', error);
-                });
-
-                // Resolve once transaction completes
-                transaction.oncomplete = () => {
-                    console.log('Transaction completed');
-                    resolve(); // Resolve the promise here
-                };
-
-                transaction.onerror = (error) => {
-                    console.error('Transaction failed:', error);
-                    reject(error); // Reject if transaction fails
-                };
-                
-            } catch (error) {
-                console.error('Failed to load JSON data:', error);
-                reject(error);
-            }
-        };
-
-        dbRequest.onerror = (event) => {
-            console.error('Error initializing database:', event.target.errorCode);
-            reject(event.target.errorCode);
-        };
-    });
-}
-
-// Now call `initDatabase`, then call `displaySaveSlots` after init completes
-initDatabase()
-    .then(() => d.displaySaveSlots())
-    .catch(error => console.error('Initialization error:' + error));
-*/
 
 export function displaySaveSlots() {
     //console.log('displaySaveSlots function started');
@@ -335,7 +241,7 @@ export function updateSlotData(slotId, section, newValues) {
                 const updateRequest = store.put(slot);
 
                 updateRequest.onsuccess = () => {
-                    console.log(`Slot ${slotId} successfully updated in section "${section}".`);
+                    //console.log(`Slot ${slotId} successfully updated in section "${section}".`);
                 };
 
                 updateRequest.onerror = (event) => {

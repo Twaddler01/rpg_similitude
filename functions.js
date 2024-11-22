@@ -1,10 +1,9 @@
 // functions.js
 
-import { equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, gatherData, trackingData } from './data.js';
+import { itemData, locationsData, characterData, encounterData, trackingData } from './data.js';
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
-import { update_battleStats, fetch_playerStats } from './equipment.js';
 import * as d from './database.js';
 import { dbState } from './main.js';
 
@@ -64,6 +63,7 @@ export function create_el(newId, type, parentId, content) {
     return new_el;
 }
 
+// OUT OF DATE SINCE indexedDB
 let add_message_cnt_test = -1;
 export function add_test_section() {
 

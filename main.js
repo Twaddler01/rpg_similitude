@@ -321,156 +321,155 @@ function start_game() {
 // Setup tab layout
 export async function layout_loadTabs() {
 
-// Find the title_section element
-const title_section = document.getElementById('title_section');
+    // Find the title_section element
+    const title_section = document.getElementById('title_section');
 
-let e_new_content = document.getElementById('new_content');
-if (e_new_content) {
-    e_new_content.remove();
-}
-let new_content = document.createElement('div');
-new_content.id = 'new_content';
-title_section.insertAdjacentElement('afterend', new_content);
-new_content.innerHTML = `
-<div style="position: relative;">
-  <div id="scrollable-container">
-    <div id="game_messages_lbl"><b>MESSAGES</b></div>
-      <div id="game_messages">Welcome to RPG Similitude!</div>
+    let e_new_content = document.getElementById('new_content');
+    if (e_new_content) {
+        e_new_content.remove();
+    }
+    let new_content = document.createElement('div');
+    new_content.id = 'new_content';
+    title_section.insertAdjacentElement('afterend', new_content);
+    new_content.innerHTML = `
+    <div style="position: relative;">
+      <div id="scrollable-container">
+        <div id="game_messages_lbl"><b>MESSAGES</b></div>
+          <div id="game_messages">Welcome to RPG Similitude!</div>
+        </div>
+      <div id="scroll-gradient"></div>
     </div>
-  <div id="scroll-gradient"></div>
-</div>
 
-<div id="playerInfo_div" style="border: 1px solid #ccc; padding: 5px;">
-  <div id="playerInfo_name"><b>noname</b></div>
-  <div id="playerInfo_level">Level nolevel norace noclass</div>
-</div>
+    <div id="playerInfo_div" style="border: 1px solid #ccc; padding: 5px;">
+      <div id="playerInfo_name"><b>noname</b></div>
+      <div id="playerInfo_level">Level nolevel norace noclass</div>
+    </div>
 
-<div class="tab-wrapper">
-  <div class="tab-container">
-    <div class="tab" onclick="showTabContent(1)">MAIN</div>
-    <div class="tab" onclick="showTabContent(2)">EQUIPMENT</div>
-    <div class="tab" onclick="showTabContent(3)">STATS</div>
-    <div class="tab" onclick="showTabContent(4)">INVENTORY</div>
-    <div class="tab" onclick="showTabContent(5)">BATTLE</div>
-    <div class="tab" onclick="showTabContent(6)">GATHER</div>
-    <div class="tab" onclick="showTabContent(7)">Tab 7</div>
-  </div>
-</div>
-<div id="content-container">
-  <div id="tab_main" class="location_box_style"></div>
-  <div id="tab_player_equipment" class="location_box_style"></div>
-  <div id="tab_player_stats" class="location_box_style"></div>
-  <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
-  <div id="tab_player_battle"></div>
-  <div id="tab_player_gather" class="location_box_style"></div>
-  <!-- <div id="tab_7" class="location_box_style"></div> -->
-</div>
-`;
-
-// Display player info
-
-// OLD... let d_char = saveData[1].savedCharacterData[0];
-// Only has 1 index at 0
-let d_char = (await d.getSlotData(dbState.slot_selected, 'savedCharacterData'))[0];
-let playerInfo_name = document.getElementById('playerInfo_name');
-playerInfo_name.innerHTML = '<b>' + d_char.char_name + '</b>';
-let playerInfo_level = document.getElementById('playerInfo_level');
-playerInfo_level.innerHTML = 'Level ' + d_char.char_level + '&nbsp;' + d_char.char_race + '&nbsp;' + d_char.char_class;
-
-// Message scrolling behavior
-const container = document.getElementById("scrollable-container");
-const gradient = document.getElementById("scroll-gradient");
-
-container.addEventListener("scroll", () => {
-  const isAtBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
-
-  if (isAtBottom) {
-    gradient.style.opacity = "0"; // Hide gradient when at the bottom
-  } else {
-    gradient.style.opacity = "1"; // Show gradient when scrolling up
-  }
-});
-
-// Attach showTabContent to the window to ensure global accessibility
-window.showTabContent = async function(tabNumber) {
-  const contentContainer = document.getElementById("content-container");
-
-  // Clear previous content
-  if (contentContainer) {
-    contentContainer.innerHTML = "";
-  }
-  // Remove active class from all tabs
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.classList.remove("active");
-  });
-
-  // Set the clicked tab as active
-  const activeTab = document.querySelector(`.tab:nth-child(${tabNumber})`);
-  activeTab.classList.add("active");
-
-  // TAB 1 on page load
-  // Generate content for each tab
-  if (tabNumber === 1) {
-    const tab0Content = document.createElement("div");
-    tab0Content.innerHTML = `
+    <div class="tab-wrapper">
+      <div class="tab-container">
+        <div class="tab" onclick="showTabContent(1)">MAIN</div>
+        <div class="tab" onclick="showTabContent(2)">EQUIPMENT</div>
+        <div class="tab" onclick="showTabContent(3)">STATS</div>
+        <div class="tab" onclick="showTabContent(4)">INVENTORY</div>
+        <div class="tab" onclick="showTabContent(5)">BATTLE</div>
+        <div class="tab" onclick="showTabContent(6)">GATHER</div>
+        <div class="tab" onclick="showTabContent(7)">Tab 7</div>
+      </div>
+    </div>
+    <div id="content-container">
       <div id="tab_main" class="location_box_style"></div>
-    `;
-    contentContainer.appendChild(tab0Content);
-    // Load main
-    m.init_main_tab();
-  } else if (tabNumber === 2) {
-    const tab1Content = document.createElement("div");
-    tab1Content.innerHTML = `
       <div id="tab_player_equipment" class="location_box_style"></div>
-    `;
-    contentContainer.appendChild(tab1Content);
-    // Load character equipment
-    ch.update_character();
-  } else if (tabNumber === 3) {
-    const tab2Content = document.createElement("div");
-    tab2Content.innerHTML = `
       <div id="tab_player_stats" class="location_box_style"></div>
-    `;
-    contentContainer.appendChild(tab2Content);
-    // Load character stats
-    e.update_stats();
-  } else if (tabNumber === 4) {
-    const tab3Content = document.createElement("div");
-    tab3Content.innerHTML = `
       <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
-    `;
-    contentContainer.appendChild(tab3Content);
-    // Load inventory
-    inv.update_inventory();
-  } else if (tabNumber === 5) {
-    const tab4Content = document.createElement("div");
-    tab4Content.innerHTML = `
       <div id="tab_player_battle"></div>
-    `;
-    contentContainer.appendChild(tab4Content);
-    // Load battle/location elements
-    b.reset_battle();
-  } else if (tabNumber === 6) {
-    const tab5Content = document.createElement("div");
-    tab5Content.innerHTML = `
       <div id="tab_player_gather" class="location_box_style"></div>
+      <!-- <div id="tab_7" class="location_box_style"></div> -->
+    </div>
     `;
-    contentContainer.appendChild(tab5Content);
-    // Load gather elements
-    g.update_gather();
-} else {
-    // Other tab content can be handled here if needed
-    const otherContent = document.createElement("div");
-    otherContent.textContent = `Content for Tab ${tabNumber}`;
-    contentContainer.appendChild(otherContent);
-  }
+
+    // Display player info
+
+    // OLD... let d_char = saveData[1].savedCharacterData[0];
+    // Only has 1 index at 0
+    let d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+    let d_char = d_savedCharacterData[0];
+    let playerInfo_name = document.getElementById('playerInfo_name');
+    playerInfo_name.innerHTML = '<b>' + d_char.char_name + '</b>';
+    let playerInfo_level = document.getElementById('playerInfo_level');
+    playerInfo_level.innerHTML = 'Level ' + d_char.char_level + '&nbsp;' + d_char.char_race + '&nbsp;' + d_char.char_class;
+
+    // Message scrolling behavior
+    const container = document.getElementById("scrollable-container");
+    const gradient = document.getElementById("scroll-gradient");
+
+    container.addEventListener("scroll", () => {
+      const isAtBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
+
+      if (isAtBottom) {
+        gradient.style.opacity = "0"; // Hide gradient when at the bottom
+      } else {
+        gradient.style.opacity = "1"; // Show gradient when scrolling up
+      }
+    });
+
+    // Attach showTabContent to the window to ensure global accessibility
+    window.showTabContent = async function(tabNumber) {
+      const contentContainer = document.getElementById("content-container");
+
+      // Clear previous content
+      if (contentContainer) {
+        contentContainer.innerHTML = "";
+      }
+      // Remove active class from all tabs
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.classList.remove("active");
+      });
+
+      // Set the clicked tab as active
+      const activeTab = document.querySelector(`.tab:nth-child(${tabNumber})`);
+      activeTab.classList.add("active");
+
+      // TAB 1 on page load
+      // Generate content for each tab
+      if (tabNumber === 1) {
+        const tab0Content = document.createElement("div");
+        tab0Content.innerHTML = `
+          <div id="tab_main" class="location_box_style"></div>
+        `;
+        contentContainer.appendChild(tab0Content);
+        // Load main
+        m.init_main_tab();
+      } else if (tabNumber === 2) {
+        const tab1Content = document.createElement("div");
+        tab1Content.innerHTML = `
+          <div id="tab_player_equipment" class="location_box_style"></div>
+        `;
+        contentContainer.appendChild(tab1Content);
+        // Load character equipment
+        ch.update_character();
+      } else if (tabNumber === 3) {
+        const tab2Content = document.createElement("div");
+        tab2Content.innerHTML = `
+          <div id="tab_player_stats" class="location_box_style"></div>
+        `;
+        contentContainer.appendChild(tab2Content);
+        // Load character stats
+        e.update_stats();
+      } else if (tabNumber === 4) {
+        const tab3Content = document.createElement("div");
+        tab3Content.innerHTML = `
+          <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
+        `;
+        contentContainer.appendChild(tab3Content);
+        // Load inventory
+        inv.update_inventory();
+      } else if (tabNumber === 5) {
+        const tab4Content = document.createElement("div");
+        tab4Content.innerHTML = `
+          <div id="tab_player_battle"></div>
+        `;
+        contentContainer.appendChild(tab4Content);
+        // Load battle/location elements
+        b.reset_battle();
+      } else if (tabNumber === 6) {
+        const tab5Content = document.createElement("div");
+        tab5Content.innerHTML = `
+          <div id="tab_player_gather" class="location_box_style"></div>
+        `;
+        contentContainer.appendChild(tab5Content);
+        // Load gather elements
+        g.update_gather();
+    } else {
+        // Other tab content can be handled here if needed
+        const otherContent = document.createElement("div");
+        otherContent.textContent = `Content for Tab ${tabNumber}`;
+        contentContainer.appendChild(otherContent);
+      }
 
 
-};
-
-// Load default tab first
-showTabContent(1);
-
+    };
+    // Load default tab first
+    showTabContent(1);
 }
 
 // Temporarily change background color and disable onclick for elements with the "tab" class

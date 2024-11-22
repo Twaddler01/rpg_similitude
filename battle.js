@@ -14,9 +14,7 @@ export async function fetch_playerStats(opt) {
     let stats = await update_battleStats();
 
     playerStats.max_health = await stats.calc_totalHealth();
-    // playerStats.cur_health
     playerStats.max_resource = await stats.calc_resource_melee();
-    // playerStats.cur_resource
 
     if (opt === 'new') {
         // Reset current health
@@ -276,7 +274,6 @@ export function getMaxLevelsByLocation(locationsData) {
 export function update_health() {
 
 // PLAYER
-
     // Data needed
     let playerStats = characterData.find(d => d.id === 'player_stats');
     // Elements to update
@@ -318,7 +315,6 @@ export function update_health() {
     }
 
 // ENEMY
-
     let encounter = encounterData.find(e => e.loc === trackingData[0].loc && e.lvl === trackingData[0].lvl);
 
     // First encounter
@@ -725,10 +721,6 @@ export async function start_battle() {
         // Choose random array index of enemyList;
         let enemyList = encounter.enemy_list;
         random_enemy = choose_enemy(enemyList);
-        //console.log('random_enemy');
-        //console.log(random_enemy);
-        //console.log('encounter');
-        //console.log(encounter);
 
         // Mark enemy alive
         random_enemy.dead = false;
@@ -929,22 +921,7 @@ let total_health = await fetch_battleStats.calc_totalHealth();
 let missChance = Math.round((1 - hitChance) * 1000) / 1000;
 let noCritChance = Math.round((1 - critChance) * 1000) / 1000;
 
-/*
-console.log('missChance: ' + missChance);
-console.log('noCritChance: ' + noCritChance);
-console.log('attack_min: ' + attack_min);
-console.log('attack_max: ' + attack_max);
-console.log('dmg_mit_armor: ' + dmg_mit_armor);
-console.log('resource_melee: ' + resource_melee);
-console.log('total_health: ' + total_health);
-*/
-
-//console.log(playerStats);
-//console.log(enemy);
-//console.log(encounter);
-
 // PLAYER TURN
-
     // While enemy is alive
     if (!enemy.dead) {
 
@@ -1067,8 +1044,6 @@ console.log('total_health: ' + total_health);
             new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;You gained ' + exp_to_add + ' experience.';
 
             // Log level increase
-            //OLD d_player_character = saveData[1].savedCharacterData[0];
-///*
             const d_savedCharacterData2 = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
             const d_player_character2 = d_savedCharacterData2[0];
 
@@ -1076,7 +1051,6 @@ console.log('total_health: ' + total_health);
                 new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;Congratulations! You have reached level ' + d_player_character2.char_level + '!';
                 add_message('Congratulations! You have reached level ' + d_player_character2.char_level + '!');
             }
-//*/
 
             // Check if any drops are present
             if (enemy.drops.length > 0) {

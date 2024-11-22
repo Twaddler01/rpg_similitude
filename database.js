@@ -239,11 +239,11 @@ export function loadGame(slotNum, slot) {
 
   // If data is for an existing game
   if (slot.state === 'Load Game') {
-    console.log('Loaded game... ' + JSON.stringify(slot,2,null));
+    //console.log('Loaded game... ' + JSON.stringify(slot,2,null));
     dbState.game_type_load = true;
   // If data is for a new game
   } else {
-    console.log('New Game... ' + JSON.stringify(slot,2,null));
+    //console.log('New Game... ' + JSON.stringify(slot,2,null));
     dbState.game_type_load = false;
   }
 

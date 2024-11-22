@@ -1,13 +1,12 @@
 // gather.js
 
 import { gatherData, trackingData } from './data.js';
-import { toggle_section } from './general_functions.js';
 import { create_el, create_bar_elements } from './functions.js';
 import { dbState } from './main.js';
 import * as d from './database.js';
 
 export async function update_gather() {
-    
+
     let e_tab_player_gather = document.getElementById('tab_player_gather');
 
     // Clear any existing elements
@@ -18,7 +17,7 @@ export async function update_gather() {
     let gather_messages_div = create_el('gather_messages_div', 'div', e_tab_player_gather);
     gather_messages_div.classList.add('normal');
     create_el('new_gather', 'div', e_tab_player_gather);
-    
+
     //OLD let saveData_gatherData = saveData[5].gatherData;
     const saveData_gatherData = await d.getSlotData(dbState.slot_selected, 'gatherData');
     //OLD let d_gold = saveData[4].currencyData[0];
@@ -54,7 +53,7 @@ export async function update_gather() {
                 }
             }
             gather_learn_btn.addEventListener('click', gather_learn_click);
-            
+
             let gold_img = create_el('gold_img', 'img', gather_learn_div);
             gold_img.src = 'media/currency_gold.png';
             gold_img.classList.add('currency_gold');
@@ -67,23 +66,23 @@ export async function update_gather() {
         } else {
             load_gather();
         }
-        
+
         function load_gather() {
 
             let gather_ready_container = create_el('gather_ready_container', 'div', e_tab_player_gather);
-            
+
             // Skill label and XP bar
             let gather_label = create_el('gather_label', 'div', gather_ready_container);
             gather_label.classList.add('bar_label_container');
-        
+
             let gather_label_left = create_el('gather_label_left', 'span', gather_label);
             gather_label_left.classList.add('bar_left_label');
             gather_label_left.innerHTML = gather.name.toUpperCase();;
-        
+
             let gather_label_right = create_el('gather_label_right', 'span', gather_label);
             gather_label_right.classList.add('bar_right_label');
             gather_label_right.innerHTML = 'Level: ' + saved_gatherData.lvl;
-            
+
             let f_skill_xp = create_el('f_skill_xp', 'div', gather_label);
             // Skill XP level formula
             let xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl * 10) / 10;
@@ -130,9 +129,9 @@ export async function update_gather() {
                     material.forEach((mat, index) => {
                         let d_saved_gatherData_inventory = saved_gatherData.inventory;
                         let gather_inventory = d_saved_gatherData_inventory[index];
-                        
+
                         let gather_row = create_el('gather_row', 'div', e_tab_player_gather);
-                        
+
                         let gather_table = create_el('gather_table', 'table', gather_row);
                         gather_table.style.width = '100%';
                         let tr = create_el('tr', 'tr', gather_table);
@@ -142,7 +141,7 @@ export async function update_gather() {
                         gather_img.classList.add('basic_icon');
                         gather_img.src = mat.img;
                         let td_2 = create_el('td_2', 'td', tr);
-        
+
                         // Create the main progress bar container
                         let progress_div = create_el('progress_div', 'div', td_2);
                         progress_div.classList.add('center');
@@ -150,14 +149,14 @@ export async function update_gather() {
                         progress_div.style.width = '200px';
                         progress_div.style.border = 'white 1px solid';
                         progress_div.style.position = 'relative'; // Allows positioning of inner elements
-                        
+
                         // Create the fill element inside the progress bar
                         let progress_fill = create_el('progress_fill', 'div', progress_div);
                         progress_fill.style.height = '100%';
                         progress_fill.style.backgroundColor = 'green';
                         progress_fill.style.width = '0%'; // Initial width set to 0, updated later based on progress
                         progress_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
-                        
+
                         // Display text above the fill element
                         let progress_text = create_el('progress_text', 'div', progress_div);
                         progress_text.style.color = 'white';
@@ -167,20 +166,20 @@ export async function update_gather() {
                         progress_text.style.top = '0';
                         progress_text.style.left = '0';
                         progress_text.style.textAlign = 'center';
-                        
+
                         // Gathered amount display
                         let td_3 = create_el('td_3', 'td', tr);
                         td_3.classList.add('center');
                         td_3.style.fontSize = '12px';
                         td_3.style.verticalAlign = 'center';
                         td_3.innerHTML = mat.name;
-                        
+
                         let td_4 = create_el('td_4', 'td', tr);
                         td_4.classList.add('center');
                         td_4.style.fontSize = '12px';
                         td_4.style.verticalAlign = 'center';
                         td_4.innerHTML = gather_inventory.cnt;
-                        
+
                         // Set progress values
                         let d_progress_total = mat.hp;
                         let d_progress_curr = mat.hp;
@@ -190,7 +189,7 @@ export async function update_gather() {
                         let progress_percent = (d_progress_curr / d_progress_total) * 100;
                         progress_fill.style.width = progress_percent + '%';
                         progress_text.innerHTML = 'GATHER: ' + d_progress_curr + ' / ' + d_progress_total;
-                        
+
                         // Gather click action
                         function gather_click() {
                             if (d_progress_curr === 0) {
@@ -218,9 +217,9 @@ export async function update_gather() {
                                 d.updateSlotData(dbState.slot_selected, 'gatherData', saveData_gatherData);
                             }
                         }
-                        
+
                         td_1.addEventListener('click', gather_click);
-                        
+
                     });
                 }
             }

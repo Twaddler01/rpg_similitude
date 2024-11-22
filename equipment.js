@@ -1,11 +1,10 @@
 // equipment.js
 
-// stats related to player equipment/level
-
 import { itemData, characterData } from './data.js';
 import { create_el } from './functions.js';
 import { dbState } from './main.js';
 import * as d from './database.js';
+import { inventorySlot } from './inventory.js';
 
 // temporary
 let trackingData = [{}];
@@ -40,8 +39,6 @@ const statDescriptions = [
     { id: 'hitChance', label: 'Hit Chance', type: 'desc', def: 'The probability an attack will cause damage or miss. 100% hit chance guarantees a hit if enemy level is less than or equal to player&apos;s current level. Hit chance decreases for each enemy level above the player&apos;s level and increases for each enemy level below the player&apos;s level.' },
     { id: 'criticalStrikeChance', label: 'Critical Strike Chance', type: 'desc', def: 'The probability a successful attack is critical. Critical strikes cause double the regular damage.' },
 ];
-
-// WIP inventory call for update_equipment() needs updating for EQUIPS, etc
 
 // Stat modifications
 // Updates for battles and equipmemt
@@ -95,6 +92,15 @@ export async function update_battleStats(eLevel) {
         }
     });
 
+// formula for armor dmg reduction
+/*let armor = 50;
+for (let lvl = 1; lvl <= 100; lvl++) {
+    armor += 50;
+    let dmg_reduce = 1.2 - (Math.log(armor)/12);
+    dmg_reduce = Math.round(dmg_reduce * 1000) / 1000;
+    console.log('Level: ' + lvl + ' / ' + armor + ': ' + dmg_reduce);
+}*/
+
 // PLAYER ARMOR DAMAGE REDUCTION
     function calc_armorMitigation() {
         let armor = battleStats.find(s => s.id === 'armor');
@@ -105,15 +111,6 @@ export async function update_battleStats(eLevel) {
         // Multply enemy damage by dmg_reduction -- see etc/formulas.txt for guide
         let dmg_mit_armor = 1.2 - (Math.log(total_armor) / 12);
         dmg_mit_armor = Math.round(dmg_mit_armor * 1000) / 1000;
-
-// formula for armor dmg reduction
-/*let armor = 50;
-for (let lvl = 1; lvl <= 100; lvl++) {
-    armor += 50;
-    let dmg_reduce = 1.2 - (Math.log(armor)/12);
-    dmg_reduce = Math.round(dmg_reduce * 1000) / 1000;
-    console.log('Level: ' + lvl + ' / ' + armor + ': ' + dmg_reduce);
-}*/
 
         return dmg_mit_armor;
     }
@@ -246,17 +243,67 @@ for (let lvl = 1; lvl <= 100; lvl++) {
 
 
 // PLAYER MELEE ATTACK -- strength, power, dmg_min, dmg_max
-    function calc_meleeAttack() {
+    async function calc_meleeAttack(tooltip_display = false) {
 
         let strength_stat = battleStats.find(s => s.id === 'strength');
         let power_stat = battleStats.find(s => s.id === 'power');
 
         // Get the base or weapon attack values depending on equipment
-        const [actual_attack_min, actual_attack_max] = base_attacks();
+        var [actual_attack_min, actual_attack_max] = base_attacks();
 
         // Combine strength and attack power
         let attack_str = strength_stat.amt * 0.01;
         let attack_pwr = power_stat.amt * 0.2;
+
+        let pEquipped = await d.getSlotData(dbState.slot_selected, 'equippedData');
+        let savedInventory = await d.getSlotData(dbState.slot_selected, 'inventoryData');
+
+        if (tooltip_display) {
+            let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
+            // Add bonus stats from weapon
+            savedInventorySlots.forEach(slot_data  => {
+                if (slot_data.contents !== '[ EMPTY ]') {
+                    let d_itemData = itemData.find(i => i.id === slot_data.contents);
+                    if (d_itemData.slot === 'mh' && slot_data.slot_id === inventorySlot.clicked) {
+                        d_itemData.gains.forEach(gain => {
+                            // Add weapon power and strength only
+                            if (gain.stat === 'strength') {
+                                attack_str += gain.amt * 0.01;
+                                //console.log('gain attack_str: ' + attack_str);
+                            }
+                            if (gain.stat === 'power') {
+                                attack_pwr += gain.amt * 0.2;
+                                //console.log('gain attack_pwr: ' + attack_pwr);
+                            }
+                            if (gain.stat === 'dmg_min') {
+                                actual_attack_min = gain.amt;
+                            }
+                            if (gain.stat === 'dmg_max')
+                            {
+                                actual_attack_max = gain.amt;
+                            }
+                        });
+                    }
+                }
+            });
+            // Remove bonus stats from equipped weapon
+            let current_weapon = pEquipped.find(i => i.id === 'mh');
+            if (current_weapon) {
+                let d_equipped_itemData = itemData.find(i => i.id === current_weapon.equipped);
+
+                d_equipped_itemData.gains.forEach(gain => {
+                    // Remove weapon power and strength only
+                    if (gain.stat === 'strength') {
+                        attack_str -= gain.amt * 0.01;
+                        //console.log('reduce attack_str: ' + attack_str);
+                    }
+                    if (gain.stat === 'power') {
+                        attack_pwr -= gain.amt * 0.2;
+                        //console.log('reduce attack_pwr: ' + attack_pwr);
+                    }
+                });
+            }
+        }
 
         // Calculate total attack values based on equipped weapon or base stats
         let total_attack_min = actual_attack_min * (1 + attack_str) + attack_pwr;
@@ -318,17 +365,12 @@ export async function update_stats() {
 
 // Equipment stats
     // Player data
-    //OLD let d_player_character = saveData[1].savedCharacterData[0];
-    //OLD let player_level = d_player_character.char_level;
     let d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
     let d_player_character = d_savedCharacterData[0];
     let player_level = d_player_character.char_level;
-
     // Main calc function call
     // Assumes enemy level is equal with player
-
     const fetch_battleStats = await update_battleStats(player_level);
-
     // Function methods of update_battleStats
     const hitChance = await fetch_battleStats.calc_hitChance();
     const critChance = await fetch_battleStats.calc_meleeCriticalStrikeChance();
@@ -339,20 +381,6 @@ export async function update_stats() {
     const total_health = await fetch_battleStats.calc_totalHealth();
     const [f_base_min, f_base_max] = await fetch_battleStats.base_attacks();
 
-/*
-    console.log('STATS: ');
-    console.log('hitChance: ' + hitChance);
-    console.log('critChance_magic: ' + critChance_magic);
-    console.log('critChance: ' + critChance);
-    console.log('attack_min: ' + attack_min);
-    console.log('attack_max: ' + attack_max);
-    console.log('dmg_mit_armor: ' + dmg_mit_armor);
-    console.log('resource_melee: ' + resource_melee);
-    console.log('total_health: ' + total_health);
-    //console.log('f_base_min: ' + f_base_min + ' / f_base_max: ' + f_base_max);
-*/
-
-    //OLD let equipped_items = saveData[3].equippedData;
     const equipped_items = await d.getSlotData(dbState.slot_selected, 'equippedData');
     // Player mh weapon
     const current_weapon = equipped_items.find(i => i.id === 'mh');
@@ -553,22 +581,4 @@ export async function update_stats() {
         let line_item = '<b>' + stat.label + ':</b> ' + stat.def + '<br>';
         stats_desc.innerHTML += line_item;
     });
-}
-
-// WIP battle.js ??
-export function fetch_playerStats(opt) {
-    let playerStats = characterData.find(d => d.id === 'player_stats');
-    let stats = update_battleStats();
-
-    playerStats.max_health = stats.calc_totalHealth();
-    // playerStats.cur_health
-    playerStats.max_resource = stats.calc_resource_melee();
-    // playerStats.cur_resource
-
-    if (opt === 'new') {
-        // Reset current health
-        playerStats.cur_health = playerStats.max_health;
-        // Reset current resource
-        playerStats.cur_resource = playerStats.max_resource;
-    }
 }

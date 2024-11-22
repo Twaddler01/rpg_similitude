@@ -3,8 +3,10 @@
 import { saveData, gatherData, trackingData } from './data.js';
 import { toggle_section } from './general_functions.js';
 import { create_el, create_bar_elements } from './functions.js';
+import { dbState } from './main.js';
+import * as d from './database.js';
 
-export function update_gather() {
+export async function update_gather() {
     
     let e_tab_player_gather = document.getElementById('tab_player_gather');
 
@@ -17,8 +19,15 @@ export function update_gather() {
     gather_messages_div.classList.add('normal');
     create_el('new_gather', 'div', e_tab_player_gather);
     
-    let saveData_gatherData = saveData[5].gatherData;
-    gatherData.forEach(gather => {
+    //OLD let saveData_gatherData = saveData[5].gatherData;
+    const saveData_gatherData = await d.getSlotData(dbState.slot_selected, 'gatherData');
+    //OLD let d_gold = saveData[4].currencyData[0];
+    let d_currencyData = await d.getSlotData(dbState.slot_selected, 'currencyData');
+    let d_gold = d_currencyData[0];
+
+    //gatherData.forEach(gather => {
+    for (const gather of gatherData) {
+
         // Match gatherData standalone array for storing cnt
         let saved_gatherData = saveData_gatherData.find(g => g.id === gather.id);
 
@@ -29,7 +38,6 @@ export function update_gather() {
             let gather_learn_btn = create_el('gather_learn_btn', 'button', gather_learn_div);
             gather_learn_btn.innerHTML = 'Learn ' + gather.name;
             function gather_learn_click() {
-                let d_gold = saveData[4].currencyData[0];
                 if (d_gold.cnt >= gather.cost) {
                     d_gold.cnt -= gather.cost;
                     saved_gatherData.learned = true;
@@ -39,6 +47,8 @@ export function update_gather() {
                         gather_messages_div.innerHTML = '';
                     }, 20000);
                     gather_learn_div.remove();
+                    d.updateSlotData(dbState.slot_selected, 'currencyData', d_currencyData);
+                    d.updateSlotData(dbState.slot_selected, 'gatherData', saveData_gatherData);
                     load_gather();
                 } else {
                     gather_messages_div.innerHTML = 'Not enough gold.';
@@ -104,6 +114,7 @@ export function update_gather() {
                     gather_label_right.innerHTML = 'Level: ' + saved_gatherData.lvl;
                     xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl * 10) / 10;
                     new_xp_bar.updateTotal(xp_to_level);
+                    d.updateSlotData(dbState.slot_selected, 'gatherData', saveData_gatherData);
                     update_gather();
                 }
             }
@@ -205,7 +216,7 @@ export function update_gather() {
                                 progress_fill.style.width = '0%';
                                 // Add and update XP
                                 update_skill_xp(mat.lvl_req);
-                                
+                                d.updateSlotData(dbState.slot_selected, 'gatherData', saveData_gatherData);
                             }
                         }
                         
@@ -215,5 +226,5 @@ export function update_gather() {
                 }
             }
         }
-    });
+    }//);
 }

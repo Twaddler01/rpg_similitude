@@ -9,7 +9,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 11-21-2024
-- Updated inventory.js to utilize the indexedDB database. Only a little left to migrate over!
+- Updated inventory.js to utilize the indexedDB database along with getting battle.js almost completed. Only a little more left to migrate over!
 - Created temporary function to load an existing character slot template for testing purposes.
 
 11-20-2024

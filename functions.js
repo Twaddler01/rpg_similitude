@@ -5,6 +5,8 @@ import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import * as inv from './inventory.js';
 import { update_battleStats, fetch_playerStats } from './equipment.js';
+import * as d from './database.js';
+import { dbState } from './main.js';
 
 // Reset saveData to defaults
 export async function clearSaveData() {
@@ -19,12 +21,12 @@ export async function clearSaveData() {
 
 export function downloadSaveData() {
     //const filteredSaveData = exportFilteredSaveData(baselineData, saveData);
-    
+
     // Convert to JSON and create a blob for download
     const saveDataString = JSON.stringify(saveData, null, 2);
     const blob = new Blob([saveDataString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = 'saveData.json';
@@ -38,7 +40,7 @@ export function downloadSaveData() {
 export function create_el(newId, type, parentId, content) {
     let parent_el = document.getElementById(parentId);
     let new_el = document.createElement(type);
-    
+
     if (parentId === 'body') {
         document.body.appendChild(new_el);
         new_el.id = newId;
@@ -58,7 +60,7 @@ export function create_el(newId, type, parentId, content) {
             new_el.innerHTML = content;
         }
     }
-    
+
     return new_el;
 }
 
@@ -92,14 +94,14 @@ export function add_test_section() {
 
 // Check modifiedSaveData
     let get_modifiedSaveData = () => {
-    
+
     downloadSaveData();
-    
+
     //const exportedData = exportFilteredSaveData(baselineData, saveData);
     //console.log(exportedData);
     //downloadFilteredSaveData();
     };
-    
+
     add_test_action('testJsonDl', 'Download Save Data', get_modifiedSaveData);
 
 // general test buttons
@@ -116,10 +118,10 @@ export function add_test_section() {
     create_el('check_divs', 'button', test_section);
     check_divs.innerHTML = 'Check divs';
     check_divs.addEventListener('click', () => {
-    
+
         let all_el = document.querySelectorAll('body, body *');
         let filteredEl = Array.from(all_el).filter(e => e.id !== 'js-console' && e.id !== 'exportButton' && e.id !== 'exportHTMLButton');
-        
+
         filteredEl.forEach(el => {
             if (el.id) {
                 console.log(el.id);
@@ -141,10 +143,10 @@ export function add_test_section() {
     let selected_kill = document.createElement('button');
     test_section.appendChild(selected_kill);
     selected_kill.innerHTML = '+1 Kill to Current Level';
-    
+
     selected_kill.addEventListener('click', () => {
         let message = document.getElementById('message');
-        
+
         if (message) {
             message.innerHTML = '';
         }
@@ -191,7 +193,7 @@ export function add_test_section() {
     setTimeout(() => {
         add_loot_buttons();
     }, 2000);
-    
+
 // Add gold button
     let add_gold = document.createElement('button');
     test_section.appendChild(add_gold);
@@ -211,13 +213,13 @@ export function add_test_section() {
     let add_xp = document.createElement('button');
     test_section.appendChild(add_xp);
     add_xp.innerHTML = 'Add Experience';
-    
+
     add_xp.addEventListener('click', () => {
         let d_player_character = saveData[1].savedCharacterData[0];
         d_player_character.char_exp += 200;
         update_xp();
     });
-    
+
 // Toggle combat status
     let toggle_combat = document.createElement('button');
     test_section.appendChild(toggle_combat);
@@ -225,7 +227,7 @@ export function add_test_section() {
     toggle_combat.addEventListener('click', () => {
         toggle_combat_status();
     });
-    
+
 // Add loot test
     let e_add_loot = document.createElement('button');
     test_section.appendChild(e_add_loot);
@@ -255,7 +257,7 @@ export function reset_game(elid) {
         parent.appendChild(confirm);
         confirm.className = 'normal';
         confirm.innerHTML = 'RESET: Are you sure?&nbsp;&nbsp;';
-        
+
         let yes = document.createElement('button');
         test_section.appendChild(yes);
         yes.innerHTML = 'YES';
@@ -269,7 +271,7 @@ export function reset_game(elid) {
             parent.removeChild(no);
             update_locations();
         });
-        
+
         let no = document.createElement('button');
         test_section.appendChild(no);
         no.innerHTML = 'NO';
@@ -279,8 +281,8 @@ export function reset_game(elid) {
             parent.removeChild(no);
             update_locations();
         });
-    
-        
+
+
 
     } else {
         console.error('elid "' + elid + '" is invalid for reset_game() function call.');
@@ -292,7 +294,7 @@ export function reset_game(elid) {
 function gel(id, css = null, inner = null, ...styles) {
     try {
         const element = document.getElementById(id);
-        
+
         // If element is not found, throw an error
         if (!element) {
             throw new Error(`Element with ID '${id}' not found`);
@@ -302,12 +304,12 @@ function gel(id, css = null, inner = null, ...styles) {
         if (css) {
             element.classList.add(css);
         }
-        
+
         // Apply innerHTML if provided
         if (inner) {
             element.innerHTML = inner;
         }
-        
+
         // Apply styles if any are provided
         styles.forEach(style => {
             let [property, value] = style.split(':').map(s => s.trim()); // Split and trim the style string
@@ -346,7 +348,7 @@ export function randomize(min, max, step) {
     return min + randomStep * step;
 }
 
-//// 
+////
 export function setup_encounters(loc) {
 
     let hp_min = 25;
@@ -362,7 +364,7 @@ export function setup_encounters(loc) {
     let incr_rate = 0.1;
 
     let d_level_data = locationsData.filter(l => l.loc && l.loc > 0 && l.lvl > 0 && l.lbl !== 'END');
-    
+
     d_level_data.forEach((level, index) => {
 
         if (level.loc === loc) {
@@ -382,17 +384,17 @@ export function setup_encounters(loc) {
                 id: 'group_lvl_' + (index + 1),
                 loc: loc,
                 lvl: index + 1,
-                hp_min: hp_min, 
-                hp_max: hp_max, 
-                cur_health: 0, 
-                max_health: 0, 
-                log_cnt: 0, 
-                enemyDmg_min: enemyDmg_min, 
-                enemyDmg_max: enemyDmg_max, 
+                hp_min: hp_min,
+                hp_max: hp_max,
+                cur_health: 0,
+                max_health: 0,
+                log_cnt: 0,
+                enemyDmg_min: enemyDmg_min,
+                enemyDmg_max: enemyDmg_max,
                 enemyNoCrit: enemyNoCrit,
                 enemy_list: []
             });
-            
+
             let new_loc = encounterData.find(e => e.id === 'group_lvl_' + (index + 1));
             let new_enemy_list = new_loc.enemy_list;
 
@@ -408,7 +410,7 @@ export function setup_encounters(loc) {
                     id: entry_id,
                     cat: 'enemy',
                     lbl: enemy_name,   // Include the random name in the enemy list
-                    lvl: index + 1, 
+                    lvl: index + 1,
                     drops: [ { id: 'GOLD', p: 1 } ]
                 });
             }
@@ -418,30 +420,30 @@ export function setup_encounters(loc) {
 
     // Function to pick a single random unused name and mark it as used
     function pickRandomName() {
-        
+
     // Get random names
     let enemy_names = encounterData.find(e => e.id === 'enemyNames1');
     let names = enemy_names.names;
-    
+
     // Filter out names that haven't been used yet (u: false)
     let unused_names = names.filter(n => !n.u);
-    
-        
+
+
         if (unused_names.length === 0) {
             console.log("No unused names left.");
             return null;
         }
-    
+
         // Shuffle and pick 1 random name
         let random_name = unused_names
             .sort(() => 0.5 - Math.random())[0];  // Pick only the first random name
-    
+
         // Mark the chosen name as used (u: true)
         random_name.u = true;
-    
+
         // Update the unused names list
         unused_names = names.filter(n => !n.u);
-    
+
         // Return the chosen name
         return random_name.n;
     }
@@ -480,7 +482,7 @@ export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, ma
         { id: name_pre + 'MH', slot_name: 'Mainhand' },
         { id: name_pre + 'OH', slot_name: 'Offhand' }
     ];
-    
+
     gearSet.forEach(item => {
         item.gains = [];
     })
@@ -502,21 +504,21 @@ export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, ma
         } else if (gearSet[i].slot === 'ring2') {
             gearSet[i].name += ' II';
         }
-        
+
         if (gearSet[i].slot === 'mh') {
             gearSet[i].name = gearSet[i].name.replace('Mh', 'Weapon');
         } else if (gearSet[i].slot === 'oh') {
             gearSet[i].name = gearSet[i].name.replace('Oh', 'Shield');
         }
-        
+
         gearSet[i].rarity = rarity_num;
-        
+
         const pluralNameSlots = [ 'shoulders', 'hands', 'legs', 'wrist', 'feet'];
         let add_s = 's';
         if (pluralNameSlots.includes(gearSet[i].slot)) {
             add_s = '';
         }
-        
+
         gearSet[i].desc = 'The ' + gearSet[i].name + ' seem' + add_s + ' to be part of a basic equipment set.';
         gearSet[i].value = value;
         // WIP use slot icons and a color overlay
@@ -525,26 +527,26 @@ export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, ma
     function get_random_stats(possibleStatsAmt) {
         let possibleStats = ['strength', 'intelligence', 'power', 'agility', 'wisdom'];
         //let possibleStatsAmt = 2;
-    
+
         // Initialize gains if it doesn't exist
         if (!gearSet[i].gains) {
             gearSet[i].gains = [];
         }
-        
+
         let p;
         for (let k = 0; k < possibleStatsAmt; k++) {
             // Ensure no duplicate stats are selected in gearSet[i].gains
             do {
                 p = randomize(0, possibleStats.length - 1, 1);
             } while (gearSet[i].gains.some(gain => gain.stat === possibleStats[p]));
-            
+
             // Add random stats
             let random_stat = possibleStats[p];
             let random_stat_lbl = random_stat.charAt(0).toUpperCase() + random_stat.slice(1);
             let random_stat_amt = randomize(min_statAmt, max_statAmt, 1);
             gearSet[i].gains.push({ stat: random_stat, lbl: random_stat_lbl, amt: random_stat_amt });
         }
-        
+
         // Add random armor
         let random_armor = randomize(armorMin, armorMax, 5);
         if (gearSet[i].slot !== 'mh' && gearSet[i].slot !== 'oh') {
@@ -555,7 +557,7 @@ export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, ma
             // Double value of oh item
             gearSet[i].value *= 2;
         }
-        
+
         // Add random damage to mh weapon
         if (gearSet[i].slot === 'mh' && gearSet[i].type === 'weapon') {
             let random_min_dmg = randomize(dmgMin, dmgMax, 0.1);
@@ -564,7 +566,7 @@ export function add_new_gear(name_pre, color, rarity_num, value, min_statAmt, ma
             // Double value of mh item
             gearSet[i].value *= 2;
         }
-    
+
     }
     get_random_stats(1);
 
@@ -579,7 +581,7 @@ function export_createdItems_JSON(filename, parsedArray) {
     parsedArray = JSON.stringify(parsedArray, null, 2);
     const blob = new Blob([parsedArray], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = filename + '.json';
@@ -649,7 +651,7 @@ export function create_bar_elements(id, parentId, textInside, valueTotal, barCol
         textInside = newText;
         progress_text.innerHTML = textInside + ': ' + valueCurrent + ' / ' + valueTotal;
     }
-    
+
     // Method to update bar fill total
     function updateTotal(newValue) {
         valueTotal = newValue;
@@ -671,8 +673,9 @@ export function create_bar_elements(id, parentId, textInside, valueTotal, barCol
 }
 
 let message_cnt = 0;
-export function add_message(message, color) {
-    const stored_messages = saveData[6].storedMessages;
+export async function add_message(message, color) {
+    //OLD const stored_messages = saveData[6].storedMessages;
+    const stored_messages = await d.getSlotData(dbState.slot_selected, 'storedMessages');
 
     // Default color to white if not provided
     color = color || 'white';
@@ -698,6 +701,8 @@ export function add_message(message, color) {
 
     // Format each message and append it to the container (newest on top)
     messages_container.innerHTML = stored_messages.map(formatMessage).join('<br>');
+
+    await d.updateSlotData(dbState.slot_selected, 'storedMessages', stored_messages);
 }
 
 // Helper function to format a message as HTML
@@ -715,7 +720,7 @@ async function import_createdItems_JSON(type, filename, arrayId) {
         data.forEach(item => {
             arrayId.push(item);
         });
-        
+
         return data;
     }
 }
@@ -731,7 +736,7 @@ function inject_items_to_global_drop(arrayId, dropId) {
     arrayId.forEach(item => {
         storedData[item.id] = 0.04;
     });
-    
+
     Object.assign(drops, storedData);
 }
 

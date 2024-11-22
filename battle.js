@@ -5,16 +5,17 @@ import { create_el, randomize } from './functions.js';
 import { update_battleStats } from './equipment.js';
 import { toggleElement } from './general_functions.js';
 import { updateLootCount } from './inventory.js';
-import { disableTabs, restoreTabs } from './main.js';
+import { disableTabs, restoreTabs, dbState } from './main.js';
 import { add_message } from './functions.js';
+import * as d from './database.js';
 
-export function fetch_playerStats(opt) {
+export async function fetch_playerStats(opt) {
     let playerStats = characterData.find(d => d.id === 'player_stats');
-    let stats = update_battleStats();
+    let stats = await update_battleStats();
 
-    playerStats.max_health = stats.calc_totalHealth();
+    playerStats.max_health = await stats.calc_totalHealth();
     // playerStats.cur_health
-    playerStats.max_resource = stats.calc_resource_melee();
+    playerStats.max_resource = await stats.calc_resource_melee();
     // playerStats.cur_resource
 
     if (opt === 'new') {
@@ -25,7 +26,7 @@ export function fetch_playerStats(opt) {
     }
 }
 
-export function update_locations() {
+export async function update_locations() {
 
     let e_tab_player_battle = document.getElementById('tab_player_battle');
     if (e_tab_player_battle) {
@@ -42,22 +43,26 @@ export function update_locations() {
     battle_ui_container.style.backgroundColor = 'black';
 
     // Update location array data
+    let d_killsData = await d.getSlotData(dbState.slot_selected, 'killsData');
     for (let i = 0; i < locationsData.length; i++) {
-    
-        if (saveData[0] && saveData[0].killsData && saveData[0].killsData[i]) {
+        /*OLD if (saveData[0] && saveData[0].killsData && saveData[0].killsData[i]) {
             locationsData[i].kills = saveData[0].killsData[i].kills;
+        }*/
+        if (d_killsData && d_killsData[i]) {
+            locationsData[i].kills = d_killsData[i].kills;
         }
-    
+
         // Always set the first level to true
         if (i === 0) {
             locationsData[i].kill_req_met = true;
         }
-    
+
         // Update kill_req_met based on the kills of the previous level
         if (i + 1 < locationsData.length) {
             locationsData[i + 1].kill_req_met = locationsData[i].kills >= locationsData[i].kills_req;
         }
     }
+    await d.updateSlotData(dbState.slot_selected, 'killsData', d_killsData);
 
     // Location image (used im battle)
     let battle_location_image = document.createElement('div');
@@ -228,11 +233,13 @@ export function selectLocation(location) {
 }
 
 export function selectLevel(loc, location, lvl, kills) {
-    
+
     const locations_status = document.getElementById('locations_status');
     const message = document.getElementById('message');
 
-    message.innerHTML = '';
+    if (message) {
+        message.innerHTML = '';
+    }
     locations_status.innerHTML = `You selected <b>${location}</b> Level <b>${lvl}</b>`;
     locations_status.innerHTML += `<br><b>Enemies Killed:</b> ${kills}`;
 
@@ -287,7 +294,7 @@ export function update_health() {
     let d_player_current_health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
     d_player_current_health_percent = Math.round(d_player_current_health_percent * 10) / 10;
     e_player_current_health_percent.innerHTML = d_player_current_health_percent + '%';
-    
+
     // Player death
     if (playerStats.cur_health <= 0) {
         playerStats.cur_health = 0;
@@ -309,7 +316,7 @@ export function update_health() {
         playerStats.dead = true;
         return;
     }
-    
+
 // ENEMY
 
     let encounter = encounterData.find(e => e.loc === trackingData[0].loc && e.lvl === trackingData[0].lvl);
@@ -325,13 +332,13 @@ export function update_health() {
 
         let d_enemy_health_percent = (encounter.cur_health / encounter.max_health) * 100;
         d_enemy_health_percent = Math.round(d_enemy_health_percent * 10) / 10;
-        
+
         // Update elements
         e_enemy_health.innerHTML = Math.round(encounter.cur_health * 10) / 10;
         e_enemy_current_health_percent.innerHTML = d_enemy_health_percent + '%';
         e_enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
         e_enemy_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
-        
+
         // Enemy death
         if (encounter.cur_health <= 0) {
             encounter.cur_health = 0;
@@ -351,7 +358,7 @@ export function toggle_combat_status() {
 
     let playerCombat = characterData.find(c => c.id === 'player_combat_status');
     // playerCombat.in_combat = true/false
-    
+
     let spacer_player_combat_status = document.getElementById('spacer_player_combat_status');
     let player_combat_status = document.getElementById('player_combat_status');
     let player_battle_status_bars = document.getElementById('player_battle_status_bars');
@@ -400,10 +407,16 @@ export function xp_gain(lvl) {
     return random_exp;
 }
 
-export function update_xp() {
-    
+export async function update_xp() {
+
     // Data needed
-    let d_player_character = saveData[1].savedCharacterData[0];
+    //OLD let d_player_character = saveData[1].savedCharacterData[0];
+    let d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+    let d_player_character = d_savedCharacterData[0];
+
+    //console.log('d_savedCharacterData[0] -- update_xp');
+    //console.log(d_savedCharacterData[0]);
+
     // Update xp progress
     let e_char_exp = document.getElementById('e_char_exp');
     let e_experience_bar_fill = document.getElementById('experience_bar_fill');
@@ -441,6 +454,7 @@ export function update_xp() {
         let playerInfo_level = document.getElementById('playerInfo_level');
         playerInfo_level.innerHTML = 'Level ' + d_player_character.char_level + '&nbsp;' + d_player_character.char_race + '&nbsp;' + d_player_character.char_class;
     }
+    await d.updateSlotData(dbState.slot_selected, 'savedCharacterData', d_savedCharacterData);
 }
 
 export function reset_battle() {
@@ -481,13 +495,16 @@ export function reset_battle() {
 }
 
 // WIP2
-export function start_battle() {
+export async function start_battle() {
 
     // Data
-    let d_player_character = saveData[1].savedCharacterData[0];
+    //OLD let d_player_character = saveData[1].savedCharacterData[0];
+    const d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+    const d_player_character = d_savedCharacterData[0];
+
     let playerStats = characterData.find(d => d.id === 'player_stats');
 
-    fetch_playerStats('new');
+    await fetch_playerStats('new');
 
     // Main battle container
     let battle_section_container = document.getElementById('tab_player_battle');
@@ -630,10 +647,10 @@ export function start_battle() {
     // Calculate experience values
     let d_exp_filter = characterData.filter(c => c.type === 'exp');
     let d_exp = d_exp_filter[0];
-    
+
     // Store experience values for each level
     d_exp.experienceValues = [];
-    
+
     for (let i = 1; i <= d_exp.level_cap; i++) {
         let expToLevel = Math.round((d_exp.starting_val * (i**1.5 + d_exp.level_rate)) / 10) * 10;
         d_exp.experienceValues.push({
@@ -642,7 +659,7 @@ export function start_battle() {
             //diff: expToLevel - Math.round((d_exp.starting_val * ((i - 1)**1.5 + d_exp.level_rate)) / 10) * 10 // Uncomment if you need the diff
         });
     }
-    
+
     // Log experience values for each level
     d_exp.experienceValues.forEach(xp => {
         //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}`);
@@ -655,8 +672,10 @@ export function start_battle() {
     create_el('experience_to_level', 'span', 'experience_text');
     experience_to_level.innerHTML = d_player_character.char_exp_to_level;
 
+    await d.updateSlotData(dbState.slot_selected, 'savedCharacterData', d_savedCharacterData);
+
     // Initial display
-    update_xp();
+    await update_xp();
 
 // WIP Need update_resource
 
@@ -687,7 +706,7 @@ export function start_battle() {
     // First encounter
     if (trackingData[0].loc === 0 && trackingData[0].lvl === 1) {
         // Encounters need to be set up with loc, lvl linked
-        // 
+        //
         encounter = encounterData.find(e => e.id === 'beginner_0');
         // Choose random array index of enemyList;
         let enemyList = encounter.enemy_list;
@@ -714,7 +733,7 @@ export function start_battle() {
         // Mark enemy alive
         random_enemy.dead = false;
         trackingData[0].current_enemy = random_enemy.id;
-        
+
         //// WIP more array data needed
     }
 
@@ -724,7 +743,7 @@ export function start_battle() {
         enemy_name.innerHTML = random_enemy.lbl;
         enemy_name.style.display = 'inline-block';
         enemy_name.style.width = '50%';
-    
+
         create_el('enemy_level', 'span', 'enemy_name_level');
         enemy_level.innerHTML = 'Level: ' + random_enemy.lvl;
         enemy_level.style.display = 'inline-block';
@@ -734,11 +753,11 @@ export function start_battle() {
         // Enemy health
         // Add to group player_battle_status_bars
         create_el('battle_ui_enemy_container', 'div', 'enemy_battle_status_bars');
-    
+
         // Create player health container
         create_el('enemy_health_container', 'div', 'battle_ui_enemy_container');
         enemy_health_container.classList.add('bar_with_border_container');
-    
+
         // Create the player_health bar fill (blue bar)
         create_el('enemy_health_bar_fill', 'div', 'enemy_health_container');
         enemy_health_bar_fill.classList.add('bar_with_border_fill');
@@ -754,10 +773,10 @@ export function start_battle() {
         enemy_current_health_text.classList.add('bar_with_border_text');
         enemy_current_health_text.innerHTML = 'Enemy Health: <span id="e_enemy_health">' + encounter.cur_health + '</span>&nbsp;/&nbsp;';
         // Inserts e_enemy_health
-    
+
         create_el('enemy_maximum_health', 'span', 'enemy_current_health_text');
         enemy_maximum_health.innerHTML = encounter.max_health;
-    
+
         create_el('enemy_current_health_percent', 'span', 'enemy_health_container');
         enemy_current_health_percent.classList.add('bar_with_border_percent');
         let d_enemy_health_percent = (encounter.cur_health / encounter.max_health) * 100;
@@ -817,7 +836,7 @@ function EL_player_turn_attack(encounter, enemy) {
         toggle_combat_status();
         let e_player_to_enemy_btn = document.getElementById('player_to_enemy_btn');
         e_player_to_enemy_btn.innerHTML = '[ ATTACKING ]';
-        // Hide change_location_button 
+        // Hide change_location_button
         let change_location_button = document.getElementById('change_location_button');
         if (change_location_button) { change_location_button.style.display = 'none'; }
         player_attack(enemy, encounter);
@@ -834,7 +853,7 @@ export function attack_box_button(elementId, enemy, encounter) {
     if (newBattleButton) {
         newBattleButton.parentNode.removeChild(newBattleButton);
     }
-    
+
     let e_player_to_enemy_btn = document.getElementById('player_to_enemy_btn');
     if (e_player_to_enemy_btn) {
         e_player_to_enemy_btn.innerHTML = '[ READY TO USE ATTACK ]';
@@ -877,7 +896,7 @@ export function attack_box_button(elementId, enemy, encounter) {
         e_player_turn_attack.addEventListener('click', ELHandler_player_turn_attack);
 
     }
-    
+
     if (trackingData[0].next_attack) {
         EL_player_turn_attack(encounter, enemy);
     }
@@ -885,25 +904,26 @@ export function attack_box_button(elementId, enemy, encounter) {
 }
 
 let ELHandler_player_next_turn = null;
-export function player_attack(enemy, encounter) {
+export async function player_attack(enemy, encounter) {
 
     let playerStats = characterData.find(d => d.id === 'player_stats');
-
-    let d_player_character = saveData[1].savedCharacterData[0];
+    //OLD let d_player_character = saveData[1].savedCharacterData[0];
+    const d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+    const d_player_character = d_savedCharacterData[0];
     let current_char_level = d_player_character.char_level;
 
 // Main function call
-let fetch_battleStats = update_battleStats(enemy.lvl);
+let fetch_battleStats = await update_battleStats(enemy.lvl);
 // Function methods
-let hitChance = fetch_battleStats.calc_hitChance();
-let critChance = fetch_battleStats.calc_meleeCriticalStrikeChance();
-let [attack_min, attack_max] = fetch_battleStats.calc_meleeAttack();
-let dmg_mit_armor = fetch_battleStats.calc_armorMitigation();
+let hitChance = await fetch_battleStats.calc_hitChance();
+let critChance = await fetch_battleStats.calc_meleeCriticalStrikeChance();
+let [attack_min, attack_max] = await fetch_battleStats.calc_meleeAttack();
+let dmg_mit_armor = await fetch_battleStats.calc_armorMitigation();
 
 // Future work
-let resource_melee = fetch_battleStats.calc_resource_melee();
+let resource_melee = await fetch_battleStats.calc_resource_melee();
 // Not needed here ?
-let total_health = fetch_battleStats.calc_totalHealth();
+let total_health = await fetch_battleStats.calc_totalHealth();
 
 // For use below
 let missChance = Math.round((1 - hitChance) * 1000) / 1000;
@@ -952,7 +972,7 @@ console.log('total_health: ' + total_health);
                 turn_player_damage *= 2;
                 turn_player_critical = true;
             }
-            
+
             // Deduct enemy health
             turn_player_damage = Math.round(turn_player_damage * 10) / 10;
             encounter.cur_health -= turn_player_damage;
@@ -962,7 +982,7 @@ console.log('total_health: ' + total_health);
         }
 
 // ENEMY TURN
-        
+
         let turn_enemy_damage = 0;
         randomMissChance = Math.random();
         let enemy_miss_chance = encounter.enemyNoCrit;
@@ -975,21 +995,23 @@ console.log('total_health: ' + total_health);
             //console.log(player_armor_reduct);
             turn_enemy_damage = Math.round(turn_enemy_damage * 10) / 10;
         }
-        
+
         if (!enemy.dead) {
             playerStats.cur_health -= turn_enemy_damage;
             playerStats.cur_health = Math.round(playerStats.cur_health * 10) / 10;
             //console.log('Enemy Damage: ' + turn_enemy_damage);
         }
-        
+
         update_health();
-        
+
         if (encounter.cur_health <= 0) {
             //encounter.cur_health = 0;
             enemy.dead = true;
+            let d_killsData = await d.getSlotData(dbState.slot_selected, 'killsData');
             locationsData.forEach((item, index) => {
                 if (locationsData[index].loc === trackingData[0].loc && locationsData[index].lvl === trackingData[0].lvl) {
-                    saveData[0].killsData[index].kills += 1;
+                    d_killsData[index].kills += 1;
+                    d.updateSlotData(dbState.slot_selected, 'killsData', d_killsData);
                 }
             });
         }
@@ -1024,7 +1046,7 @@ console.log('total_health: ' + total_health);
                 new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#FFCB30;">&nbsp;You dealt ' + turn_player_damage + ' physical damage to ' + enemy.lbl + '.</span></p>';
             }
         }
-        
+
         if (turn_enemy_damage === 0 && !enemy.dead) {
             new_div.innerHTML += '<p><span class="material-symbols-outlined">swords</span><span style="color:#F7EB00;">&nbsp;Level ' + enemy.lvl + ' enemy ' + enemy.lbl + '\'s attack against you missed!</span></p>';
         } else if (!enemy.dead) {
@@ -1037,24 +1059,30 @@ console.log('total_health: ' + total_health);
 
             // xp gained
             let exp_to_add = xp_gain(enemy.lvl);
+            //d_savedCharacterData[0].char_exp += exp_to_add;
             d_player_character.char_exp += exp_to_add;
-            update_xp();
-            
+            await d.updateSlotData(dbState.slot_selected, 'savedCharacterData', d_savedCharacterData);
+            await update_xp();
+
             new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;You gained ' + exp_to_add + ' experience.';
-            
+
             // Log level increase
-            d_player_character = saveData[1].savedCharacterData[0];
-            
-            if (d_player_character.char_level > 1 && d_player_character.char_level !== current_char_level) {
-                new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;Congratulations! You have reached level ' + d_player_character.char_level + '!';
-                add_message('Congratulations! You have reached level ' + d_player_character.char_level + '!');
+            //OLD d_player_character = saveData[1].savedCharacterData[0];
+///*
+            const d_savedCharacterData2 = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+            const d_player_character2 = d_savedCharacterData2[0];
+
+            if (d_player_character2.char_level > 1 && d_player_character2.char_level !== current_char_level) {
+                new_div.innerHTML += '<p><img src="media/combatlog/xp.png" height="24" width="24"><span style="color:#34aaff;font-weight:bold;">&nbsp;Congratulations! You have reached level ' + d_player_character2.char_level + '!';
+                add_message('Congratulations! You have reached level ' + d_player_character2.char_level + '!');
             }
+//*/
 
             // Check if any drops are present
             if (enemy.drops.length > 0) {
-    
+
                 let loot_dropped = add_loot(enemy, 1, 1, 2);
-                
+
                 let global_dropped = null;
                 // use GLOBAL_DROP1 for loc1 only
                 if (encounter.loc === 1) {
@@ -1081,7 +1109,7 @@ console.log('total_health: ' + total_health);
                     } else {
                         loot_dropped.forEach(loot => {
                             let d_itemData = itemData.find(i => i.id === loot.id);
-                            
+
                             if (loot.id === 'GOLD') {
                                 gold_total += loot.cnt;
                             } else {
@@ -1099,7 +1127,7 @@ console.log('total_health: ' + total_health);
             } else {
                 new_div.innerHTML += `<p><span class="material-symbols-outlined">backpack</span><span style="color:yellow;font-weight:bold;">&nbsp;You received no loot.</span></p>`;
             }
-    
+
             // reset combat log
             encounter.log_cnt = 0;
 
@@ -1107,18 +1135,18 @@ console.log('total_health: ' + total_health);
 
             // Other resets are performed in reset_battle()
             encounter.in_combat = false;
-            
+
             // Reset eventListener for next attack without full element reset
             let e_player_turn_attack = document.getElementById('player_turn_attack');
             e_player_turn_attack.removeEventListener('click', ELHandler_player_turn_attack);
-            
+
             // WIP BUG Resets combat too early
             ELHandler_player_next_turn = function() {
                 EL_player_next_turn(e_player_turn_attack);
-                
+
             };
             e_player_turn_attack.addEventListener('click', ELHandler_player_next_turn);
-            
+
             toggleElement('s', 'change_location_button');
             let e_locations_status = document.getElementById('locations_status');
             e_locations_status.innerHTML = `You defeated <b>${enemy.lbl}</b> in <b>${trackingData[0].location}</b> Level <b>${trackingData[0].lvl}</b>`;
@@ -1131,11 +1159,11 @@ console.log('total_health: ' + total_health);
             let e_player_turn_attack = document.getElementById('player_turn_attack');
             e_player_turn_attack.removeEventListener('click', ELHandler_player_turn_attack);
             e_player_turn_attack.innerHTML = '<b><font style="font-size: 24px;"> REVIVE </font></b>';
-        
+
             let do_revive = function() {
                 e_player_turn_attack.removeEventListener('click', do_revive);
                 let wait_time = 10;
-                
+
                 // Countdown to revive
                 let countdown = setInterval(function() {
                     if (wait_time > 0) {
@@ -1153,17 +1181,17 @@ console.log('total_health: ' + total_health);
                     }
                 }, 1000); // 1000ms = 1 second
             };
-            
+
             e_player_turn_attack.addEventListener('click', do_revive);
         }
     } // end if (!enemy.dead
 }
 
 // Function for next turn USE ATTACK
-function EL_player_next_turn(e_player_turn_attack) {
+async function EL_player_next_turn(e_player_turn_attack) {
     toggleElement('h', 'change_location_button');
     trackingData[0].combat_log_created = false;
-    update_locations();
+    await update_locations();
     trackingData[0].next_attack = true;
     selectLevel(trackingData[0].loc, trackingData[0].location, trackingData[0].lvl, trackingData[0].kills);
 }
@@ -1196,11 +1224,11 @@ export function add_loot(enemy, count, gold_min, gold_max) {
     while (loot_dropped < count) {
 
         // Shuffle enemyDrops
-        let shuffledDrops = enemyDrops.sort(() => 0.5 - Math.random()); 
-        
+        let shuffledDrops = enemyDrops.sort(() => 0.5 - Math.random());
+
         shuffledDrops.forEach(drop => {
             if (loot_dropped >= count) return;
-        
+
             let random_loot = Math.random();
             if (drop.p > random_loot) {
                 add_item_to_dropped(drop.id);
@@ -1220,12 +1248,12 @@ export function add_loot(enemy, count, gold_min, gold_max) {
 }
 
 export function choose_enemy(enemyList) {
-    
+
     let enemyListEnemy = enemyList.filter(e => e.cat === 'enemy');
     if (enemyListEnemy && enemyListEnemy.length > 0) {
         let randomIndex = Math.floor(Math.random() * enemyListEnemy.length);
         let random_enemy = enemyListEnemy[randomIndex];
-        
+
         return random_enemy;
     }
 }
@@ -1234,7 +1262,7 @@ export function choose_enemy(enemyList) {
 // Called only when looting
 // add_global_drop('GLOBAL_DROP1');
 export function add_global_drop(dropId) {
-    
+
     let globalDrops = encounterData.filter(e => e.cat === 'global_drops');
     let drop_id = globalDrops.find(d => d.id === dropId);
     let drops = drop_id.drops;
@@ -1243,7 +1271,7 @@ export function add_global_drop(dropId) {
         // Convert the drops object into an array of key-value pairs and shuffle them
         let shuffledEntries = Object.entries(drops)
             .sort(() => Math.random() - 0.5);  // This shuffles the array randomly
-    
+
         // Now iterate over the shuffled array
         for (let [key, value] of shuffledEntries) {
             if (value > Math.random()) {
@@ -1251,7 +1279,7 @@ export function add_global_drop(dropId) {
             }
         }
     }
-    
+
     // Get random key based on value, p
     for (let i=0; i<50; i++) {
         let this_drop = getRandomDrop();

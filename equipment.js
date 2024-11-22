@@ -49,7 +49,8 @@ export async function update_battleStats(eLevel) {
 
     // Player data
     //OLD let d_player_character = saveData[1].savedCharacterData[0];
-    const d_player_character = (await d.getSlotData(dbState.slot_selected, 'savedCharacterData'))[0];
+    const d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+    const d_player_character = d_savedCharacterData[0];
 
     //OLD let pLevel = d_player_character.char_level;
     const pLevel = await d_player_character.char_level;
@@ -91,16 +92,16 @@ export async function update_battleStats(eLevel) {
                     }
                 });
             });
-        } 
+        }
     });
 
 // PLAYER ARMOR DAMAGE REDUCTION
     function calc_armorMitigation() {
         let armor = battleStats.find(s => s.id === 'armor');
         let base_armorMit = armor.base;
-        
+
         let total_armor = base_armorMit + armor.amt;
-        
+
         // Multply enemy damage by dmg_reduction -- see etc/formulas.txt for guide
         let dmg_mit_armor = 1.2 - (Math.log(total_armor) / 12);
         dmg_mit_armor = Math.round(dmg_mit_armor * 1000) / 1000;
@@ -123,7 +124,7 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         let base_health = 100;
 
         let total_health = (constitution.amt * 10) + base_health;
-        
+
         return total_health;
     }
 
@@ -139,7 +140,7 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         calc_dexterity += hitChance.amt;
 
         let enemyLevel_diff = eLevel - pLevel;
-    
+
         // No difference in level
         let calculated_hitChance = calc_dexterity;
 
@@ -163,7 +164,7 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         // Calculate melee critical strike chance with equipmemt
         let agility = battleStats.find(s => s.id === 'agility');
         let agility_crit_amt = agility.amt * 0.001;
-        
+
         // Left as decimal
         // Combine existing standalone crit (and base from reset above) with agility
         let crit_total = agility_crit_amt;
@@ -181,7 +182,7 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         // Calculate melee critical strike chance with equipmemt
         let wisdom = battleStats.find(s => s.id === 'wisdom');
         let wisdom_crit_amt = wisdom.amt * 0.001;
-        
+
         // Left as decimal
         // Combine existing standalone crit (and base from reset above) with agility
         let crit_total = wisdom_crit_amt;
@@ -213,10 +214,10 @@ for (let lvl = 1; lvl <= 100; lvl++) {
         let equip_attack_pwr = power_stat.amt * 0.2;
         let attackMinimum_stat = battleStats.find(s => s.id === 'dmg_min');
         let attackMaximum_stat = battleStats.find(s => s.id === 'dmg_max');
-    
+
         let new_attack_min = attackMinimum_stat.amt + equip_attack_pwr;
         let new_attack_max = attackMaximum_stat.amt + equip_attack_pwr;
-        
+
         return [new_attack_min, new_attack_max];
     }
 
@@ -225,21 +226,21 @@ for (let lvl = 1; lvl <= 100; lvl++) {
 
         let attackMinimum_stat = battleStats.find(s => s.id === 'dmg_min');
         let attackMaximum_stat = battleStats.find(s => s.id === 'dmg_max');
-    
+
         // Base values
         let base_attack_min = attackMinimum_stat.base;
         let base_attack_max = attackMaximum_stat.base;
         let weapon_attack_min = attackMinimum_stat.amt;
         let weapon_attack_max = attackMaximum_stat.amt;
-        
+
         let equipped_items = pEquipped;
         let current_weapon = equipped_items.find(i => i.id === 'mh');
-        
+
         // Use weapon stats if equipped
         if (current_weapon && current_weapon.equipped) {
             return [weapon_attack_min, weapon_attack_max];
         }
-        
+
         return [base_attack_min, base_attack_max];
     }
 
@@ -252,15 +253,15 @@ for (let lvl = 1; lvl <= 100; lvl++) {
 
         // Get the base or weapon attack values depending on equipment
         const [actual_attack_min, actual_attack_max] = base_attacks();
-    
+
         // Combine strength and attack power
         let attack_str = strength_stat.amt * 0.01;
         let attack_pwr = power_stat.amt * 0.2;
-    
+
         // Calculate total attack values based on equipped weapon or base stats
         let total_attack_min = actual_attack_min * (1 + attack_str) + attack_pwr;
         let total_attack_max = actual_attack_max * (1 + attack_str) + attack_pwr;
-    
+
         // Round to one decimal place
         total_attack_min = Math.round(total_attack_min * 10) / 10;
         total_attack_max = Math.round(total_attack_max * 10) / 10;
@@ -278,9 +279,9 @@ for (let lvl = 1; lvl <= 100; lvl++) {
     function calc_resource_melee() {
         let strength_stat = battleStats.find(s => s.id === 'strength');
         let base_resource = 100;
-        
+
         let resource_bonus = strength_stat.amt;
-        
+
         let total_resource_melee = base_resource + resource_bonus;
         return total_resource_melee;
     }
@@ -289,9 +290,9 @@ for (let lvl = 1; lvl <= 100; lvl++) {
     function calc_resource_magic() {
         let intelligence_stat = battleStats.find(s => s.id === 'intelligence');
         let base_resource = 100;
-        
+
         let resource_bonus = intelligence_stat.amt * 10;
-        
+
         let total_resource_magic = base_resource + resource_bonus;
         return total_resource_magic;
     }
@@ -319,7 +320,8 @@ export async function update_stats() {
     // Player data
     //OLD let d_player_character = saveData[1].savedCharacterData[0];
     //OLD let player_level = d_player_character.char_level;
-    let d_player_character = (await d.getSlotData(dbState.slot_selected, 'savedCharacterData'))[0];
+    let d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+    let d_player_character = d_savedCharacterData[0];
     let player_level = d_player_character.char_level;
 
     // Main calc function call
@@ -372,7 +374,7 @@ export async function update_stats() {
         let stats_effect = `<span style="color:lightgreen">(Base)</span>`;
 
         switch (stat.id) {
-            case 'armor': 
+            case 'armor':
                 let c_dmg_mit_armor = dmg_mit_armor * 100;
                 // Display
                 stats_effect = `<br><span style="color:lightgreen">Player base: +${stat.base}
@@ -480,7 +482,7 @@ export async function update_stats() {
                 <br><b>Increases magic critical strike chance by ${mag_critOnly + stat_base_mag_rnd}%</b></span>`;
                 break;
         }
-        
+
         let line_item = stat.label + stat.amt + stats_effect + '<br>';
         if (stat.id === 'hitChance') {
         let stat_hit = stat.amt - stat.base;
@@ -500,7 +502,7 @@ export async function update_stats() {
 
     // Combined stats
     create_el('combined_stats', 'div', e_tab_player_stats);
-    
+
     let combinedStats = battleStats.filter(s => s.combines === true);
     combinedStats.forEach(stat => {
         if (stat.id === 'power') {
@@ -520,7 +522,7 @@ export async function update_stats() {
                 attack_max_diff_p = Math.round(attack_max_diff_p*10)/10;
                 stat_text += `Attack base: ${f_base_min} - ${f_base_max}
                 <br>Attack (Strength and Power): ${attack_min} - ${attack_max}
-                <br><b>Increases attack minimum to ${attack_min} by ${attack_min_diff} (${attack_min_diff_p}%) and 
+                <br><b>Increases attack minimum to ${attack_min} by ${attack_min_diff} (${attack_min_diff_p}%) and
                 attack maximum to ${attack_max} by ${attack_max_diff} (${attack_max_diff_p}%).</b>`;
                 break;
             case 'hitChance':

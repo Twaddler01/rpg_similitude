@@ -5,7 +5,7 @@
 // specifically for armor and hit  etc
 
 // import arrays
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, saveData, trackingData } from './data.js';
+import { equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, trackingData } from './data.js';
 
 // general functions needed
 import { dbState } from './main.js';

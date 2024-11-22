@@ -1,6 +1,6 @@
 // battle.js
 
-import { characterData, saveData, locationsData, trackingData, encounterData, itemData } from './data.js';
+import { characterData, locationsData, trackingData, encounterData, itemData } from './data.js';
 import { create_el, randomize } from './functions.js';
 import { update_battleStats } from './equipment.js';
 import { toggleElement } from './general_functions.js';

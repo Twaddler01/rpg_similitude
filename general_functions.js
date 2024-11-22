@@ -1,6 +1,6 @@
 // general_functions.js
 
-import { elementsData, trackingData, characterData } from './data.js';
+import { trackingData, characterData } from './data.js';
 import { add_message } from './functions.js';
 import { update_inventory } from './inventory.js';
 import { update_character, update_character_stats, update_equipment } from './character.js';
@@ -392,108 +392,6 @@ export function toggleElement(method, elementId) {
             console.error('Invalid method specified: "' + method + ', ' + elementId + '"');
         }
     }
-}
-
-// add elements
-export function add_allElements() {
-    elementsData.forEach(element => {
-
-        // sections elements
-        if (element.section_cat === true) {
-
-            let element_id = document.createElement(element.type);
-            element_id.id = element.id;
-            let parent_el = element.parent_el;
-            let fetched_parent_el = document.getElementById(parent_el);
-
-            // append elements
-            if (!element.fetch_cat) {
-                if (parent_el === 'body') {
-                    document.body.appendChild(element_id);
-                } else {
-                    parent_el.appendChild(element_id);
-                }
-            } else {
-                if (fetched_parent_el) {
-                    fetched_parent_el.appendChild(element_id);
-                }
-            }
-
-            if (element.content) {
-                element_id.innerHTML = element.content;
-            }
-
-            if (element.css_class) {
-                element_id.className = element.css_class;
-            }
-
-            if (element.css_class2) {
-                element_id.classList.add(element.css_class2);
-            }
-
-            if (element.css_class3) {
-                element_id.classList.add(element.css_class3);
-            }
-
-            // 'hidden' flag (if set TRUE in array) to hide element
-            if (element.hidden) {
-                element_id.style.display = 'none';
-            }
-        }
-/*
-        // tables
-        if (element.table_cat === true) {
-
-            // table id
-            let table_id = document.createElement(element.type);
-            table_id.id = element.id;
-            let parent_el = element.parent_el;
-
-            // table header
-            let thead = document.createElement('thead');
-            table_id.appendChild(thead);
-            thead.innerHTML = 'Battle Table';
-
-            let fetched_parent_el = document.getElementById(parent_el);
-            if (fetched_parent_el) {
-                fetched_parent_el.appendChild(table_id);
-            } else {
-                parent_el.appendChild(table_id);
-            }
-
-            // tr
-            let rows = element.rows; // 3
-            if (rows >= 1) {
-                for (let row = 1; row <= rows; row++) {
-                    let table_row = document.createElement('tr');
-                    table_id.appendChild(table_row);
-
-                    // td
-                    let cols = element.cols; // 4
-                    if (cols >= 1 && table_row) {
-                        for (let col = 1; col <= cols; col++) {
-                            let cell_content = document.createElement('td');
-                            table_row.appendChild(cell_content);
-
-                            let contentKey = `content${row}_${col}`;
-                            if (element[contentKey]) {
-                                cell_content.innerHTML = element[contentKey];
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (element.css_class) {
-                table_id.className = element.css_class;
-            }
-
-            // 'hidden' flag (if set TRUE in array) to hide element
-            if (element.hidden) {
-                table_id.style.display = 'none';
-            }
-        }*/
-    });
 }
 
 // Show or hide sections (clear/create or hide/show)

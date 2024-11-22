@@ -2,7 +2,7 @@
 
 // stats related to player equipment/level
 
-import { saveData, itemData, characterData } from './data.js';
+import { itemData, characterData } from './data.js';
 import { create_el } from './functions.js';
 import { dbState } from './main.js';
 import * as d from './database.js';

@@ -1,6 +1,6 @@
 // gather.js
 
-import { saveData, gatherData, trackingData } from './data.js';
+import { gatherData, trackingData } from './data.js';
 import { toggle_section } from './general_functions.js';
 import { create_el, create_bar_elements } from './functions.js';
 import { dbState } from './main.js';
@@ -25,7 +25,6 @@ export async function update_gather() {
     let d_currencyData = await d.getSlotData(dbState.slot_selected, 'currencyData');
     let d_gold = d_currencyData[0];
 
-    //gatherData.forEach(gather => {
     for (const gather of gatherData) {
 
         // Match gatherData standalone array for storing cnt
@@ -226,5 +225,5 @@ export async function update_gather() {
                 }
             }
         }
-    }//);
+    }
 }

@@ -1,8 +1,6 @@
 // inventory.js
 
-import { elementsData, equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, trackingData } from './data.js';
-// saveData
-
+import { equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, trackingData } from './data.js';
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
 import { create_el, add_message } from './functions.js';

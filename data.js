@@ -1,17 +1,5 @@
 // data.js
 
-// for element creation
-export const elementsData = [
-    // test section
-/*    { id: 'test_section',
-    section_cat: true,
-    type: 'div',
-    parent_el: 'body',
-    content: 'TEST Section<br>',
-    css_class: 'h1_yellow_font',
-    },*/
-];
-
 export const equipmentElements = [
     { num: 1, type: 'equip_slot', id: 'head' }, 
     { num: 2, type: 'equip_slot', id: 'shoulders' }, 
@@ -340,43 +328,6 @@ export const characterData = [
     { id: 'player_combat_status', in_combat: false }, // See toggle_combat_status()
 ];
 
-/* OLD
-export const characterData = [
-    { id: 'armor', type: 'stat', amt: 100, label: 'Armor: ', lvl_mod: true, lvl_amt: 100, base: 100 }, // lvl_mod -> increases with level to lvl_amt
-    { id: 'strength', type: 'stat', amt: 10, label: 'Strength: ', lvl_mod: true, lvl_amt: 10, base: 10 },
-    { id: 'intelligence', type: 'stat', amt: 10, label: 'Intelligence: ', lvl_mod: true, lvl_amt: 10, base: 10 },
-    { id: 'dexterity', type: 'stat', amt: 10, label: 'Dexterity: ', lvl_mod: true, lvl_amt: 10, base: 10 },
-    { id: 'constitution', type: 'stat', amt: 10, label: 'Constitution: ', lvl_mod: true, lvl_amt: 10, base: 10 },
-    { id: 'agility', type: 'stat', amt: 10, label: 'Agility: ', lvl_mod: true, lvl_amt: 10, base: 10 },
-    { id: 'wisdom', type: 'stat', amt: 10, label: 'Wisdom: ', lvl_mod: true, lvl_amt: 10, base: 10 },
-    { id: 'power', type: 'stat', amt: 0.0, label: 'Power: ', lvl_amt: 0, base: 0 },
-    { id: 'attackMinimum', type: 'stat', amt: 1.2, label: 'Attack Minimum: ', lvl_amt: 0, base: 1.2 },
-    { id: 'attackMaximum', type: 'stat', amt: 1.6, label: 'Attack Maximum: ', lvl_amt: 0, base: 1.6 }, // stat_attack_min * 1.5
-    { id: 'hitChance', type: 'stat', amt: 0.0, label: 'Hit Chance: ', base: 0 },
-    { id: 'criticalStrikeChance', type: 'stat', amt: 0.0, label: 'Critical Strike Chance: ', lvl_amt: 5, base: 0 }, // bsse stats: [0] - [12]
-    // desc
-    { id: 'armor', label: 'Armor', type: 'desc', def: 'Reduces damage received by 0.1% per point.' },
-    { id: 'strength', label: 'Strength', type: 'desc', def: 'Increases melee damage dealt by 0.1% per point and total energy by both 0.1 per base level amount and 1 per equipment bonus point.' },
-    { id: 'intelligence', label: 'Intelligence', type: 'desc', def: 'Increases magic damage dealt by 0.1% and total mana by 10 per point.' },
-    { id: 'dexterity', label: 'Dexterity', type: 'desc', def: 'Increases hit chance by 0.1% per point above base amount. Default hit chance is 90%, or 100% at 100+ dex' },
-    { id: 'constitution', label: 'Constitution', type: 'desc', def: 'Increases total maximum health by 10 per point.' },
-    { id: 'agility', label: 'Agility', type: 'desc', def: 'Increases melee critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
-    { id: 'wisdom', label: 'Wisdom', type: 'desc', def: 'Increases magic critical strike chance by 0.1% per point above base amount. Critical strikes deal double damage.' },
-    { id: 'power', label: 'Power', type: 'desc', def: 'Increases both attack damage minimum and maximum per turn.' },
-    { id: 'attackMinimum', label: 'Attack Minimum', type: 'desc', def: 'Minimum damage caused for each hit per turn.' },
-    { id: 'attackMaximum', label: 'Attack Maximum', type: 'desc', def: 'Maximim damage caused for each hit per turn.' },
-    { id: 'hitChance', label: 'Hit Chance', type: 'desc', def: 'The probability an attack will cause damage or miss. 100% hit chance guarantees a hit if enemy level is less than or equal to player&apos;s current level. Hit chance decreases for each enemy level above the player&apos;s level.' },
-    { id: 'criticalStrikeChance', label: 'Critical Strike Chance', type: 'desc', def: 'The probability a successful attack is critical. Critical strikes cause double the regular damage.' },
-    // misc
-    // d_exp_filter = characterData.filter(c => c.type === 'exp');
-    // d_exp = d_exp_filter[0];
-    { /* experienceValues [] */ /*id: 'level_exp', type: 'exp', level_cap: 20, starting_val: 800, level_rate: 0.2 },
-/*    { id: 'player_stats', /* playerStats.total_armor, etc */ /*}, // See character_setup() 
-    // let playerStats = characterData.find(d => d.id === 'player_stats');
-/*    { id: 'player_combat_status', in_combat: false }, // See toggle_combat_status()
-];
-*/
-
 export const encounterData = [
 
         { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0, enemyDmg_min: 3, enemyDmg_max: 4, enemyNoCrit: 0.06, 
@@ -431,125 +382,7 @@ export const encounterData = [
         //
     ];
 
-export var saveData = [
-    // saveData[0].killsData
-    { killsData: [ // added to locationsData array
-        { kills: 3 }, // l = 0
-        { kills: 3 }, // l = 0 + 1
-        { kills: 3 },
-        { kills: 3 },
-        { kills: 3 },
-        { kills: 4 },
-        { kills: 5 },
-        { kills: 6 },
-        { kills: 7 },
-        { kills: 8 },
-        { kills: 9 },
-        { kills: 10 }, // l = 10 + 1
-        { kills: 11 },
-        { kills: 12 },
-        { kills: 13 },
-        { kills: 14 }, // max = 14 + 1
-        { kills: 15 }, // placeholder
-        ] },
-    // saveData[1].savedCharacterData[0]
-    { savedCharacterData: [
-        // SC: Char created
-        { char_created: true, 
-        char_name: 'Legolas', 
-        char_race: 'Human', 
-        char_class: 'Fighter', 
-        char_level: 1,
-        char_exp: 0, 
-        // SC: Char not created
-        /*{ char_created: false, 
-        char_name: null, 
-        char_race: null, 
-        char_class: null, 
-        char_level: 1, 
-        char_exp: 0, */
-        
-        // Others: see playerStats = characterData.find(d => d.id === 'player_stats')
-        // char_exp_to_level -> see new_battle_button()
-        },
-        ] },
-    // saveData[2].inventoryData
-    { inventoryData: [ // slots added below
-        { /* size: see inventoryMaxSlots above */ 
-          setup: false,
-          full: false,
-        },
-        { type: 'slot', slot_id: 1, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 2, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 3, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 4, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 5, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 6, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 7, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 8, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 9, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 10, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 11, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 12, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 13, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 14, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 15, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 16, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 17, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 18, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 19, contents: '[ EMPTY ]', cnt: 0 },
-        { type: 'slot', slot_id: 20, contents: '[ EMPTY ]', cnt: 0 },
-    ] },
-    // saveData[3].equippedData
-    { equippedData: [ 
-        { id: 'head' , equipped: 'BASIC_HELMET', }, // l = 0
-        { id: 'shoulders', equipped: null },
-        { id: 'hands', equipped: null },
-        { id: 'neck', equipped: null },
-        { id: 'waist', equipped: null },
-        { id: 'chest', equipped: 'BASIC_CHESTPIECE' },
-        { id: 'legs', equipped: null },
-        { id: 'wrist', equipped: null },
-        { id: 'feet', equipped: 'BASIC_BOOTS' },
-        { id: 'ring1', equipped: null },
-        { id: 'ring2', equipped: null },
-        { id: 'mh', equipped: 'MH_TEST_DAGGER' },
-        { id: 'oh', equipped: null },
-    ] },
-    // saveData[4].currencyData[0]
-    { currencyData: [
-        { id: 'GOLD', cnt: 800, name: 'Gold' },
-    ] },
-    // saveData[5].gatherData
-    { gatherData: [
-        { id: 'herbgather', learned: false, lvl: 1, xp_amt: 0,
-        inventory: [
-            { cnt: 0 },
-            { cnt: 0 }, 
-            { cnt: 0 }, 
-            { cnt: 0 }, 
-            { cnt: 0 }, 
-            { cnt: 0 }, 
-            { cnt: 0 }, 
-            { cnt: 0 }, 
-            { cnt: 0 }, 
-            { cnt: 0 }, 
-            { cnt: 0 }
-        ] },
-        { id: 'oremine', learned: false, lvl: 1, xp_amt: 0, 
-        inventory: [ 
-        { id: 'copper', cnt: 0 }
-        ] },
-        { id: 'tailor', learned: false, lvl: 1, xp_amt: 0, 
-        inventory: [ 
-        { id: 'basic_cloth', cnt: 0 }
-        ] },
-    ] },
-    // saveData[6].storedMessages
-    { storedMessages: [] }
-];
-
-// Matches indices of saveData[5].gatherData
+// Matches indices of 'gatherData' section of JSON template
 export const gatherData = [
     { id: 'herbgather', name: 'Herb Gathering', cost: 200, gather_str: 4, gather_str_mult: 1.08, xp_lvl_mult: 1.5,
     materials: [ 
@@ -614,20 +447,6 @@ export function init_gatherData() {
 
 // trackingData[0] only
 export var trackingData = [];
-// trackingData[0].loc (int)
-// trackingData[0].lvl (int)
-// trackingData[0].currentLocation (int)
-// trackingData[0].location (string)
-// trackingData[0].kills (int)
-// trackingData[0].character_created (bool: false)
-// trackingData[0].starting_equip_added (bool: false)
-// trackingData[0].currentTooltip (element); // Store the currently open tooltip container
-// trackingData[0].currentTooltipElement (bool); // Store the element that triggered the current tooltip
-// trackingData[0].tooltipTargetElementId (element)
-// trackingData[0].current_weapon_dmg_min (float)
-// trackingData[0].current_weapon_dmg_max (float)
-// trackingData[0].pwr_weapon_min (float)
-// trackingData[0].pwr_weapon_max (float)
 
 // Add initial tracking data
 export function init_trackingData() {
@@ -641,24 +460,3 @@ export function init_trackingData() {
     trackingData[0].t_character_section = false;
     trackingData[0].init_run = true;
 }
-
-// Additional one-time data modifications
-function initilize_extras() {
-    // ONLY NEEDED OUTSIDE OF LOADING JSON
-    // add .slot to equippedData
-    let equippedItems = saveData[3].equippedData;
-    equippedItems.forEach(equip_slot => {
-        equip_slot.slot = equip_slot.id;
-    });
-    
-    // elementsData
-    for (let i = 0; i < elementsData.length; i++) {
-        const elementsIndex = elementsData[i];
-        const elementsDataUpdates = {};
-        //elementsIndex.content_id = elementsIndex.id + '_content_id';
-        // Assign updates to resourcesIndex properties
-        Object.assign(elementsIndex, elementsDataUpdates);
-    }
-}
-
-initilize_extras();

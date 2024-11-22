@@ -9,8 +9,8 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 11-21-2024
-- Updated inventory.js to utilize the indexedDB database along with getting battle.js almost completed. Only a little more left to migrate over!
-- Created temporary function to load an existing character slot template for testing purposes.
+- Migrated all array data over to indexedDB. There may be some bugs or quirks but it seems to run generally smooth at the moment.
+- Created temporary function to load an existing character slot template (slot 1) for testing purposes. Slot 2 is using blank template and should retain any progress on reload. Will probably eventually give option to import or export a .JSON save file to backup the data locally as an encrypted hash.
 
 11-20-2024
 - In process of converting code to SLOT format. Right now, code is between array (old method) and IndexedDB (new method). This will potentially use temporary arrays and direct updates to the database following JSON templates.

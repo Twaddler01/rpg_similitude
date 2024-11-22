@@ -8,6 +8,10 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 # BUGS
 
 # Updates
+11-22-2024
+- Added an [ Equipped ] display for weapons that shows the damage per turn as if weapon was equipped. This is in preparation for a "CURRENTLY EQUIPPED" tooltip to sit alongside regular one for comparisons in a future update.
+- Cleaned out some old code and fixed some tabbing for better code look.
+
 11-21-2024
 - Migrated all array data over to indexedDB. There may be some bugs or quirks but it seems to run generally smooth at the moment.
 - Created temporary function to load an existing character slot template (slot 1) for testing purposes. Slot 2 is using blank template and should retain any progress on reload. Will probably eventually give option to import or export a .JSON save file to backup the data locally as an encrypted hash.

@@ -163,7 +163,7 @@ export async function new_game() {
     clear_game_elements();
 
     // Title
-    f.create_el('title_section', 'div', 'body');
+    const title_section = f.create_el('title_section', 'div', 'body');
     title_section.style.fontSize = '20px';
     title_section.innerHTML = '<b>RPG Similitude: Just another RPG.</b>';
 
@@ -173,7 +173,7 @@ export async function new_game() {
     }
 
 
-    f.create_el('new_character_container', 'div', 'body');
+    const new_character_container = f.create_el('new_character_container', 'div', 'body');
     new_character_container.classList.add('location_box_style');
     new_character_container.style.paddingBottom = '40px';
 

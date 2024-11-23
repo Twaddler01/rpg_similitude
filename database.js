@@ -52,7 +52,7 @@ export function displaySaveSlots() {
     // Title
     let e_title = document.getElementById('title_section');
     if (!e_title) {
-        create_el('title_section', 'div', 'body');
+        const title_section = create_el('title_section', 'div', 'body');
         title_section.style.fontSize = '20px';
         title_section.innerHTML = '<b>RPG Similitude: Just another RPG.</b>';
     }
@@ -133,11 +133,11 @@ export function displaySaveSlots() {
                             slot_container_div.style.color = 'red';
                             slot_container_div.innerHTML = 'Are you sure you want to delete all of the data for <b>SLOT ' + slotNum + '</b>? THIS ACTION CANNOT BE UNDONE! ';
 
-                            create_el('con_yes', 'button', slot_container_div);
+                            const con_yes = create_el('con_yes', 'button', slot_container_div);
                             con_yes.innerHTML = 'YES';
                             con_yes.onclick = () => delete_slot(slotNum);
 
-                            create_el('con_no', 'button', slot_container_div);
+                            const con_no = create_el('con_no', 'button', slot_container_div);
                             con_no.innerHTML = 'NO';
                             con_no.onclick = () => displaySaveSlots();
                         }
@@ -390,17 +390,14 @@ async function displayCharacterData(slotId) {
 displayCharacterData(3);
 */
 
-//DEBUG
 /*
-console.log('before equippedItems');
-let equippedItems;
+//DEBUG
 try {
-    equippedItems = await d.getSlotData(dbState.slot_selected, 'equippedData');
+//DEBUG
 } catch (error) {
-    console.error('Error fetching equipped items:' + error);
-    return; // Exit if it fails
+    console.error('ERROR:' + error);
+    console.error('STACK:' + error.stack)
 }
-console.log(JSON.stringify(equippedItems));
 */
 
 /*

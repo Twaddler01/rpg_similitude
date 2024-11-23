@@ -36,7 +36,7 @@ export function downloadSaveData() {
 }
 
 // Main function to create new elements
-export function create_el(newId, type, parentId, content) {
+/*export function create_el(newId, type, parentId, content) {
     let parent_el = document.getElementById(parentId);
     let new_el = document.createElement(type);
 
@@ -61,7 +61,43 @@ export function create_el(newId, type, parentId, content) {
     }
 
     return new_el;
+}*/
+
+// Main function to create new elements
+export function create_el(newId, type, parentId, content) {
+    // Check if the element already exists
+    let existing_el = document.getElementById(newId);
+    if (existing_el) {
+        return existing_el; // Return the existing element
+    }
+
+    // Get the parent element (whether passed as ID or element)
+    let parent_el =
+        typeof parentId === 'string' ? document.getElementById(parentId) : parentId;
+
+    if (!parent_el && parentId !== 'body') {
+        console.warn(`Parent with ID "${parentId}" not found. Element "${newId}" created but not appended.`);
+        parent_el = null; // Fallback to no parent
+    }
+
+    // Create the new element
+    let new_el = document.createElement(type);
+    new_el.id = newId;
+
+    if (content) {
+        new_el.innerHTML = content;
+    }
+
+    // Append to the parent if it exists
+    if (parent_el) {
+        parent_el.appendChild(new_el);
+    } else if (parentId === 'body') {
+        document.body.appendChild(new_el); // Special case for the body
+    }
+
+    return new_el;
 }
+
 
 // OUT OF DATE SINCE indexedDB
 let add_message_cnt_test = -1;
@@ -73,7 +109,7 @@ export function add_test_section() {
     test_section.id = 'test_section';
 
 // test add_message()
-    create_el('message_test_btn', 'button', test_section);
+    const message_test_btn = create_el('message_test_btn', 'button', test_section);
     message_test_btn.innerHTML = 'ADD NEW MESSAGE';
     message_test_btn.addEventListener('click', () => {
         add_message_cnt_test++;
@@ -115,7 +151,7 @@ export function add_test_section() {
 
 
 // Check divs
-    create_el('check_divs', 'button', test_section);
+    const check_divs = create_el('check_divs', 'button', test_section);
     check_divs.innerHTML = 'Check divs';
     check_divs.addEventListener('click', () => {
 

@@ -32,9 +32,17 @@ export async function update_inventory() {
 
     //OLD let savedInventory = saveData[2].inventoryData;
     let savedInventory = await d.getSlotData(dbState.slot_selected, 'inventoryData');
-
     let savedInventorySlots = savedInventory.filter(i => i.type === 'slot');
     let d_inventoryElements = inventoryElements.filter(i => i.type === 'slot');
+
+// Fix corrupt inventory
+/*
+console.log(JSON.stringify(savedInventory));
+const newInventory = [
+    {"setup":true,"full":false},{"type":"slot","slot_id":1,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":2,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":3,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":4,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":5,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":6,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":7,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":8,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":9,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":10,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":11,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":12,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":13,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":14,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":15,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":16,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":17,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":18,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":19,"contents":"[ EMPTY ]","cnt":0},{"type":"slot","slot_id":20,"contents":"[ EMPTY ]","cnt":0}
+];
+await d.updateSlotData(dbState.slot_selected, 'inventoryData', newInventory);
+*/
 
     // setup inventory
     let inv_parent = document.createElement('div');
@@ -391,20 +399,17 @@ export async function update_gold() {
 // Setup each tooltip box
 async function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type, savedInventory) {
 
-//DEBUG
-try {
-
     // Clear all elements
     let e_tooltip_container_div = document.getElementById(tooltip_container_div);
     if (e_tooltip_container_div) { e_tooltip_container_div.innerHTML = ''; }
 
-    create_el('item_tooltip_div', 'div', tooltip_container_div);
+    const item_tooltip_div = create_el('item_tooltip_div', 'div', tooltip_container_div);
     item_tooltip_div.classList.add('item_tooltip');
 
-    create_el('item_name', 'div', 'item_tooltip_div');
+    const item_name = create_el('item_name', 'div', item_tooltip_div);
     item_name.classList.add('normal-bold');
     item_name.innerHTML = '[ ' + item.name + ' ]';
-    create_el('item_slot', 'div', 'item_tooltip_div');
+    const item_slot = create_el('item_slot', 'div', item_tooltip_div);
     item_slot.classList.add('i_slot_type');
     if (item.type === 'armor' || item.type === 'weapon') {
         item_slot.innerHTML = item.slot_name;
@@ -415,7 +420,7 @@ try {
     }
 
     // Set rarity color and item color
-    create_el('item_rarity', 'div', 'item_tooltip_div');
+    const item_rarity = create_el('item_rarity', 'div', item_tooltip_div);
     switch (item.rarity) {
         case 0:
             item_rarity.classList.add('r_junk');
@@ -449,13 +454,13 @@ try {
             item_name.classList.add('r_ancient');
             break;
     }
-    create_el('tt_hr1', 'hr', 'item_tooltip_div');
-    create_el('item_desc', 'div', 'item_tooltip_div');
+    create_el('tt_hr1', 'hr', item_tooltip_div);
+    const item_desc = create_el('item_desc', 'div', item_tooltip_div);
     item_desc.classList.add('light_small');
     if (item.desc) {
         item_desc.innerHTML = item.desc;
     }
-    create_el('item_stats', 'div', 'item_tooltip_div');
+    const item_stats = create_el('item_stats', 'div', item_tooltip_div);
 
     // Set stat gain attributes
     let item_gains = item.gains;
@@ -489,24 +494,24 @@ try {
             // mh weapons only
             if (item.slot === 'mh') {
                 // mh elements
-                create_el('damage_lbl', 'div', 'item_tooltip_div');
+                const damage_lbl = create_el('damage_lbl', 'div', item_tooltip_div);
                 damage_lbl.classList.add('item_tooltip_armor');
                 // Weapon base damage
                 damage_lbl.innerHTML = 'Base damage: ';
-                create_el('min_span', 'span', 'damage_lbl');
-                create_el('sep', 'span', 'damage_lbl');
+                const min_span = create_el('min_span', 'span', damage_lbl);
+                const sep = create_el('sep', 'span', damage_lbl);
                 sep.innerHTML = '&nbsp;-&nbsp;';
-                create_el('max_span', 'span', 'damage_lbl');
-                create_el('damage_pwr_lbl', 'div', 'item_tooltip_div');
+                const max_span = create_el('max_span', 'span', damage_lbl);
+                const damage_pwr_lbl = create_el('damage_pwr_lbl', 'div', item_tooltip_div);
                 damage_pwr_lbl.classList.add('item_tooltip_armor');
                 damage_pwr_lbl.innerHTML = 'Damage Per Turn: ';
                 if (!slot_data.equipped) {
                     damage_pwr_lbl.innerHTML = '<span style="color:green">[Equipped]</span> Damage Per Turn: ';
                 }
-                create_el('min_span_pwr', 'span', 'damage_pwr_lbl');
-                create_el('sep2', 'span', 'damage_pwr_lbl');
+                const min_span_pwr = create_el('min_span_pwr', 'span', damage_pwr_lbl);
+                const sep2 = create_el('sep2', 'span', damage_pwr_lbl);
                 sep2.innerHTML = '&nbsp;-&nbsp;';
-                create_el('max_span_pwr', 'span', 'damage_pwr_lbl');
+                const max_span_pwr = create_el('max_span_pwr', 'span', damage_pwr_lbl);
 
                 // Only if mh is a currently equipped item, use calculations
                 if (slot_data.equipped) {
@@ -533,20 +538,20 @@ try {
 
     // Only if description is not empty to prevent doubled hr
     if (item_desc.innerHTML) {
-        create_el('tt_hr4', 'hr', 'item_tooltip_div');
+        create_el('tt_hr4', 'hr', item_tooltip_div);
     }
-    create_el('sell_price_lbl', 'div', 'item_tooltip_div');
+    const sell_price_lbl = create_el('sell_price_lbl', 'div', item_tooltip_div);
     sell_price_lbl.classList.add('light_small');
     sell_price_lbl.innerHTML = 'Sell Price: ';
-    create_el('gold_div', 'div', 'sell_price_lbl');
+    const gold_div = create_el('gold_div', 'div', sell_price_lbl);
     gold_div.style.display = 'inline-block';
-    create_el('gold', 'img', 'gold_div');
+    const gold = create_el('gold', 'img', gold_div);
     gold.src = 'media/currency_gold.png';
     gold.classList.add('currency_gold');
-    create_el('sell_price_container_1', 'span', 'sell_price_lbl');
-    create_el('sell_price_amt1', 'span', 'sell_price_container_1');
-    create_el('sell_price_container_2', 'span', 'sell_price_lbl');
-    create_el('sell_price_amt2', 'span', 'sell_price_container_2');
+    const sell_price_container_1 = create_el('sell_price_container_1', 'span', sell_price_lbl);
+    const sell_price_amt1 = create_el('sell_price_amt1', 'span', sell_price_container_1);
+    const sell_price_container_2 = create_el('sell_price_container_2', 'span', sell_price_lbl);
+    const sell_price_amt2 = create_el('sell_price_amt2', 'span', sell_price_container_2);
     sell_price_amt1.classList.add('light_small');
     sell_price_amt2.classList.add('light_small');
 
@@ -575,20 +580,24 @@ try {
         }
 
         sell_price_amt1.innerHTML = '&nbsp;' + item.value + '&nbsp;';
-        create_el('sell_action', 'button', 'sell_price_container_1');
-        sell_action.classList.add('light_small');
-        sell_action.style.color = 'black';
-        sell_action.innerHTML = 'Sell';
-        sell_action.addEventListener('click', () => {
-            // Clear inventory event listener to prevent item movement on click after change
-            removeInventorySlotListener(slot_data.slot_id);
-            sell_item();
-        });
+
+        // Only if in inventory
+        if (tt_type === 'inventory') {
+            const sell_action = create_el('sell_action', 'button', sell_price_container_1);
+            sell_action.classList.add('light_small');
+            sell_action.style.color = 'black';
+            sell_action.innerHTML = 'Sell';
+            sell_action.addEventListener('click', () => {
+                // Clear inventory event listener to prevent item movement on click after change
+                removeInventorySlotListener(slot_data.slot_id);
+                sell_item();
+            });
+        }
 
         if (slot_data.cnt > 1) {
             sell_action.innerHTML = 'Sell (1)';
             sell_price_amt2.innerHTML = '<br>Sell Price x' + slot_data.cnt + ': ' + '<img src="media/currency_gold.png" class="currency_gold">&nbsp;' + (item.value * slot_data.cnt) + '&nbsp;';
-            create_el('sell_action2', 'button', 'sell_price_container_2');
+            const sell_action2 = create_el('sell_action2', 'button', sell_price_container_2);
             sell_action2.innerHTML = '<span class="light_small" style="color:black">Sell (ALL)</span>';
             sell_action2.addEventListener('click', () => {
                 // Clear inventory event listener to prevent item movement on click after change
@@ -612,11 +621,11 @@ try {
 
         // Destroy inventory item
         if (nosell_inventory_item) {
-            create_el('hr4', 'hr', 'item_tooltip_div');
-            create_el('destroy_sect', 'div', 'item_tooltip_div');
+            create_el('hr4', 'hr', item_tooltip_div);
+            const destroy_sect = create_el('destroy_sect', 'div', item_tooltip_div);
             destroy_sect.classList.add('light_small');
             destroy_sect.innerHTML = '<b>Item Actions:</b> ';
-            create_el('destroy_btn', 'button', 'destroy_sect');
+            const destroy_btn = create_el('destroy_btn', 'button', destroy_sect);
             destroy_btn.innerHTML = 'DESTROY';
             destroy_btn.addEventListener('click', () => {
 
@@ -627,9 +636,9 @@ try {
                 // Clear inventory event listener to prevent item movement on click after change
                 removeInventorySlotListener(slot_data.slot_id);
 
-                create_el('destroy_confirm_div', 'div', 'destroy_sect');
+                const destroy_confirm_div = create_el('destroy_confirm_div', 'div', destroy_sect);
                 destroy_confirm_div.innerHTML = '<b>(DESTROY ITEM)</b> Are you sure? Action cannot be undone!';
-                create_el('confirm_yes', 'button', 'destroy_sect');
+                const confirm_yes = create_el('confirm_yes', 'button', destroy_sect);
                 confirm_yes.innerHTML = ' YES ';
                 confirm_yes.addEventListener('click', () => {
                     slot_data.contents = '[ EMPTY ]';
@@ -637,7 +646,7 @@ try {
                     d.updateSlotData(dbState.slot_selected, 'inventoryData', savedInventory);
                     update_inventory();
                 });
-                create_el('confirm_no', 'button', 'destroy_sect');
+                const confirm_no = create_el('confirm_no', 'button', destroy_sect);
                 confirm_no.innerHTML = ' NO ';
                 confirm_no.addEventListener('click', () => {
                     update_inventory();
@@ -662,11 +671,11 @@ try {
             // Items equipped only
             if (e_equipment_slot && saveItem.equipped === item.id) {
 
-                create_el('tt_hr2', 'hr', 'item_tooltip_div');
-                create_el('equip_actions', 'div', 'item_tooltip_div');
+                create_el('tt_hr2', 'hr', item_tooltip_div);
+                const equip_actions = create_el('equip_actions', 'div', item_tooltip_div);
                 equip_actions.classList.add('light_small');
                 equip_actions.innerHTML = '<b>Equipment Actions:</b> ';
-                create_el('unequip_btn', 'button', 'equip_actions');
+                const unequip_btn = create_el('unequip_btn', 'button', equip_actions);
                 unequip_btn.innerHTML = 'REMOVE';
                 unequip_btn.addEventListener('click', () => {
                     swap_equipment(item.id, 'remove', saveItem, saveDataEquip);
@@ -693,12 +702,12 @@ try {
                     // Prevent duplicates of tt_hr3 HR
                     let e_tt_hr3 = document.getElementById('tt_hr3');
                     if (!e_tt_hr3) {
-                        create_el('tt_hr3', 'hr', 'item_tooltip_div');
+                        create_el('tt_hr3', 'hr', item_tooltip_div);
                     }
-                    create_el('equip_actions2', 'div', 'item_tooltip_div');
+                    const equip_actions2 = create_el('equip_actions2', 'div', item_tooltip_div);
                     equip_actions2.classList.add('light_small');
                     equip_actions2.innerHTML = '<b>Equipment Actions:</b> ';
-                    create_el('equip_btn', 'button', 'equip_actions2');
+                    const equip_btn = create_el('equip_btn', 'button', equip_actions2);
                     equip_btn.innerHTML = 'EQUIP';
                     equip_btn.addEventListener('click', async () => {
                         // Get slot id clicked
@@ -750,14 +759,6 @@ try {
             }
         });
     }
-
-//DEBUG
-} catch (error) {
-    console.error(error);
-}
-
-
-
 }
 
 // Remove ALL tooltips

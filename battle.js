@@ -32,12 +32,12 @@ export async function update_locations() {
     }
 
     // For choosing locations
-    create_el('location_container', 'div', e_tab_player_battle);
+    const location_container = create_el('location_container', 'div', e_tab_player_battle);
     location_container.classList.add('location_box_style');
     location_container.innerHTML = '<b>CHOOSE BATTLE LOCATION:<p></p></b>';
 
     // Once battle starts
-    create_el('battle_ui_container', 'div', e_tab_player_battle);
+    const battle_ui_container = create_el('battle_ui_container', 'div', e_tab_player_battle);
     battle_ui_container.style.backgroundColor = 'black';
 
     // Update location array data
@@ -86,8 +86,8 @@ export async function update_locations() {
     locations_status.id = 'locations_status';
 
     // Attack (turn by turn) used once in combat
-    create_el('player_turn_attack_container', 'div', location_container);
-    create_el('player_turn_attack', 'button', 'player_turn_attack_container');
+    const player_turn_attack_container = create_el('player_turn_attack_container', 'div', location_container);
+    const player_turn_attack = create_el('player_turn_attack', 'button', player_turn_attack_container);
     player_turn_attack.style.display = 'none';
 
     const message = document.createElement('div');
@@ -104,7 +104,7 @@ export async function update_locations() {
     attack_box_button.style.display = 'none';
 
     // Insert change_location_button
-    create_el('change_location_button', 'button', location_container);
+    const change_location_button = create_el('change_location_button', 'button', location_container);
     change_location_button.innerHTML = '<b><font style="font-size: 24px;"> CHANGE LOCATION </font></b>';
     change_location_button.classList.add('location_box_style');
     change_location_button.classList.add('center');
@@ -493,6 +493,11 @@ export function reset_battle() {
 // WIP2
 export async function start_battle() {
 
+
+//DEBUG
+try {
+
+
     // Data
     //OLD let d_player_character = saveData[1].savedCharacterData[0];
     const d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
@@ -506,7 +511,7 @@ export async function start_battle() {
     let battle_section_container = document.getElementById('tab_player_battle');
 
     // All battle specific elements
-    create_el('all_battle_ui_elements', 'div', battle_section_container);
+    const all_battle_ui_elements = create_el('all_battle_ui_elements', 'div', battle_section_container);
 
     // Clear all Elements
     let e_battle_ui_container = document.getElementById('battle_ui_container');
@@ -515,11 +520,11 @@ export async function start_battle() {
     }
 
     // Parent for ui, resets each update
-    create_el('battle_ui_container', 'div', all_battle_ui_elements);
+    const battle_ui_container = create_el('battle_ui_container', 'div', all_battle_ui_elements);
     battle_ui_container.classList.add('location_box_style');
 
     // Spacer
-    create_el('spacer_player_combat_status', 'div', all_battle_ui_elements);
+    const spacer_player_combat_status = create_el('spacer_player_combat_status', 'div', all_battle_ui_elements);
     spacer_player_combat_status.style.height = '17px';
     spacer_player_combat_status.style.backgroundColor = 'black';
     spacer_player_combat_status.style.height = '17px';
@@ -527,7 +532,7 @@ export async function start_battle() {
     //spacer_player_combat_status.style.height = '5px';
 
     // Spacer
-    create_el('player_combat_status', 'span', all_battle_ui_elements);
+    const player_combat_status = create_el('player_combat_status', 'span', all_battle_ui_elements);
     player_combat_status.style.textAlign = 'center';
     player_combat_status.style.fontSize = '12px';
     player_combat_status.style.width = '100%';
@@ -537,7 +542,7 @@ export async function start_battle() {
     player_combat_status.innerHTML = '<b><span style="background-color:red;">&nbsp;&nbsp; IN COMBAT &nbsp;&nbsp;</span></b>';
 
     // Place battle_ui_container2/3 here
-    create_el('player_battle_status_bars', 'div', all_battle_ui_elements);
+    const player_battle_status_bars = create_el('player_battle_status_bars', 'div', all_battle_ui_elements);
     player_battle_status_bars.style.width = "100%";
     player_battle_status_bars.style.border = 'solid 5px #333';
     // Toggle combat on
@@ -545,41 +550,41 @@ export async function start_battle() {
 
     // Player labels
     // Add to group player_battle_status_bars
-    create_el('player_name_level', 'div', 'player_battle_status_bars');
+    const player_name_level = create_el('player_name_level', 'div', player_battle_status_bars);
     player_name_level.classList.add('bar_label_container');
 
-    create_el('player_name', 'span', 'player_name_level');
+    const player_name = create_el('player_name', 'span', player_name_level);
     player_name.classList.add('bar_left_label');
     player_name.innerHTML = d_player_character.char_name;
 
-    create_el('player_level', 'span', 'player_name_level');
+    const player_level = create_el('player_level', 'span', player_name_level);
     player_level.classList.add('bar_right_label');
     player_level.innerHTML = 'Level: ' + d_player_character.char_level;
 
     // Player health
     // Add to group player_battle_status_bars
-    create_el('battle_ui_container2', 'div', 'player_battle_status_bars');
+    const battle_ui_container2 = create_el('battle_ui_container2', 'div', player_battle_status_bars);
 
     // Create player health container
-    create_el('player_health_container', 'div', 'battle_ui_container2');
+    const player_health_container = create_el('player_health_container', 'div', battle_ui_container2);
     player_health_container.classList.add('bar_with_border_container');
 
     // Create the player_health bar fill (blue bar)
-    create_el('player_health_bar_fill', 'div', 'player_health_container');
+    const player_health_bar_fill = create_el('player_health_bar_fill', 'div', player_health_container);
     player_health_bar_fill.classList.add('bar_with_border_fill');
     player_health_bar_fill.style.backgroundColor = 'green';
     player_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
     // Fill calculated below
 
-    create_el('player_current_health_text', 'span', 'player_health_container');
+    const player_current_health_text = create_el('player_current_health_text', 'span', player_health_container);
     player_current_health_text.classList.add('bar_with_border_text');
     player_current_health_text.innerHTML = 'Player Health: <span id="e_char_health">' + playerStats.cur_health + '</span>&nbsp;/&nbsp;';
     // Inserts e_char_health
 
-    create_el('player_maximum_health', 'span', 'player_current_health_text');
+    const player_maximum_health = create_el('player_maximum_health', 'span', player_current_health_text);
     player_maximum_health.innerHTML = playerStats.max_health;
 
-    create_el('player_current_health_percent', 'span', 'player_health_container');
+    const player_current_health_percent = create_el('player_current_health_percent', 'span', player_health_container);
     player_current_health_percent.classList.add('bar_with_border_percent');
     let d_player_health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
     d_player_health_percent = Math.round(d_player_health_percent * 10) / 10;
@@ -593,28 +598,28 @@ export async function start_battle() {
 
     // Player resource
     // Add to group player_battle_status_bars
-    create_el('battle_ui_container3', 'div', 'player_battle_status_bars');
+    const battle_ui_container3 = create_el('battle_ui_container3', 'div', player_battle_status_bars);
 
     // Create player resource container
-    create_el('player_resource_container', 'div', 'battle_ui_container3');
+    const player_resource_container = create_el('player_resource_container', 'div', battle_ui_container3);
     player_resource_container.classList.add('bar_with_border_container');
 
     // Create the player_resource bar fill (yellow bar)
-    create_el('player_resource_bar_fill', 'div', 'player_resource_container');
+    const player_resource_bar_fill = create_el('player_resource_bar_fill', 'div', player_resource_container);
     player_resource_bar_fill.classList.add('bar_with_border_fill');
     player_resource_bar_fill.style.backgroundColor = '#6E6800';
     player_resource_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
     // Fill calculated below
 
-    create_el('player_current_resource_text', 'span', 'player_resource_container');
+    const player_current_resource_text = create_el('player_current_resource_text', 'span', player_resource_container);
     player_current_resource_text.classList.add('bar_with_border_text');
     player_current_resource_text.innerHTML = 'Player Resource: <span id="e_char_resource">' + playerStats.cur_resource + '</span>&nbsp;/&nbsp;';
     // Inserts e_char_resource
 
-    create_el('player_maximum_resource', 'span', 'player_current_resource_text');
+    const player_maximum_resource = create_el('player_maximum_resource', 'span', player_current_resource_text);
     player_maximum_resource.innerHTML = playerStats.max_resource;
 
-    create_el('player_current_resource_percent', 'span', 'player_resource_container');
+    const player_current_resource_percent = create_el('player_current_resource_percent', 'span', player_resource_container);
     player_current_resource_percent.classList.add('bar_with_border_percent');
     let d_player_resource_percent = (playerStats.cur_resource / playerStats.max_resource) * 100;
     d_player_resource_percent = Math.round(d_player_resource_percent * 10) / 10;
@@ -624,20 +629,20 @@ export async function start_battle() {
     player_resource_bar_fill.style.width = d_player_resource_percent + '%';
 
     // Create the experience container
-    create_el('experience_container', 'div', 'player_battle_status_bars');
+    const experience_container = create_el('experience_container', 'div', player_battle_status_bars);
     experience_container.classList.add('bar_with_border_container');
 
     // Create the experience bar fill (blue bar)
-    create_el('experience_bar_fill', 'div', 'experience_container');
+    const experience_bar_fill = create_el('experience_bar_fill', 'div', experience_container);
     experience_bar_fill.classList.add('bar_with_border_fill');
     experience_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
 
-    create_el('experience_text', 'span', 'experience_container');
+    const experience_text = create_el('experience_text', 'span', experience_container);
     experience_text.classList.add('bar_with_border_text');
     experience_text.innerHTML = 'Experience: <span id="e_char_exp">' + d_player_character.char_exp + '</span>&nbsp;/&nbsp;';
     // Inserts e_char_exp
 
-    create_el('experience_percent', 'span', 'experience_container');
+    const experience_percent = create_el('experience_percent', 'span', experience_container);
     experience_percent.classList.add('bar_with_border_percent');
 
     // Calculate experience values
@@ -665,7 +670,7 @@ export async function start_battle() {
         }
     });
 
-    create_el('experience_to_level', 'span', 'experience_text');
+    const experience_to_level = create_el('experience_to_level', 'span', experience_text);
     experience_to_level.innerHTML = d_player_character.char_exp_to_level;
 
     await d.updateSlotData(dbState.slot_selected, 'savedCharacterData', d_savedCharacterData);
@@ -676,19 +681,19 @@ export async function start_battle() {
 // WIP Need update_resource
 
     // Setup battle encounter
-    create_el('battle_verses_box', 'div', all_battle_ui_elements);
+    const battle_verses_box = create_el('battle_verses_box', 'div', all_battle_ui_elements);
     battle_verses_box.innerHTML = '<p style="text-align:center;font-size:16px;color:red;" id="player_to_enemy_btn">[ TARGETING ]</p>';
 
 // WIP need multiple enemies
 
     // Place enemy_ui_containers here
-    create_el('enemy_battle_status_bars', 'div', all_battle_ui_elements);
+    const enemy_battle_status_bars = create_el('enemy_battle_status_bars', 'div', all_battle_ui_elements);
     enemy_battle_status_bars.style.width = "100%";
     enemy_battle_status_bars.style.border = 'solid 5px #333';
 
     // Enemy labels
     // Add to group enemy_battle_status_bars
-    create_el('enemy_name_level', 'div', 'enemy_battle_status_bars');
+    const enemy_name_level = create_el('enemy_name_level', 'div', enemy_battle_status_bars);
     enemy_name_level.style.backgroundColor = '#333';
     enemy_name_level.style.fontSize = '18px';
     enemy_name_level.style.color = '#00FFFF';
@@ -731,12 +736,12 @@ export async function start_battle() {
 
     if (encounter && random_enemy) {
 
-        create_el('enemy_name', 'span', 'enemy_name_level');
+        const enemy_name = create_el('enemy_name', 'span', enemy_name_level);
         enemy_name.innerHTML = random_enemy.lbl;
         enemy_name.style.display = 'inline-block';
         enemy_name.style.width = '50%';
 
-        create_el('enemy_level', 'span', 'enemy_name_level');
+        const enemy_level = create_el('enemy_level', 'span', enemy_name_level);
         enemy_level.innerHTML = 'Level: ' + random_enemy.lvl;
         enemy_level.style.display = 'inline-block';
         enemy_level.style.width = '50%';
@@ -744,14 +749,14 @@ export async function start_battle() {
 
         // Enemy health
         // Add to group player_battle_status_bars
-        create_el('battle_ui_enemy_container', 'div', 'enemy_battle_status_bars');
+        const battle_ui_enemy_container = create_el('battle_ui_enemy_container', 'div', enemy_battle_status_bars);
 
         // Create player health container
-        create_el('enemy_health_container', 'div', 'battle_ui_enemy_container');
+        const enemy_health_container = create_el('enemy_health_container', 'div', battle_ui_enemy_container);
         enemy_health_container.classList.add('bar_with_border_container');
 
         // Create the player_health bar fill (blue bar)
-        create_el('enemy_health_bar_fill', 'div', 'enemy_health_container');
+        const enemy_health_bar_fill = create_el('enemy_health_bar_fill', 'div', enemy_health_container);
         enemy_health_bar_fill.classList.add('bar_with_border_fill');
         enemy_health_bar_fill.style.backgroundColor = 'green';
         enemy_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
@@ -761,15 +766,15 @@ export async function start_battle() {
         encounter.max_health = randomize(encounter.hp_min, encounter.hp_max, 1);
         encounter.cur_health = encounter.max_health;
 
-        create_el('enemy_current_health_text', 'span', 'enemy_health_container');
+        const enemy_current_health_text = create_el('enemy_current_health_text', 'span', enemy_health_container);
         enemy_current_health_text.classList.add('bar_with_border_text');
         enemy_current_health_text.innerHTML = 'Enemy Health: <span id="e_enemy_health">' + encounter.cur_health + '</span>&nbsp;/&nbsp;';
         // Inserts e_enemy_health
 
-        create_el('enemy_maximum_health', 'span', 'enemy_current_health_text');
+        const enemy_maximum_health = create_el('enemy_maximum_health', 'span', enemy_current_health_text);
         enemy_maximum_health.innerHTML = encounter.max_health;
 
-        create_el('enemy_current_health_percent', 'span', 'enemy_health_container');
+        const enemy_current_health_percent = create_el('enemy_current_health_percent', 'span', enemy_health_container);
         enemy_current_health_percent.classList.add('bar_with_border_percent');
         let d_enemy_health_percent = (encounter.cur_health / encounter.max_health) * 100;
         d_enemy_health_percent = Math.round(d_enemy_health_percent * 10) / 10;
@@ -779,8 +784,7 @@ export async function start_battle() {
         enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
 
         // Insert combat log
-        let e_tab_player_battle = document.getElementById('tab_player_battle');
-        create_el('combat_log_container', 'div', all_battle_ui_elements);
+        const combat_log_container = create_el('combat_log_container', 'div', all_battle_ui_elements);
     }
 
     toggleElement('h', 'new_battle_button');
@@ -818,6 +822,14 @@ export async function start_battle() {
     if (trackingData[0].next_attack) {
         attack_box_button(e_attack_box_button, random_enemy, encounter);
     }
+
+//DEBUG
+} catch (error) {
+    console.error('ERROR:' + error);
+    console.error('STACK:' + error.stack)
+}
+
+
 }
 
 // Clicks for attack_box_button
@@ -1001,9 +1013,9 @@ let noCritChance = Math.round((1 - critChance) * 1000) / 1000;
         if (!trackingData[0].combat_log_created) {
             let e_combat_log_container = document.getElementById('combat_log_container');
             if (e_combat_log_container) { e_combat_log_container.innerHTML = ''; }
-            create_el('combat_log_title', 'div', 'combat_log_container');
+            const combat_log_title = create_el('combat_log_title', 'div', e_combat_log_container);
             combat_log_title.innerHTML = '<p style="font-size: 24px; color: white;">COMBAT LOG</p>';
-            create_el('combat_log', 'div', 'combat_log_container');
+            const combat_log = create_el('combat_log', 'div', e_combat_log_container);
             combat_log.classList.add('normal');
             trackingData[0].combat_log_created = true;
         }

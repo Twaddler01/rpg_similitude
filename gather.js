@@ -14,9 +14,9 @@ export async function update_gather() {
         e_tab_player_gather.innerHTML = '';
     }
 
-    let gather_messages_div = create_el('gather_messages_div', 'div', e_tab_player_gather);
+    const gather_messages_div = create_el('gather_messages_div', 'div', e_tab_player_gather);
     gather_messages_div.classList.add('normal');
-    create_el('new_gather', 'div', e_tab_player_gather);
+    const new_gather = create_el('new_gather', 'div', e_tab_player_gather);
 
     //OLD let saveData_gatherData = saveData[5].gatherData;
     const saveData_gatherData = await d.getSlotData(dbState.slot_selected, 'gatherData');
@@ -31,9 +31,9 @@ export async function update_gather() {
 
         // Learn to gather
         if (!saved_gatherData.learned) {
-            let gather_learn_div = create_el('gather_learn_div', 'div', new_gather);
+            const gather_learn_div = create_el('gather_learn_div', 'div', new_gather);
             gather_learn_div.classList.add('normal');
-            let gather_learn_btn = create_el('gather_learn_btn', 'button', gather_learn_div);
+            const gather_learn_btn = create_el('gather_learn_btn', 'button', gather_learn_div);
             gather_learn_btn.innerHTML = 'Learn ' + gather.name;
             function gather_learn_click() {
                 if (d_gold.cnt >= gather.cost) {
@@ -54,7 +54,7 @@ export async function update_gather() {
             }
             gather_learn_btn.addEventListener('click', gather_learn_click);
 
-            let gold_img = create_el('gold_img', 'img', gather_learn_div);
+            const gold_img = create_el('gold_img', 'img', gather_learn_div);
             gold_img.src = 'media/currency_gold.png';
             gold_img.classList.add('currency_gold');
             gold_img.style.paddingLeft = '10px';
@@ -69,21 +69,21 @@ export async function update_gather() {
 
         function load_gather() {
 
-            let gather_ready_container = create_el('gather_ready_container', 'div', e_tab_player_gather);
+            const gather_ready_container = create_el('gather_ready_container', 'div', e_tab_player_gather);
 
             // Skill label and XP bar
-            let gather_label = create_el('gather_label', 'div', gather_ready_container);
+            const gather_label = create_el('gather_label', 'div', gather_ready_container);
             gather_label.classList.add('bar_label_container');
 
-            let gather_label_left = create_el('gather_label_left', 'span', gather_label);
+            const gather_label_left = create_el('gather_label_left', 'span', gather_label);
             gather_label_left.classList.add('bar_left_label');
             gather_label_left.innerHTML = gather.name.toUpperCase();;
 
-            let gather_label_right = create_el('gather_label_right', 'span', gather_label);
+            const gather_label_right = create_el('gather_label_right', 'span', gather_label);
             gather_label_right.classList.add('bar_right_label');
             gather_label_right.innerHTML = 'Level: ' + saved_gatherData.lvl;
 
-            let f_skill_xp = create_el('f_skill_xp', 'div', gather_label);
+            const f_skill_xp = create_el('f_skill_xp', 'div', gather_label);
             // Skill XP level formula
             let xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl * 10) / 10;
             let new_xp_bar = create_bar_elements('skill_xp_bar', f_skill_xp, 'Experience', xp_to_level, 'blue');
@@ -130,20 +130,20 @@ export async function update_gather() {
                         let d_saved_gatherData_inventory = saved_gatherData.inventory;
                         let gather_inventory = d_saved_gatherData_inventory[index];
 
-                        let gather_row = create_el('gather_row', 'div', e_tab_player_gather);
+                        const gather_row = create_el('gather_row', 'div', e_tab_player_gather);
 
-                        let gather_table = create_el('gather_table', 'table', gather_row);
+                        const gather_table = create_el('gather_table', 'table', gather_row);
                         gather_table.style.width = '100%';
-                        let tr = create_el('tr', 'tr', gather_table);
-                        let td_1 = create_el('td_1', 'td', tr);
+                        const tr = create_el('tr', 'tr', gather_table);
+                        const td_1 = create_el('td_1', 'td', tr);
                         td_1.style.verticalAlign = 'center';
-                        let gather_img = create_el('gather_img', 'img', td_1);
+                        const gather_img = create_el('gather_img', 'img', td_1);
                         gather_img.classList.add('basic_icon');
                         gather_img.src = mat.img;
-                        let td_2 = create_el('td_2', 'td', tr);
+                        const td_2 = create_el('td_2', 'td', tr);
 
                         // Create the main progress bar container
-                        let progress_div = create_el('progress_div', 'div', td_2);
+                        const progress_div = create_el('progress_div', 'div', td_2);
                         progress_div.classList.add('center');
                         progress_div.style.height = '15px';
                         progress_div.style.width = '200px';
@@ -151,14 +151,14 @@ export async function update_gather() {
                         progress_div.style.position = 'relative'; // Allows positioning of inner elements
 
                         // Create the fill element inside the progress bar
-                        let progress_fill = create_el('progress_fill', 'div', progress_div);
+                        const progress_fill = create_el('progress_fill', 'div', progress_div);
                         progress_fill.style.height = '100%';
                         progress_fill.style.backgroundColor = 'green';
                         progress_fill.style.width = '0%'; // Initial width set to 0, updated later based on progress
                         progress_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
 
                         // Display text above the fill element
-                        let progress_text = create_el('progress_text', 'div', progress_div);
+                        const progress_text = create_el('progress_text', 'div', progress_div);
                         progress_text.style.color = 'white';
                         progress_text.style.fontSize = '10px';
                         progress_text.style.position = 'absolute'; // Overlay the text on the progress bar
@@ -168,13 +168,13 @@ export async function update_gather() {
                         progress_text.style.textAlign = 'center';
 
                         // Gathered amount display
-                        let td_3 = create_el('td_3', 'td', tr);
+                        const td_3 = create_el('td_3', 'td', tr);
                         td_3.classList.add('center');
                         td_3.style.fontSize = '12px';
                         td_3.style.verticalAlign = 'center';
                         td_3.innerHTML = mat.name;
 
-                        let td_4 = create_el('td_4', 'td', tr);
+                        const td_4 = create_el('td_4', 'td', tr);
                         td_4.classList.add('center');
                         td_4.style.fontSize = '12px';
                         td_4.style.verticalAlign = 'center';

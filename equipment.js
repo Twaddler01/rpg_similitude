@@ -391,7 +391,7 @@ export async function update_stats() {
         e_tab_player_stats.innerHTML = '';
     }
 
-    create_el('stats_info', 'div', e_tab_player_stats);
+    const stats_info = create_el('stats_info', 'div', e_tab_player_stats);
     stats_info.innerHTML = '<b>CURRENT STATS</b><br><br>';
 
     // Character stat descriptions
@@ -529,7 +529,7 @@ export async function update_stats() {
     });
 
     // Combined stats
-    create_el('combined_stats', 'div', e_tab_player_stats);
+    const combined_stats = create_el('combined_stats', 'div', e_tab_player_stats);
 
     let combinedStats = battleStats.filter(s => s.combines === true);
     combinedStats.forEach(stat => {
@@ -573,9 +573,9 @@ export async function update_stats() {
     });
 
     // Stat descriptions
-    create_el('stats_desc_lbl', 'div', e_tab_player_stats);
+    const stats_desc_lbl = create_el('stats_desc_lbl', 'div', e_tab_player_stats);
     stats_desc_lbl.innerHTML = '<br><b>STAT DEFINITIONS:</b<br>';
-    create_el('stats_desc', 'div', e_tab_player_stats);
+    const stats_desc = create_el('stats_desc', 'div', e_tab_player_stats);
     stats_desc.innerHTML = '<p>';
     statDescriptions.forEach(stat => {
         let line_item = '<b>' + stat.label + ':</b> ' + stat.def + '<br>';

@@ -1,6 +1,5 @@
 RPG_SIMILITUDE KNOWN ISSUES
-
 * 
 
-
-
+RPG_SIMILITUDE PROGRESSION
+* At about level 6 for location 1, need potion or healing ability to surive battles.

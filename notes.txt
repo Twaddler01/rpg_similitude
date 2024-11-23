@@ -1,5 +1,6 @@
 RPG_SIMILITUDE KNOWN ISSUES
-* 
+* See BUGS
 
 RPG_SIMILITUDE PROGRESSION
 * At about level 6 for location 1, need potion or healing ability to surive battles.
+* Gather needs to be debugged so it's ready for "CRAFT" tab, for potion making and other professions.

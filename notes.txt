@@ -6,4 +6,4 @@ RPG_SIMILITUDE PROGRESSION
 * Gather needs to be debugged so it's ready for "CRAFT" tab, for potion making and other professions.
 
 RPG_SIMILITUDE FUTURE FEATURES
-* A CURRENTLY EQUIPPED tooltip for stat comparisons of inventory item that match currently equipped slot item.
+* A CURRENTLY EQUIPPED tooltip for stat comparisons of inventory items that match the currently equipped slot item.

@@ -4,3 +4,6 @@ RPG_SIMILITUDE KNOWN ISSUES
 RPG_SIMILITUDE PROGRESSION
 * At about level 6 for location 1, need potion or healing ability to surive battles.
 * Gather needs to be debugged so it's ready for "CRAFT" tab, for potion making and other professions.
+
+RPG_SIMILITUDE FUTURE FEATURES
+* A CURRENTLY EQUIPPED tooltip for stat comparisons of inventory item that match currently equipped slot item.

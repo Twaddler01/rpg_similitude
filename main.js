@@ -1,6 +1,6 @@
 // main.js
 
-import { equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, gatherData, init_gatherData, trackingData, init_trackingData } from './data.js';
+import { equipmentElements, inventoryElements, itemData, locationsData, characterData, encounterData, trackingData, init_trackingData } from './data.js';
 import * as f from  './functions.js';
 import * as gf from './general_functions.js';
 import * as ch from './character.js';
@@ -142,7 +142,6 @@ initDatabase()
 
 // Add array updates
 f.load_items();
-init_gatherData();
 init_trackingData();
 f.setup_encounters(1);
 //console.log(JSON.stringify(encounterData, null, 2));

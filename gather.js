@@ -1,9 +1,13 @@
 // gather.js
 
-import { gatherData, trackingData } from './data.js';
+import { trackingData } from './data.js';
 import { create_el, create_bar_elements } from './functions.js';
 import { dbState } from './main.js';
 import * as d from './database.js';
+
+function sjson(data) {
+    console.log(JSON.stringify(data, null, 2));
+}
 
 export async function update_gather() {
 
@@ -16,21 +20,44 @@ export async function update_gather() {
 
     const gather_messages_div = create_el('gather_messages_div', 'div', e_tab_player_gather);
     gather_messages_div.classList.add('normal');
-    const new_gather = create_el('new_gather', 'div', e_tab_player_gather);
 
-    //OLD let saveData_gatherData = saveData[5].gatherData;
+    const e_tab_player_gather_NEW = create_el('e_tab_player_gather_NEW', 'div', e_tab_player_gather);
+    const e_tab_player_gather_EXISTING = create_el('e_tab_player_gather_EXISTING', 'div', e_tab_player_gather);
+
+    const gather_ready_label = create_el('gather_ready_label', 'div', e_tab_player_gather_NEW);
+
+    const gather_existing_label = create_el('gather_existing_label', 'div', e_tab_player_gather_EXISTING);
+    gather_existing_label.innerHTML = 'Learned Skills';
+    gather_existing_label.style.fontSize = "30px";
+    gather_existing_label.style.paddingTop = '10px';
+    gather_existing_label.style.paddingBottom = '10px';
+
     const saveData_gatherData = await d.getSlotData(dbState.slot_selected, 'gatherData');
-    //OLD let d_gold = saveData[4].currencyData[0];
     let d_currencyData = await d.getSlotData(dbState.slot_selected, 'currencyData');
     let d_gold = d_currencyData[0];
 
-    for (const gather of gatherData) {
+    var allSkillsLearned = saveData_gatherData.every(skill => skill.learned === true);
+    const hr_sep1 = document.createElement('hr');
+    if (!allSkillsLearned) {
+        gather_ready_label.innerHTML = 'Learn New Skill';
+        gather_ready_label.style.fontSize = "30px";
+        gather_ready_label.style.paddingTop = '10px';
+        gather_ready_label.style.paddingBottom = '10px';
+        e_tab_player_gather.insertBefore(hr_sep1, e_tab_player_gather_EXISTING);
+    }
 
-        // Match gatherData standalone array for storing cnt
-        let saved_gatherData = saveData_gatherData.find(g => g.id === gather.id);
+// temp hp = 5 for testing
+// { "id": "greenleaf", "name": "Green Leaf", "hp": 5, "lvl_req": 0 },
+
+    for (const gather of saveData_gatherData) {
+        //OLD Match gatherData standalone array for storing cnt
+        //OLD let saved_gatherData = saveData_gatherData.find(g => g.id === gather.id);
 
         // Learn to gather
-        if (!saved_gatherData.learned) {
+        if (!gather.learned) {
+            // Trigger unique IDs
+            const new_gather = create_el('new_gather', 'div', e_tab_player_gather_NEW);
+            new_gather.innerHTML = gather.name;
             const gather_learn_div = create_el('gather_learn_div', 'div', new_gather);
             gather_learn_div.classList.add('normal');
             const gather_learn_btn = create_el('gather_learn_btn', 'button', gather_learn_div);
@@ -38,13 +65,18 @@ export async function update_gather() {
             function gather_learn_click() {
                 if (d_gold.cnt >= gather.cost) {
                     d_gold.cnt -= gather.cost;
-                    saved_gatherData.learned = true;
+                    gather.learned = true;
+                    allSkillsLearned = saveData_gatherData.every(skill => skill.learned === true);
+                    if (allSkillsLearned) {
+                        gather_ready_label.remove();
+                        hr_sep1.remove();
+                    }
                     gather_messages_div.innerHTML += 'You have learned a new skill: <b>' + gather.name.toUpperCase() + '</b>!<br>';
                     // Clear the message after 20 seconds (20,000 milliseconds)
                     setTimeout(() => {
                         gather_messages_div.innerHTML = '';
                     }, 20000);
-                    gather_learn_div.remove();
+                    new_gather.remove();
                     d.updateSlotData(dbState.slot_selected, 'currencyData', d_currencyData);
                     d.updateSlotData(dbState.slot_selected, 'gatherData', saveData_gatherData);
                     load_gather();
@@ -74,18 +106,19 @@ export async function update_gather() {
             // Skill label and XP bar
             const gather_label = create_el('gather_label', 'div', gather_ready_container);
             gather_label.classList.add('bar_label_container');
+            gather_label.style.paddingTop = '30px';
 
             const gather_label_left = create_el('gather_label_left', 'span', gather_label);
             gather_label_left.classList.add('bar_left_label');
-            gather_label_left.innerHTML = gather.name.toUpperCase();;
+            gather_label_left.innerHTML = gather.name.toUpperCase();
 
             const gather_label_right = create_el('gather_label_right', 'span', gather_label);
             gather_label_right.classList.add('bar_right_label');
-            gather_label_right.innerHTML = 'Level: ' + saved_gatherData.lvl;
+            gather_label_right.innerHTML = 'Level: ' + gather.lvl;
 
             const f_skill_xp = create_el('f_skill_xp', 'div', gather_label);
             // Skill XP level formula
-            let xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl * 10) / 10;
+            let xp_to_level = Math.round(150 * gather.xp_lvl_mult * gather.lvl * 10) / 10;
             let new_xp_bar = create_bar_elements('skill_xp_bar', f_skill_xp, 'Experience', xp_to_level, 'blue');
 
             // Update current XP after each gather completes
@@ -97,38 +130,38 @@ export async function update_gather() {
                 }
                 let gather_xp_gain = Math.round(18.4 * mat_level * 10) / 10;
                 // 5+ levels above required level give no xp
-                if ((saved_gatherData.lvl - mat_lvl_req) >= 5) {
+                if ((gather.lvl - mat_lvl_req) >= 5) {
                     gather_xp_gain = 0;
                 }
                 // WIP: increase XP gains for higher levels
-                saved_gatherData.xp_amt += gather_xp_gain;
-                saved_gatherData.xp_amt = Math.round(saved_gatherData.xp_amt * 10) / 10;
-                new_xp_bar.updateValue(saved_gatherData.xp_amt);
-                if (saved_gatherData.xp_amt >= xp_to_level) {
-                    saved_gatherData.xp_amt -= xp_to_level;
-                    saved_gatherData.xp_amt = Math.round(saved_gatherData.xp_amt * 10) / 10;
-                    new_xp_bar.updateValue(saved_gatherData.xp_amt);
-                    saved_gatherData.lvl += 1;
-                    gather_label_right.innerHTML = 'Level: ' + saved_gatherData.lvl;
-                    xp_to_level = Math.round(150 * gather.xp_lvl_mult * saved_gatherData.lvl * 10) / 10;
+                gather.xp_amt += gather_xp_gain;
+                gather.xp_amt = Math.round(gather.xp_amt * 10) / 10;
+                new_xp_bar.updateValue(gather.xp_amt);
+                if (gather.xp_amt >= xp_to_level) {
+                    gather.xp_amt -= xp_to_level;
+                    gather.xp_amt = Math.round(gather.xp_amt * 10) / 10;
+                    new_xp_bar.updateValue(gather.xp_amt);
+                    gather.lvl += 1;
+                    gather_label_right.innerHTML = 'Level: ' + gather.lvl;
+                    xp_to_level = Math.round(150 * gather.xp_lvl_mult * gather.lvl * 10) / 10;
                     new_xp_bar.updateTotal(xp_to_level);
                     d.updateSlotData(dbState.slot_selected, 'gatherData', saveData_gatherData);
                     update_gather();
                 }
             }
             // Current values
-            new_xp_bar.updateValue(saved_gatherData.xp_amt);
+            new_xp_bar.updateValue(gather.xp_amt);
             new_xp_bar.updateTotal(xp_to_level);
 
             // Get materials data for each learned skill
             let gatherMaterial = gather.materials;
             if (gatherMaterial) {
                 // Create rows based on materials unlocked
-                let material = gatherMaterial.filter(m => m.lvl_req <= saved_gatherData.lvl);
+                let material = gatherMaterial.filter(m => m.lvl_req <= gather.lvl);
                 if (material) {
                     material.forEach((mat, index) => {
-                        let d_saved_gatherData_inventory = saved_gatherData.inventory;
-                        let gather_inventory = d_saved_gatherData_inventory[index];
+                        let d_inventory = gather.inventory;
+                        let gather_inventory = d_inventory[index];
 
                         const gather_row = create_el('gather_row', 'div', e_tab_player_gather);
 
@@ -199,7 +232,7 @@ export async function update_gather() {
                                 return;
                             }
                             // WIP: Need a depreciation of xp based on current skill lvl
-                            let gather_strength = gather.gather_str * gather.gather_str_mult * saved_gatherData.lvl;
+                            let gather_strength = gather.gather_str * gather.gather_str_mult * gather.lvl;
                             d_progress_curr -= gather_strength;
                             d_progress_curr = Math.round(d_progress_curr * 10) / 10;
                             progress_percent = (d_progress_curr / d_progress_total) * 100;

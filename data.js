@@ -1,19 +1,19 @@
 // data.js
 
 export const equipmentElements = [
-    { num: 1, type: 'equip_slot', id: 'head' }, 
-    { num: 2, type: 'equip_slot', id: 'shoulders' }, 
-    { num: 3, type: 'equip_slot', id: 'hands' }, 
-    { num: 4, type: 'equip_slot', id: 'neck' }, 
-    { num: 5, type: 'equip_slot', id: 'waist' }, 
-    { num: 6, type: 'equip_slot', id: 'chest' }, 
-    { num: 7, type: 'equip_slot', id: 'legs' }, 
-    { num: 8, type: 'equip_slot', id: 'wrist' }, 
-    { num: 9, type: 'equip_slot', id: 'feet' }, 
-    { num: 10, type: 'equip_slot', id: 'ring1' }, 
-    { num: 11, type: 'equip_slot', id: 'ring2' }, 
-    { num: 12, type: 'equip_slot', id: 'mh' }, 
-    { num: 13, type: 'equip_slot', id: 'oh' }, 
+    { num: 1, type: 'equip_slot', id: 'head' },
+    { num: 2, type: 'equip_slot', id: 'shoulders' },
+    { num: 3, type: 'equip_slot', id: 'hands' },
+    { num: 4, type: 'equip_slot', id: 'neck' },
+    { num: 5, type: 'equip_slot', id: 'waist' },
+    { num: 6, type: 'equip_slot', id: 'chest' },
+    { num: 7, type: 'equip_slot', id: 'legs' },
+    { num: 8, type: 'equip_slot', id: 'wrist' },
+    { num: 9, type: 'equip_slot', id: 'feet' },
+    { num: 10, type: 'equip_slot', id: 'ring1' },
+    { num: 11, type: 'equip_slot', id: 'ring2' },
+    { num: 12, type: 'equip_slot', id: 'mh' },
+    { num: 13, type: 'equip_slot', id: 'oh' },
 ];
 
 const inventoryMaxSlots = 20;
@@ -158,7 +158,7 @@ export const itemData = [
     slot_name: 'Head',
     rarity: 0,
     desc: 'Basic head protection, nothing extraordinary.',
-    gains: [ 
+    gains: [
         { stat: 'armor', lbl: 'Armor', amt: 10 },
         { stat: 'strength', lbl: 'Strength', amt: 1 },
         { stat: 'intelligence', lbl: 'Intelligence', amt: 1 },
@@ -175,7 +175,7 @@ export const itemData = [
     slot_name: 'Chest',
     rarity: 0,
     desc: 'Basic chest protection. Not very stylish.',
-    gains: [ 
+    gains: [
         { stat: 'armor', lbl: 'Armor', amt: 20 },
         { stat: 'wisdom', lbl: 'Wisdom', amt: 2 },
     ],
@@ -191,7 +191,7 @@ export const itemData = [
     slot_name: 'Hands',
     rarity: 0,
     desc: 'Basic hand protection. Almost as good as junk...almost.',
-    gains: [ 
+    gains: [
         { stat: 'armor', lbl: 'Armor', amt: 10 },
         { stat: 'power', lbl: 'Power', amt: 5 },
         { stat: 'hitChance', lbl: 'Chance to hit (%)', amt: 0.02 },
@@ -208,7 +208,7 @@ export const itemData = [
     slot_name: 'Feet',
     rarity: 0,
     desc: 'Basic feet protection. Not very comfortable.',
-    gains: [ 
+    gains: [
         { stat: 'armor', lbl: 'Armor', amt: 10 },
         { stat: 'dexterity', lbl: 'Dexterity', amt: 5 },
     ],
@@ -225,11 +225,11 @@ export const itemData = [
     player_equipped: true,
     rarity: 0,
     desc: 'A cheap dagger. Dull. You&apos;ll stab your eye out, kid.',
-    gains: [ 
-        { stat: 'dmg_min', amt: 1.2 }, 
-        { stat: 'dmg_max', amt: 1.6 }, 
-        { stat: 'constitution', lbl: 'Constitution', amt: 1 }, 
-        { stat: 'agility', lbl: 'Agility', amt: 5 }, 
+    gains: [
+        { stat: 'dmg_min', amt: 1.2 },
+        { stat: 'dmg_max', amt: 1.6 },
+        { stat: 'constitution', lbl: 'Constitution', amt: 1 },
+        { stat: 'agility', lbl: 'Agility', amt: 5 },
     ],
     cnt: 0,
     value: 0,
@@ -243,7 +243,7 @@ export const itemData = [
     slot_name: 'Feet',
     rarity: 1,
     desc: 'Better feet protection. A tiny bit more comfortable.',
-    gains: [ 
+    gains: [
         { stat: 'armor', lbl: 'Armor', amt: 20 },
         { stat: 'agility', lbl: 'Agility', amt: 15 },
     ],
@@ -259,7 +259,7 @@ export const itemData = [
     slot_name: 'Head',
     rarity: 1,
     desc: 'Better head protection, still not extraordinary.',
-    gains: [ 
+    gains: [
         { stat: 'armor', lbl: 'Armor', amt: 30 },
         { stat: 'strength', lbl: 'Strength', amt: 15 },
         { stat: 'intelligence', lbl: 'Intelligence', amt: 15 },
@@ -276,12 +276,12 @@ export const itemData = [
     slot_name: 'Mainhand',
     rarity: 4,
     desc: 'Overpowered.',
-    gains: [ 
-        { stat: 'dmg_min', amt: 8.9 }, 
-        { stat: 'dmg_max', amt: 9.6 }, 
-        { stat: 'constitution', lbl: 'Constitution', amt: 10 }, 
-        { stat: 'agility', lbl: 'Agility', amt: 10 }, 
-        { stat: 'criticalStrikeChance_melee', lbl: 'Melee Critical Strike Chance', amt: 0.05 }, 
+    gains: [
+        { stat: 'dmg_min', amt: 8.9 },
+        { stat: 'dmg_max', amt: 9.6 },
+        { stat: 'constitution', lbl: 'Constitution', amt: 10 },
+        { stat: 'agility', lbl: 'Agility', amt: 10 },
+        { stat: 'criticalStrikeChance_melee', lbl: 'Melee Critical Strike Chance', amt: 0.05 },
     ],
     cnt: 0,
     value: 0,
@@ -304,18 +304,18 @@ export const locationsData = [
     { loc: 1, lbl: 'Dark Plains', lvl: 6, kills_req: 3 },
     { loc: 1, lbl: 'Dark Plains', lvl: 7, kills_req: 3 },
     { loc: 1, lbl: 'Dark Plains', lvl: 8, kills_req: 3 },
-    
+
     { loc: 2, lbl: 'Dark Highlands', lvl: 1, kills_req: 3,
     img: 'media/img_loc_2.jpg', },
     { loc: 2, lbl: 'Dark Highlands', lvl: 2, kills_req: 3 },
     { loc: 2, lbl: 'Dark Highlands', lvl: 3, kills_req: 3 }, // l = 10 + 1
     { loc: 2, lbl: 'Dark Highlands', lvl: 4, kills_req: 3 },
-    
+
     { loc: 3, lbl: 'Dark Forest', lvl: 1, kills_req: 3,
     img: 'media/img_loc_3.jpg', },
     { loc: 3, lbl: 'Dark Forest', lvl: 2, kills_req: 3 },
     { loc: 3, lbl: 'Dark Forest', lvl: 3, kills_req: 3 }, // max = 14 + 1
-    
+
     { loc: 4, lbl: 'END', lvl: 3, kills_req: 99 }, // placeholder
 ];
 
@@ -323,127 +323,64 @@ export const characterData = [
     // d_exp_filter = characterData.filter(c => c.type === 'exp');
     // d_exp = d_exp_filter[0];
     { /* experienceValues [] */ id: 'level_exp', type: 'exp', level_cap: 20, starting_val: 800, level_rate: 0.2 },
-    { id: 'player_stats', /* playerStats.total_armor, etc */ }, // See character_setup() 
+    { id: 'player_stats', /* playerStats.total_armor, etc */ }, // See character_setup()
     // let playerStats = characterData.find(d => d.id === 'player_stats');
     { id: 'player_combat_status', in_combat: false }, // See toggle_combat_status()
 ];
 
 export const encounterData = [
 
-        { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0, enemyDmg_min: 3, enemyDmg_max: 4, enemyNoCrit: 0.06, 
-            // encounterData[0]
-            enemy_list: [
-                { en: 'beginner_0', cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: [ { id: 'NPC_LOOT_SLIME', p: 0.8 }, { id: 'NPC_LOOT_SLIME_CHUNK', p: 0.2 }, ] },
-                { en: 'beginner_0', cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: [ { id: 'NPC_LOOT_LIZARD_SCALE', p: 0.6 }, { id: 'NPC_LOOT_LIZARD_CLAW', p: 0.5 }, { id: 'NPC_LOOT_LIZARD_TAIL', p: 0.3}, ] },
-                { en: 'beginner_0', cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: [ { id: 'NPC_LOOT_LEPER_BONE_FRAGMENT', p: 0.5 }, { id: 'GOLD', p: 0.6 }, { id: 'NPC_LOOT_LEPER_SMALL_SKULL', p: 0.4 }, { id: 'CLOTH_BASIC', p: 0.3 } ] },
-            ] }, 
-        // WIP dynamic entries
-        // start_encounter()
-        
-        /*{ id: 'group_loc1', loc: 1, lvl: 1,
-            enemy_list: [
-                //
-            ] },
-        
-        { id: 'group2' },*/
-        // for add_loot() function
-        { id: 'lootData', current_loot: [] },
-        // any enemy can drop -- see f.add_global_drop()
-        { cat: 'global_drops', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1 } },
-        { cat: 'global_drops', id: 'GLOBAL_DROP0', drops: { 'GOLD': 0.05 } },
-        { id: 'enemyNames1', names: [ 
-            { n: 'Shadowfiend', l: 'SF', type: 'shadow', u: false }, 
-            { n: 'Flame Wraith', l: 'FW', type: 'elemental', u: false }, 
-            { n: 'Ice Revenant', l: 'IR', type: 'elemental', u: false }, 
-            { n: 'Void Stalker', l: 'VST', type: 'elemental', u: false }, 
-            { n: 'Doom Serpent', l: 'DS', type: 'beast', u: false }, 
-            { n: 'Storm Bringer', l: 'SB', type: 'elemental', u: false }, 
-            { n: 'Blood Harpy', l: 'BH', type: 'humanoid', u: false }, 
-            { n: 'Bone Golem', l: 'BG', type: 'undead', u: false }, 
-            { n: 'Iron Behemoth', l: 'IB', type: 'mech', u: false }, 
-            { n: 'Frost Lurker', l: 'FL', type: 'elemental', u: false }, 
-            { n: 'Soul Leech', l: 'SL', type: 'undead', u: false }, 
-            { n: 'Nightmare Hound', l: 'NH', type: 'beast', u: false }, 
-            { n: 'Crimson Specter', l: 'CS', type: 'undead', u: false }, 
-            { n: 'Ghoul King', l: 'GK', type: 'undead', u: false }, 
-            { n: 'Ash Demon', l: 'AD', type: 'elemental', u: false }, 
-            { n: 'Wraith Knight', l: 'WK', type: 'shadow', u: false }, 
-            { n: 'Venomous Slime', l: 'VSLIME', type: 'elemental', u: false }, 
-            { n: 'Blight Fiend', l: 'BF', type: 'shadow', u: false }, 
-            { n: 'Crystal Drake', l: 'CD', type: 'dragon', u: false }, 
-            { n: 'Necrotic Crawler', l: 'NC', type: 'shadow', u: false }, 
-            { n: 'Thunder Wyrm', l: 'TW', type: 'beast', u: false }, 
-            { n: 'Dark Harbinger', l: 'DH', type: 'shadow', u: false }, 
-            { n: 'Lava Elemental', l: 'LE', type: 'elemental', u: false }, 
-            { n: 'Obsidian Guardian', l: 'OG', type: 'elemental', u: false } 
-            ]
-        },
-        { id: 'experience', experienceGains: [] },
-        //
-    ];
+    { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0, enemyDmg_min: 3, enemyDmg_max: 4, enemyNoCrit: 0.06,
+        // encounterData[0]
+        enemy_list: [
+            { en: 'beginner_0', cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: [ { id: 'NPC_LOOT_SLIME', p: 0.8 }, { id: 'NPC_LOOT_SLIME_CHUNK', p: 0.2 }, ] },
+            { en: 'beginner_0', cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: [ { id: 'NPC_LOOT_LIZARD_SCALE', p: 0.6 }, { id: 'NPC_LOOT_LIZARD_CLAW', p: 0.5 }, { id: 'NPC_LOOT_LIZARD_TAIL', p: 0.3}, ] },
+            { en: 'beginner_0', cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: [ { id: 'NPC_LOOT_LEPER_BONE_FRAGMENT', p: 0.5 }, { id: 'GOLD', p: 0.6 }, { id: 'NPC_LOOT_LEPER_SMALL_SKULL', p: 0.4 }, { id: 'CLOTH_BASIC', p: 0.3 } ] },
+        ] },
+    // WIP dynamic entries
+    // start_encounter()
 
-// Matches indices of 'gatherData' section of JSON template
-export const gatherData = [
-    { id: 'herbgather', name: 'Herb Gathering', cost: 200, gather_str: 4, gather_str_mult: 1.08, xp_lvl_mult: 1.5,
-    materials: [ 
-        { id: 'greenleaf', name: 'Green Leaf', hp: 10, lvl_req: 0 }, // 100
-        { id: 'jadeleaf', name: 'Jade Leaf', hp: 200, lvl_req: 2 },
-        { id: 'goldenclove', name: 'Golden Clove', hp: 200, lvl_req: 5 },
-        { id: 'foxglove', name: 'Fox Glove', hp: 200, lvl_req: 5 },
-        { id: 'thornypike', name: 'Thorny Pike', hp: 200, lvl_req: 5 },
-        { id: 'deathglory', name: 'Death Glory', hp: 200, lvl_req: 5 },
-        { id: 'morningglade', name: 'Morning Glade', hp: 200, lvl_req: 5 },
-        { id: 'judegloom', name: 'Jude Gloom', hp: 200, lvl_req: 5 },
-        { id: 'nightblade', name: 'Night Blade', hp: 200, lvl_req: 5 },
-        { id: 'bloodroot', name: 'Blood Root', hp: 200, lvl_req: 5 },
-        { id: 'elderberry', name: 'Elder Berry', hp: 200, lvl_req: 5 },
-    ] },
-    { id: 'oremine', name: 'Ore Mining', cost: 200,
-    materials: [
-        { id: 'copper', name: 'Copper', hp: 100, lvl_req: 1 },
-    ], },
-    // WIP: Replace with a different gathering skill
-    { id: 'tailor', name: 'Tailor', cost: 200, 
-    materials: [
-        { id: 'basic_cloth', name: 'Basic Cloth', hp: 100, lvl_req: 1 }
-    ] }
+    /*{ id: 'group_loc1', loc: 1, lvl: 1,
+        enemy_list: [
+            //
+        ] },
+
+    { id: 'group2' },*/
+    // for add_loot() function
+    { id: 'lootData', current_loot: [] },
+    // any enemy can drop -- see f.add_global_drop()
+    { cat: 'global_drops', id: 'GLOBAL_DROP1', drops: { 'GOLD': 0.1 } },
+    { cat: 'global_drops', id: 'GLOBAL_DROP0', drops: { 'GOLD': 0.05 } },
+    { id: 'enemyNames1', names: [
+        { n: 'Shadowfiend', l: 'SF', type: 'shadow', u: false },
+        { n: 'Flame Wraith', l: 'FW', type: 'elemental', u: false },
+        { n: 'Ice Revenant', l: 'IR', type: 'elemental', u: false },
+        { n: 'Void Stalker', l: 'VST', type: 'elemental', u: false },
+        { n: 'Doom Serpent', l: 'DS', type: 'beast', u: false },
+        { n: 'Storm Bringer', l: 'SB', type: 'elemental', u: false },
+        { n: 'Blood Harpy', l: 'BH', type: 'humanoid', u: false },
+        { n: 'Bone Golem', l: 'BG', type: 'undead', u: false },
+        { n: 'Iron Behemoth', l: 'IB', type: 'mech', u: false },
+        { n: 'Frost Lurker', l: 'FL', type: 'elemental', u: false },
+        { n: 'Soul Leech', l: 'SL', type: 'undead', u: false },
+        { n: 'Nightmare Hound', l: 'NH', type: 'beast', u: false },
+        { n: 'Crimson Specter', l: 'CS', type: 'undead', u: false },
+        { n: 'Ghoul King', l: 'GK', type: 'undead', u: false },
+        { n: 'Ash Demon', l: 'AD', type: 'elemental', u: false },
+        { n: 'Wraith Knight', l: 'WK', type: 'shadow', u: false },
+        { n: 'Venomous Slime', l: 'VSLIME', type: 'elemental', u: false },
+        { n: 'Blight Fiend', l: 'BF', type: 'shadow', u: false },
+        { n: 'Crystal Drake', l: 'CD', type: 'dragon', u: false },
+        { n: 'Necrotic Crawler', l: 'NC', type: 'shadow', u: false },
+        { n: 'Thunder Wyrm', l: 'TW', type: 'beast', u: false },
+        { n: 'Dark Harbinger', l: 'DH', type: 'shadow', u: false },
+        { n: 'Lava Elemental', l: 'LE', type: 'elemental', u: false },
+        { n: 'Obsidian Guardian', l: 'OG', type: 'elemental', u: false }
+        ]
+    },
+    { id: 'experience', experienceGains: [] },
+    //
 ];
-
-// Add dynamic data to gatherData
-export function init_gatherData() {
-
-    // Add dynamic img urls
-    gatherData.forEach(gather => {
-        let mats = gather.materials;
-        if (gather.name === 'Herb Gathering') {
-            for (let i = 0; i < mats.length; i++) {
-                if (i < 10) {
-                    mats[i].img = 'media/icons/gather/herb_0' + i + '.png';
-                } else {
-                    mats[i].img = 'media/icons/gather/herb_' + i + '.png';
-                }
-            }
-        }
-        if (gather.name === 'Ore Mining') {
-            for (let i = 0; i < mats.length; i++) {
-                if (i < 10) {
-                    mats[i].img = 'media/icons/gather/mine_0' + i + '.png';
-                } else {
-                    mats[i].img = 'media/icons/gather/mine_' + i + '.png';
-                }
-            }
-        }
-        if (gather.name === 'Tailor') {
-            for (let i = 0; i < mats.length; i++) {
-                if (i < 10) {
-                    mats[i].img = 'media/icons/gather/tail_0' + i + '.png';
-                } else {
-                    mats[i].img = 'media/icons/gather/tail_' + i + '.png';
-                }
-            }
-        }
-    });
-}
 
 // trackingData[0] only
 export var trackingData = [];

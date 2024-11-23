@@ -3,6 +3,9 @@
 import { dbInstance, dbState, new_game, layout_loadTabs, clear_game_elements } from './main.js';
 import { create_el } from './functions.js';
 
+// IF running loadFirstSlotFromNewSave()
+// newSaveData.json (slot1) is for the current slot1 for permanent testing data
+// using new saveTemplate.json (slot1) for the current slot2 in testing (with resets)
 export async function loadFirstSlotFromNewSave() {
     try {
         const response = await fetch('./data/newSaveData.json');

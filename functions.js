@@ -63,8 +63,8 @@ export function downloadSaveData() {
     return new_el;
 }*/
 
-// Main function to create new elements
-export function create_el(newId, type, parentId, content) {
+// Main function to create new elements VERSION 2
+/*export function create_el(newId, type, parentId, content) {
     // Check if the element already exists
     let existing_el = document.getElementById(newId);
     if (existing_el) {
@@ -96,8 +96,49 @@ export function create_el(newId, type, parentId, content) {
     }
 
     return new_el;
-}
+}*/
 
+// Main function to create new elements NEWEST
+export function create_el(newId, type, parentId, content, allIds = []) {
+    // Push the current ID to the tracking array
+    allIds.push(newId);
+
+    // Count all occurrences of this ID in the array so far
+    const occurrences = allIds.filter(id => id === newId).length;
+
+    // Modify the ID if there are duplicates
+    let finalId = newId;
+    if (occurrences > 1) {
+        // First duplicate gets "0", and subsequent ones increment
+        finalId = newId + (occurrences - 1);
+    }
+
+    // Check if the parent element exists
+    const parent_el =
+        typeof parentId === 'string' ? document.getElementById(parentId) : parentId;
+
+    if (!parent_el && parentId !== 'body') {
+        console.warn(`Parent with ID "${parentId}" not found. Element "${newId}" created but not appended.`);
+        return null; // Exit early if no parent
+    }
+
+    // Create the element with the final ID
+    const new_el = document.createElement(type);
+    new_el.id = finalId;
+
+    if (content) {
+        new_el.innerHTML = content;
+    }
+
+    // Append the element to the parent or body
+    if (parent_el) {
+        parent_el.appendChild(new_el);
+    } else if (parentId === 'body') {
+        document.body.appendChild(new_el);
+    }
+
+    return new_el;
+}
 
 // OUT OF DATE SINCE indexedDB
 let add_message_cnt_test = -1;

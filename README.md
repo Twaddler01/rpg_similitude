@@ -7,12 +7,13 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Identified an intermittent css error on Chrome (Mobile) that throws error when applying a css classList. This is NOT an issue when using Firefox Mobile. For now, recommend using the Firefox browser until issue can be addressed. Likely a Github server-related error since code executes error free on Chrome locally. Another workaround on mobile is listed above by using an HTTP server (running a Node.js server in Termux also works fine on my Android device).
 # BUGS
 - REVIVE seems to work intermittently, likely due an async issue with database timing. Page can be reloaded to reset.
+- Gather tab eventually bugs out at certain unlocked levels, needs better database integration. 
 
 # Updates
 11-22-2024
 - Added an [ Equipped ] display for weapons that shows the damage per turn as if weapon was equipped. This is in preparation for a "CURRENTLY EQUIPPED" tooltip to sit alongside regular one for comparisons in a future update.
 - Cleaned out some old code and fixed some tabbing for better code look.
-- All create_el function calls now use const assignments to ensure proper element assignments.
+- Most create_el function calls now use const assignments to ensure proper element assignments.
 
 11-21-2024
 - Migrated all array data over to indexedDB. There may be some bugs or quirks but it seems to run generally smooth at the moment.

@@ -495,6 +495,7 @@ async function setup_tooltip_div(tooltip_container_div, item, slot_data, tt_type
             if (item.slot === 'mh') {
                 // mh elements
                 const damage_lbl = create_el('damage_lbl', 'div', item_tooltip_div);
+                damage_lbl.id = 'damage_lbl';
                 damage_lbl.classList.add('item_tooltip_armor');
                 // Weapon base damage
                 damage_lbl.innerHTML = 'Base damage: ';

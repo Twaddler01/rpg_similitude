@@ -64,8 +64,17 @@ export function downloadSaveData() {
 }*/
 
 // Main function to create new elements VERSION 2
-/*export function create_el(newId, type, parentId, content) {
-    // Check if the element already exists
+export function create_el(newId, type, parentId, looped = false, content) {
+    // If looped, append incremental numbers to the ID
+    if (looped) {
+        let index = 0; // Start index at 0
+        while (document.getElementById(newId + '_' + index)) {
+            index++; // Increment until an unused ID is found
+        }
+        newId = newId + '_' + index; // Append the number to the ID
+    }
+
+    // Check if the element already exists (for non-looped IDs)
     let existing_el = document.getElementById(newId);
     if (existing_el) {
         return existing_el; // Return the existing element
@@ -96,10 +105,12 @@ export function downloadSaveData() {
     }
 
     return new_el;
-}*/
+}
 
 // Main function to create new elements NEWEST
-export function create_el(newId, type, parentId, content, allIds = []) {
+/*export function create_el(newId, type, parentId, content, single = false, allIds = []) {
+
+if (allIds) {
     // Push the current ID to the tracking array
     allIds.push(newId);
 
@@ -112,7 +123,7 @@ export function create_el(newId, type, parentId, content, allIds = []) {
         // First duplicate gets "0", and subsequent ones increment
         finalId = newId + (occurrences - 1);
     }
-
+}
     // Check if the parent element exists
     const parent_el =
         typeof parentId === 'string' ? document.getElementById(parentId) : parentId;
@@ -126,6 +137,10 @@ export function create_el(newId, type, parentId, content, allIds = []) {
     const new_el = document.createElement(type);
     new_el.id = finalId;
 
+    if (single) {
+        new_el.id = newId;
+    }
+
     if (content) {
         new_el.innerHTML = content;
     }
@@ -138,7 +153,7 @@ export function create_el(newId, type, parentId, content, allIds = []) {
     }
 
     return new_el;
-}
+}*/
 
 // OUT OF DATE SINCE indexedDB
 let add_message_cnt_test = -1;

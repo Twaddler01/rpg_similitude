@@ -128,7 +128,12 @@ export function displaySaveSlots() {
             });
     }
 
+    let e_reset_all_data = document.getElementById('reset_all_data');
+    if (e_reset_all_data) {
+        e_reset_all_data.remove();
+    }
     let reset_all_data = document.createElement('button');
+    reset_all_data.id = 'reset_all_data';
     parent_id.appendChild(reset_all_data);
     reset_all_data.innerHTML = 'RESET ALL DATA';
     reset_all_data.onclick = () => resetAll();

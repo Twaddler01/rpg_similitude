@@ -61,23 +61,23 @@ function initDatabase() {
                 console.log('Database connection closed due to version change');
             };
 
-try {
-    const transaction = dbInstance.transaction(['saveStates'], 'readonly');
-    const store = transaction.objectStore('saveStates');
-
-    const getAllRequest = store.getAll();
-    getAllRequest.onsuccess = () => {
-        console.log('Existing slots:', getAllRequest.result);
-        resolve();
-    };
-    getAllRequest.onerror = (error) => {
-        console.error('getAllRequest error:', error);
-        reject(error);
-    };
-} catch (error) {
-    console.error('Transaction failed:', error);
-    reject(error);
-}
+            try {
+                const transaction = dbInstance.transaction(['saveStates'], 'readonly');
+                const store = transaction.objectStore('saveStates');
+            
+                const getAllRequest = store.getAll();
+                getAllRequest.onsuccess = () => {
+                    //console.log('Existing slots:', getAllRequest.result);
+                    resolve();
+                };
+                getAllRequest.onerror = (error) => {
+                    console.error('getAllRequest error:', error);
+                    reject(error);
+                };
+            } catch (error) {
+                console.error('Transaction failed:', error);
+                reject(error);
+            }
         };
 
         dbRequest.onerror = (event) => {

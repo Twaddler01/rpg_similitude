@@ -12,6 +12,7 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 
 # Updates
 11-23-2024
+- Various bug fixes.
 - "Gather" is still in progress, but the experience and unlocks portion of herb gathering are essentially done.
 - Updated gatherData to work without its old array using integrated JSON database in one place. Since it was easiest to load images dynamically, these are generated per session. May eventually just add each img URL individually in JSON database for consistency.
 - Updated create_el to work dynamically by using unique IDs when neccesary.

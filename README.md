@@ -12,6 +12,11 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Gather tab eventually bugs out at certain unlocked levels, needs better database integration. 
 
 # Updates
+11-23-2024
+- "Gather" is still in progress, but the experience and unlocks portion of herb gathering are essentially done.
+- Updated gatherData to work without its old array using integrated JSON database in one place. Since it was easiest to load images dynamically, these are generated per session. May eventually just add each img URL individually in JSON database for consistency.
+- Updated create_el to work dynamically by using unique IDs when neccesary.
+
 11-22-2024
 - Added an [ Equipped ] display for weapons that shows the damage per turn as if weapon was equipped. This is in preparation for a "CURRENTLY EQUIPPED" tooltip to sit alongside regular one for comparisons in a future update.
 - Cleaned out some old code and fixed some tabbing for better code look.

@@ -280,6 +280,7 @@ export function displaySaveSlots() {
                                                     // Refresh the UI
                                                     if (dbState.slot_selected === slotNum) {
                                                         dbState.slot_selected = null;
+                                                        clear_game_elements();
                                                     }
                                                     displaySaveSlots();
                                                 };

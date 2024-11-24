@@ -101,7 +101,7 @@ initDatabase()
         }
         //use_test_data();
     })
-    .catch(error => console.error('Initialization error: ' + error);
+    .catch(error => console.error('Initialization error: ' + error));
 
 // Add array updates
 f.load_items();

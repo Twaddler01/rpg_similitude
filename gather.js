@@ -36,6 +36,47 @@ export async function update_gather() {
     let d_currencyData = await d.getSlotData(dbState.slot_selected, 'currencyData');
     let d_gold = d_currencyData[0];
 
+    // Load images dynamically
+    async function init_gatherDataImages() {
+
+        // Add dynamic img urls
+        saveData_gatherData.forEach(gather => {
+            let mats = gather.materials;
+            if (gather.name === 'Herb Gathering') {
+                for (let i = 0; i < mats.length; i++) {
+                    if (i < 10) {
+                        mats[i].img = 'media/icons/gather/herb_0' + i + '.png';
+                    } else {
+                        mats[i].img = 'media/icons/gather/herb_' + i + '.png';
+                    }
+                }
+            }
+            if (gather.name === 'Ore Mining') {
+                for (let i = 0; i < mats.length; i++) {
+                    if (i < 10) {
+                        mats[i].img = 'media/icons/gather/mine_0' + i + '.png';
+                    } else {
+                        mats[i].img = 'media/icons/gather/mine_' + i + '.png';
+                    }
+                }
+            }
+            if (gather.name === 'Tailor') {
+                for (let i = 0; i < mats.length; i++) {
+                    if (i < 10) {
+                        mats[i].img = 'media/icons/gather/tail_0' + i + '.png';
+                    } else {
+                        mats[i].img = 'media/icons/gather/tail_' + i + '.png';
+                    }
+                }
+            }
+        });
+
+        await d.updateSlotData(dbState.slot_selected, 'gatherData', saveData_gatherData);
+
+    }
+
+    await init_gatherDataImages();
+
     var allSkillsLearned = saveData_gatherData.every(skill => skill.learned === true);
     const hr_sep1 = document.createElement('hr');
     if (!allSkillsLearned) {

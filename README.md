@@ -1,6 +1,8 @@
 # RPG Similitude
 # URL
 https://twaddler01.github.io/rpg_similitude/
+# IMPORTANT
+- To avoid database problems, use SLOT2 by deleting it first and creating a new character in that slot. Updates are continually being made to the database(s).
 # Issues
 - May be issues loading code from URL. For best results, download .zip and use localhost server. (For Android, I use Simple HTTP server):
 https://play.google.com/store/apps/details?id=com.phlox.simpleserver

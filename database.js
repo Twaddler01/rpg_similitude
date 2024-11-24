@@ -74,6 +74,8 @@ export function displaySaveSlots() {
 
     // Reset all data
     function resetAll() {
+        clear_game_elements();
+        dbState.slot_selected = null;
         // Fetch the template data
         fetch('./data/saveTemplate.json')
             .then((response) => {
@@ -105,8 +107,9 @@ export function displaySaveSlots() {
                         });
     
                         transaction.oncomplete = () => {
-                            console.log('All slots reset to saveTemplate.json data.');
-                            location.reload(); // Reload page
+                            displaySaveSlots(); // Reload
+                            console.log('All slots reset to saveTemplate.json.');
+
                         };
     
                         transaction.onerror = (event) => {
@@ -134,6 +137,7 @@ export function displaySaveSlots() {
         e_reset_div.remove();
     }
     let reset_div = document.createElement('div');
+    reset_div.id = 'reset_div';
     parent_id.appendChild(reset_div);
     reset_div.classList.add('location_box_style');
     let reset_all_data = document.createElement('button');
@@ -171,7 +175,8 @@ export function displaySaveSlots() {
             //console.log(slots);
 
             if (slots.length === 0) {
-                console.log('No slots found in database');
+                console.log('No slots found in database, starting fresh...');
+                resetAll();
             } else {
                 //let e_idb_slots = document.getElementById('idb_slots');
                 idb_slots.innerHTML = '<p><b>CHOOSE A SLOT</b></p>';
@@ -275,7 +280,6 @@ export function displaySaveSlots() {
                                                     // Refresh the UI
                                                     if (dbState.slot_selected === slotNum) {
                                                         dbState.slot_selected = null;
-                                                        clear_game_elements();
                                                     }
                                                     displaySaveSlots();
                                                 };
@@ -316,6 +320,8 @@ export function displaySaveSlots() {
     dbRequest.onerror = (event) => {
         console.error('Error opening database in displaySaveSlots:', event.target.errorCode);
     };
+    
+    return { resetAll };
 }
 
 // Load 'data' from database to determine new or existing data

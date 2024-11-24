@@ -134,7 +134,6 @@ export async function new_game() {
       e_new_content.remove();
     }
 
-
     const new_character_container = f.create_el('new_character_container', 'div', 'body');
     new_character_container.classList.add('location_box_style');
     new_character_container.style.paddingBottom = '40px';
@@ -375,6 +374,7 @@ export async function layout_loadTabs() {
       // Generate content for each tab
       if (tabNumber === 1) {
         const tab0Content = document.createElement("div");
+        tab0Content.id = 'tab0Content';
         tab0Content.innerHTML = `
           <div id="tab_main" class="location_box_style"></div>
         `;

@@ -106,7 +106,7 @@ export function displaySaveSlots() {
     
                         transaction.oncomplete = () => {
                             console.log('All slots reset to saveTemplate.json data.');
-                            displaySaveSlots(); // Refresh the UI
+                            location.reload(); // Reload page
                         };
     
                         transaction.onerror = (event) => {
@@ -128,15 +128,33 @@ export function displaySaveSlots() {
             });
     }
 
-    let e_reset_all_data = document.getElementById('reset_all_data');
-    if (e_reset_all_data) {
-        e_reset_all_data.remove();
+    // Reset all - elements
+    let e_reset_div = document.getElementById('reset_div');
+    if (e_reset_div) {
+        e_reset_div.remove();
     }
+    let reset_div = document.createElement('div');
+    parent_id.appendChild(reset_div);
+    reset_div.classList.add('location_box_style');
     let reset_all_data = document.createElement('button');
     reset_all_data.id = 'reset_all_data';
-    parent_id.appendChild(reset_all_data);
+    reset_div.appendChild(reset_all_data);
     reset_all_data.innerHTML = 'RESET ALL DATA';
-    reset_all_data.onclick = () => resetAll();
+
+    function resetAll_confirm() {
+        reset_div.style.color = 'red';
+        reset_div.innerHTML = 'Are you sure you want to delete all slot data? THIS ACTION CANNOT BE UNDONE! ';
+    
+        const con_yes = create_el('con_yes', 'button', reset_div);
+        con_yes.innerHTML = 'YES';
+        con_yes.onclick = () => resetAll();
+    
+        const con_no = create_el('con_no', 'button', reset_div);
+        con_no.innerHTML = 'NO';
+        con_no.onclick = () => displaySaveSlots();
+    }
+
+    reset_all_data.onclick = () => resetAll_confirm();
 
     const dbRequest = indexedDB.open('GameDatabase', 1);
 

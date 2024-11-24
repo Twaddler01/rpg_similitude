@@ -40,6 +40,7 @@ function initDatabase() {
     return new Promise((resolve, reject) => {
         if (dbInstance) {
             dbInstance.close();
+            dbInstance = null; // Clear reference
             console.log('Closed existing database connection');
         }
 
@@ -60,61 +61,23 @@ function initDatabase() {
                 console.log('Database connection closed due to version change');
             };
 
-            try {
-                const transaction = dbInstance.transaction(['saveStates'], 'readonly');
-                const store = transaction.objectStore('saveStates');
+try {
+    const transaction = dbInstance.transaction(['saveStates'], 'readonly');
+    const store = transaction.objectStore('saveStates');
 
-                const getAllRequest = store.getAll();
-                getAllRequest.onsuccess = async () => {
-                    const existingSlots = getAllRequest.result;
-
-                    if (existingSlots.length > 0) {
-                        //console.log('Database already contains data. No new data loaded.');
-                        resolve();
-                        return; // Exit early since data already exists
-                    }
-
-                    //console.log('Database is empty. Loading newSaveData.json...');
-                    const response = await fetch('./data/newSaveData.json');
-                    if (!response.ok) throw new Error('Failed to fetch JSON data');
-                    const jsonData = await response.json();
-
-                    // Write slots from JSON only if the database is empty
-                    const writeTransaction = dbInstance.transaction(['saveStates'], 'readwrite');
-                    const writeStore = writeTransaction.objectStore('saveStates');
-
-                    jsonData.forEach(slot => {
-                        writeStore.add(slot);
-                    });
-
-                    writeTransaction.oncomplete = () => {
-                        console.log('Initial data loaded into database.');
-                        resolve();
-                    };
-
-                    writeTransaction.onerror = (error) => {
-                        console.error('Error writing initial data:', error);
-
-                        // Check if this is the first error (using a flag stored in sessionStorage)
-                        if (!sessionStorage.getItem('dbReloaded')) {
-                            console.log('Reloaded the page due to an error.');
-                            sessionStorage.setItem('dbReloaded', 'true');
-                            location.reload(); // Reload the page
-                        } else {
-                            console.error('Reload already attempted. Not reloading again. This error can occur if using private or "incognito" browsing mode. Please try again in a regular browser window.');
-                            reject(error); // Reject the promise if reload is not attempted
-                        }
-                    };
-                };
-
-                getAllRequest.onerror = (error) => {
-                    console.error('Error checking existing data:', error);
-                    reject(error);
-                };
-            } catch (error) {
-                console.error('Failed to initialize database:', error);
-                reject(error);
-            }
+    const getAllRequest = store.getAll();
+    getAllRequest.onsuccess = () => {
+        console.log('Existing slots:', getAllRequest.result);
+        resolve();
+    };
+    getAllRequest.onerror = (error) => {
+        console.error('getAllRequest error:', error);
+        reject(error);
+    };
+} catch (error) {
+    console.error('Transaction failed:', error);
+    reject(error);
+}
         };
 
         dbRequest.onerror = (event) => {
@@ -127,7 +90,7 @@ function initDatabase() {
 // Call `initDatabase`, then call `displaySaveSlots` after init completes
 initDatabase()
     .then(() => {
-        //d.displaySaveSlots(); // Run displaySaveSlots first
+        d.displaySaveSlots(); // Run displaySaveSlots first
 
         // Use test data instead (comment out displaySaveSlots call)
         function use_test_data() {
@@ -136,9 +99,9 @@ initDatabase()
             dbState.slot_selected = 1;
             new_game();
         }
-        use_test_data();
+        //use_test_data();
     })
-    .catch(error => console.error('Initialization error: ' + error));
+    //.catch(error => console.error('Initialization error: ' + error);
 
 // Add array updates
 f.load_items();

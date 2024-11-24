@@ -50,7 +50,6 @@ export async function loadFirstSlotFromNewSave() {
 }
 
 export function displaySaveSlots() {
-    //console.log('displaySaveSlots function started');
 
     // Title
     let e_title = document.getElementById('title_section');
@@ -72,6 +71,67 @@ export function displaySaveSlots() {
         idb_slots = create_el('idb_slots', 'div', parent_id);
         idb_slots.classList.add('location_box_style');
     }
+
+    // Reset all data
+    function resetAll() {
+        // Fetch the template data
+        fetch('./data/saveTemplate.json')
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Failed to load saveTemplate.json');
+                }
+                return response.json();
+            })
+            .then((templateData) => {
+                // Open the IndexedDB connection
+                const dbRequest = indexedDB.open('GameDatabase', 1);
+    
+                dbRequest.onsuccess = (event) => {
+                    const db = event.target.result;
+    
+                    // Open a transaction in readwrite mode
+                    const transaction = db.transaction(['saveStates'], 'readwrite');
+                    const store = transaction.objectStore('saveStates');
+    
+                    // Clear the existing data
+                    const clearRequest = store.clear();
+    
+                    clearRequest.onsuccess = () => {
+                        console.log('Existing database cleared.');
+    
+                        // Add the new slots from the template
+                        templateData.forEach((slot) => {
+                            store.add(slot);
+                        });
+    
+                        transaction.oncomplete = () => {
+                            console.log('All slots reset to saveTemplate.json data.');
+                            displaySaveSlots(); // Refresh the UI
+                        };
+    
+                        transaction.onerror = (event) => {
+                            console.error('Error resetting slots:', event.target.errorCode);
+                        };
+                    };
+    
+                    clearRequest.onerror = (event) => {
+                        console.error('Error clearing database:', event.target.errorCode);
+                    };
+                };
+    
+                dbRequest.onerror = (event) => {
+                    console.error('Error opening database in resetAll:', event.target.errorCode);
+                };
+            })
+            .catch((error) => {
+                console.error('Error loading saveTemplate.json:', error);
+            });
+    }
+
+    let reset_all_data = document.createElement('button');
+    parent_id.appendChild(reset_all_data);
+    reset_all_data.innerHTML = 'RESET ALL DATA';
+    reset_all_data.onclick = () => resetAll();
 
     const dbRequest = indexedDB.open('GameDatabase', 1);
 
@@ -122,7 +182,7 @@ export function displaySaveSlots() {
                         button.onclick = () => loadGame(slot.slotId, slot);
                         slot_container_div.appendChild(button);
                     }
-
+                    
                     // To clear a slot
                     if (slot.data?.savedCharacterData?.[0]?.char_name !== null) {
                         let spacer = document.createElement('span');

@@ -81,4 +81,4 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Updated equipment.js.
 - Working on potentially adding "tabs" instead of the expand-type design. It should be a lot more visually appealing. Will require changing "toggle" setup and/or removing of it, but so far it looks much cleaner.
 
-# SEE ARCHIVED_UPDATES.md FOR MORE
+# SEE [ARCHIVED_UPDATES.md] FOR MORE

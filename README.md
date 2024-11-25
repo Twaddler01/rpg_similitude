@@ -9,8 +9,16 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Identified an intermittent css error on Chrome (Mobile) that throws error when applying a css classList. This is NOT an issue when using Firefox Mobile. For now, recommend using the Firefox browser until issue can be addressed. Likely a Github server-related error since code executes error free on Chrome locally. Another workaround on mobile is listed above by using an HTTP server (running a Node.js server in Termux also works fine on my Android device).
 # BUGS
 - REVIVE seems to work intermittently, likely due an async issue with database timing. Page can be reloaded to reset.
-
-# Updates
+# PROGRESSION WIP
+* BATTLE needs to be revamped clean in preparation for battle icons, potion usage, etc.
+* At about level 6 for location 1, need potion or healing ability to surive battles.
+* More equipment items needed.
+# FUTURE FEATURES
+* A CURRENTLY EQUIPPED tooltip for stat comparisons of inventory items that match the currently equipped slot item.
+* Drops for enemy types that can be sold or used for a purpose.
+* CRAFT tab, for potion making and other professions.
+* QUEST tab
+# UPDATES
 11-25-2024
 - Updated 'GATHER' section with revised code to show all gather inventory items as blank with '? Unknown' unless unlocked to eliminate 'jump' of screen when elements are added/updated.
 

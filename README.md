@@ -3,7 +3,7 @@
 https://twaddler01.github.io/rpg_similitude/
 # IMPORTANT
 - To avoid database problems, use the RESET ALL DATA option if revisiting this page later. Updates are continually being made to the database(s).
-# Issues
+# KNOWN ISSUES
 - May be issues loading code from URL. For best results, download .zip and use localhost server. (For Android, I use Simple HTTP server):
 https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - Identified an intermittent css error on Chrome (Mobile) that throws error when applying a css classList. This is NOT an issue when using Firefox Mobile. For now, recommend using the Firefox browser until issue can be addressed. Likely a Github server-related error since code executes error free on Chrome locally. Another workaround on mobile is listed above by using an HTTP server (running a Node.js server in Termux also works fine on my Android device).

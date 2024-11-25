@@ -416,7 +416,7 @@ export async function layout_loadTabs() {
       } else if (tabNumber === 6) {
         const tab5Content = document.createElement("div");
         tab5Content.innerHTML = `
-          <div id="tab_player_gather" class="location_box_style"></div>
+          <div id="tab_player_gather" class="location_box_style" style="padding-bottom: 100px;"></div>
         `;
         contentContainer.appendChild(tab5Content);
         // Load gather elements

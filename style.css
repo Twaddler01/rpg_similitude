@@ -153,12 +153,17 @@ img {
     z-index: 5;  /* Overlay above the image */
     pointer-events: none; /* Ensure the overlay doesn't block clicks */
 }
-
 .basic_icon {
     height: 50px;
     width: 50px;
     display: block;
 }
+.basic_icon_small {
+    height: 25px;
+    width: 25px;
+    display: block;
+}
+
 /* Experience and health bars */
 .bar_label_container {
     background-color: #333;

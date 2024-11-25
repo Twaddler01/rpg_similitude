@@ -4,7 +4,7 @@
 https://twaddler01.github.io/rpg_similitude/
 
 ## IMPORTANT
-- To avoid database problems, use the RESET ALL DATA option if revisiting the online URL at a later time. Updates are continually being made to the database(s) and can be buggy.
+- To avoid database problems, use the RESET ALL DATA option on MAIN game tab if revisiting the online URL at a later time. Updates are continually being made to the database(s) and can be buggy.
 
 ## KNOWN ISSUES
 - For best results, download .zip and use localhost server. (For Android, I use [Simple HTTP server](https://play.google.com/store/apps/details?id=com.phlox.simpleserver).

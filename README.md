@@ -11,6 +11,9 @@ https://play.google.com/store/apps/details?id=com.phlox.simpleserver
 - REVIVE seems to work intermittently, likely due an async issue with database timing. Page can be reloaded to reset.
 
 # Updates
+11-25-2024
+- Updated 'GATHER' section with revised code to show all gather inventory items as blank with '? Unknown' unless unlocked to eliminate 'jump' of screen when elements are added/updated.
+
 11-23-2024
 - Various bug fixes.
 - "Gather" is still in progress, but the experience and unlocks portion of herb gathering are essentially done.

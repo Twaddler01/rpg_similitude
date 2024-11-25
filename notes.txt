@@ -2,10 +2,12 @@ RPG_SIMILITUDE KNOWN ISSUES
 * See BUGS
 
 RPG_SIMILITUDE PROGRESSION
+* BATTLE needs to be revamped clean in preparation for battle icons, potion usage, etc.
 * At about level 6 for location 1, need potion or healing ability to surive battles.
-* Gather needs to be debugged so it's ready for "CRAFT" tab, for potion making and other professions.
 * More equipment items needed.
 
 RPG_SIMILITUDE FUTURE FEATURES
 * A CURRENTLY EQUIPPED tooltip for stat comparisons of inventory items that match the currently equipped slot item.
 * Drops for enemy types that can be sold or used for a purpose.
+* CRAFT tab, for potion making and other professions.
+* QUEST tab

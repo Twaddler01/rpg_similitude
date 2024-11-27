@@ -3,12 +3,119 @@
     "slotId": 1,
     "state": "New Game",
     "data": {
-      "killsData": [
-        { "kills": 0 }, { "kills": 0 }, { "kills": 0 }, { "kills": 0 },
-        { "kills": 0 }, { "kills": 0 }, { "kills": 0 }, { "kills": 0 },
-        { "kills": 0 }, { "kills": 0 }, { "kills": 0 }, { "kills": 0 },
-        { "kills": 0 }, { "kills": 0 }, { "kills": 0 }, { "kills": 0 },
-        { "kills": 0 }
+      "locationsData": [
+        { "id": "starting_zone",
+          "lbl": "Starting Zone",
+          "unlocked": true,
+          "levels": [
+            { "id": "starting_zone_1", "lbl": "Village Start 1", "kills": 0, "unlocked": true, "next_unlock": [
+              { "id": "starting_zone_2" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            },
+            { "id": "starting_zone_2", "lbl": "Village Start 2", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "starting_zone_3" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            },
+            { "id": "starting_zone_3", "lbl": "Village Start 3", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "dark_plains_1" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            }
+          ], 
+          "img": "media/img_loc_0.jpg"
+        },
+        { "id": "dark_plains",
+          "lbl": "Dark Plains",
+          "unlocked": false,
+          "levels": [
+            { "id": "dark_plains_1", "lbl": "Dark Plains 1", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "dark_plains_2" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            },
+            { "id": "dark_plains_2", "lbl": "Dark Plains 2", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "dark_plains_3" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            },
+            { "id": "dark_plains_3", "lbl": "Dark Plains 3", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "dark_highlands_1" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            }
+          ], 
+          "img": "media/img_loc_1.jpg"
+        },
+        { "id": "dark_highlands",
+          "lbl": "Dark Highlands",
+          "unlocked": false,
+          "levels": [
+            { "id": "dark_highlands_1", "lbl": "Dark Highlands 1", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "dark_highlands_2" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            },
+            { "id": "dark_highlands_2", "lbl": "Dark Highlands 2", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "dark_highlands_3" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            },
+            { "id": "dark_highlands_3", "lbl": "Dark Highlands 3", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "dark_forest_1" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            }
+          ], 
+          "img": "media/img_loc_2.jpg"
+        },
+        { "id": "dark_forest",
+          "lbl": "Dark Forest",
+          "unlocked": false,
+          "levels": [
+            { "id": "dark_forest_1", "lbl": "Dark Forest 1", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "dark_forest_2" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            },
+            { "id": "dark_forest_2", "lbl": "Dark Forest 2", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": "dark_forest_3" }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            },
+            { "id": "dark_forest_3", "lbl": "Dark Forest 3", "kills": 0, "unlocked": false, "next_unlock": [
+              { "id": null }
+              ],
+            "next_req": [ 
+                { "id": "kills", "cnt": 3, "req_met": false }
+              ]
+            }
+          ], 
+          "img": "media/img_loc_3.jpg"
+        }
       ],
       "savedCharacterData": [
         {
@@ -21,196 +128,43 @@
       ],
       "inventoryData": [
         {
-          "setup": true,
           "full": false
         },
-        {
-          "type": "slot",
-          "slot_id": 1,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 2,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 3,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 4,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 5,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 6,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 7,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 8,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 9,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 10,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 11,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 12,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 13,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 14,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 15,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 16,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 17,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 18,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 19,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        },
-        {
-          "type": "slot",
-          "slot_id": 20,
-          "contents": "[ EMPTY ]",
-          "cnt": 0
-        }
+        { "type": "slot", "slot_id": 1, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 2, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 3, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 4, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 5, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 6, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 7, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 8, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 9, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 10, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 11, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 12, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 13, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 14, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 15, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 16, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 17, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 18, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 19, "contents": "[ EMPTY ]", "cnt": 0 },
+        { "type": "slot", "slot_id": 20, "contents": "[ EMPTY ]", "cnt": 0 }
       ],
       "equippedData": [
-        {
-          "id": "equip_slot_EMPTY_head",
-          "equipped": null,
-          "slot": "head"
-        },
-        {
-          "id": "equip_slot_EMPTY_shoulders",
-          "equipped": null,
-          "slot": "shoulders"
-        },
-        {
-          "id": "equip_slot_EMPTY_hands",
-          "equipped": null,
-          "slot": "hands"
-        },
-        {
-          "id": "equip_slot_EMPTY_neck",
-          "equipped": null,
-          "slot": "neck"
-        },
-        {
-          "id": "equip_slot_EMPTY_waist",
-          "equipped": null,
-          "slot": "waist"
-        },
-        {
-          "id": "equip_slot_EMPTY_chest",
-          "equipped": null,
-          "slot": "chest"
-        },
-        {
-          "id": "equip_slot_EMPTY_legs",
-          "equipped": null,
-          "slot": "legs"
-        },
-        {
-          "id": "equip_slot_EMPTY_wrist",
-          "equipped": null,
-          "slot": "wrist"
-        },
-        {
-          "id": "equip_slot_EMPTY_feet",
-          "equipped": null,
-          "slot": "feet"
-        },
-        {
-          "id": "equip_slot_EMPTY_ring1",
-          "equipped": null,
-          "slot": "ring1"
-        },
-        {
-          "id": "equip_slot_EMPTY_ring2",
-          "equipped": null,
-          "slot": "ring2"
-        },
-        {
-          "id": "mh",
-          "equipped": "MH_BASIC_DAGGER",
-          "slot": "mh"
-        },
-        {
-          "id": "equip_slot_EMPTY_oh",
-          "equipped": null,
-          "slot": "oh"
-        }
+        { "id": "equip_slot_EMPTY_head", "equipped": null, "slot": "head"},
+        { "id": "equip_slot_EMPTY_shoulders", "equipped": null, "slot": "shoulders"},
+        { "id": "equip_slot_EMPTY_hands", "equipped": null, "slot": "hands"},
+        { "id": "equip_slot_EMPTY_neck", "equipped": null, "slot": "neck"},
+        { "id": "equip_slot_EMPTY_waist", "equipped": null, "slot": "waist"},
+        { "id": "equip_slot_EMPTY_chest", "equipped": null, "slot": "chest"},
+        { "id": "equip_slot_EMPTY_legs", "equipped": null, "slot": "legs"},
+        { "id": "equip_slot_EMPTY_wrist", "equipped": null, "slot": "wrist"},
+        { "id": "equip_slot_EMPTY_feet", "equipped": null, "slot": "feet"},
+        { "id": "equip_slot_EMPTY_ring1", "equipped": null, "slot": "ring1"},
+        { "id": "equip_slot_EMPTY_ring2", "equipped": null, "slot": "ring2"},
+        { "id": "mh", "equipped": "MH_BASIC_DAGGER", "slot": "mh"},
+        { "id": "equip_slot_EMPTY_oh", "equipped": null, "slot": "oh" }
       ],
       "currencyData": [
         {

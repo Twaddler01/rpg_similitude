@@ -25,6 +25,9 @@ https://twaddler01.github.io/rpg_similitude/
 * QUEST tab
 
 ## UPDATES
+11-26-2024
+- In process of overhauling BATTLE tab with new database template and improved integration. This opens up level requirements beyond "kills" and can include many other checks. New structure accounts for location level names instead of just numbers. May integrate enemy level ranges for locations to better set it up for future battle/location dynamics.
+
 11-25-2024
 - Updated 'GATHER' section with revised code to show all gather inventory items as blank with '? Unknown' unless unlocked to eliminate 'jump' of screen when elements are added/updated.
 

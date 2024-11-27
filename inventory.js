@@ -101,7 +101,7 @@ await d.updateSlotData(dbState.slot_selected, 'inventoryData', newInventory);
     await update_gold();
 
     // insert test items
-    if (!savedInventory[0].setup) {
+/*    if (!savedInventory[0].setup) {
         updateLootCount('TOOTH', 1);
         updateLootCount('TOOTH', 1);
         updateLootCount('BASIC_HELMET', 1);
@@ -110,7 +110,7 @@ await d.updateSlotData(dbState.slot_selected, 'inventoryData', newInventory);
         updateLootCount('CLOTH_BASIC', 1);
         updateLootCount('BASIC_GLOVES', 1);
         savedInventory[0].setup = true;
-    }
+    }*/
 }
 
 // Function to remove the event listener by slot_id

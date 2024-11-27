@@ -127,7 +127,8 @@ export function displaySaveSlots() {
                 };
             })
             .catch((error) => {
-                console.error('Error loading saveTemplate.json:', error);
+                console.error('Error loading saveTemplate.json:' + error);
+                console.error('STACK: ' + error.stack)
             });
     }
 

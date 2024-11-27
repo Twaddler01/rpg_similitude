@@ -35,6 +35,10 @@ export function downloadSaveData() {
     URL.revokeObjectURL(url);
 }
 
+export function json(data) {
+    console.log(JSON.stringify(data, null, 2));
+}
+
 // Main function to create new elements
 /*export function create_el(newId, type, parentId, content) {
     let parent_el = document.getElementById(parentId);

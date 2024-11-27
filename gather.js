@@ -5,10 +5,6 @@ import { create_el, create_bar_elements, add_message } from './functions.js';
 import { dbState } from './main.js';
 import * as d from './database.js';
 
-function sjson(data) {
-    console.log(JSON.stringify(data, null, 2));
-}
-
 export async function update_gather() {
 
     let e_tab_player_gather = document.getElementById('tab_player_gather');

@@ -86,6 +86,10 @@ function display_locations(selected_loc = null, selected_lvl = null) {
     location_container.appendChild(locations_status);
     locations_status.id = 'locations_status';
 
+    const available_enemies = document.createElement('div');
+    location_container.appendChild(available_enemies);
+    available_enemies.id = 'available_enemies';
+
     const prepare_battle_div = document.createElement('div');
     location_container.appendChild(prepare_battle_div);
     prepare_battle_div.id = 'prepare_battle_div';
@@ -169,17 +173,38 @@ function display_locations(selected_loc = null, selected_lvl = null) {
                     const e_locations_status = document.getElementById('locations_status');
                     e_locations_status.innerHTML = `Prepared to attack <b>${fe_loc.lbl}</b>: <b>${fe_level.lbl}<b>`;
                     e_locations_status.innerHTML += `<br><span id="enemy_cnt">Enemies defeated here: ${fe_level.kills}</span>`;
-                    
-                    const e_prepare_battle_div = document.getElementById('prepare_battle_div');
-                    //const prepare_battle_btn = create_el('prepare_battle_btn', 'button', e_prepare_battle_div);
-                    //prepare_battle_btn.innerHTML = 'START BATTLE HERE';
-                    
+//WIP Show enemies??
+// Default is RANDOM
+// Need JSON update
+const e_available_enemies = document.getElementById('available_enemies');
+e_available_enemies.innerHTML = `<br><b>Enemies available:</b><br>`;
+
+
                     function prepare_battle_action(f_loc, f_lvl) {
-                        //let c_e_loc = document.getElementById('location_div_' + loc);
-                        //if (c_e_loc) { c_e_loc.click(); }
-                        //let c_levelButton = document.getElementById('levelButton_' + lvl);
-                        //if (c_levelButton) { c_levelButton.click(); }
+                        
                         console.log(f_loc + '.' + f_lvl);
+                        // Disable location and level selections
+                        function lock_elements() {
+                            // Change selected colors
+                            /*let dis_e_loc = document.getElementById('location_div_' + f_loc);
+                            dis_e_loc.classList.remove('green_border_on');
+                            dis_e_loc.style.border = '5px solid black';
+                            let dis_levelButton = document.getElementById('levelButton_' + f_lvl);
+                            dis_levelButton.style.backgroundColor = 'black';
+                            dis_levelButton.style.color = 'white';*/
+                            
+                            // Remove all other loc/lvl elements
+                            locationsData.forEach(item => {
+                                if (item.id !== loc) {
+                                    clearElements('location_div_' + item.id, 'remove');                         
+                                } else {
+                                    let e_location_div = document.getElementById('location_div_' + item.id);
+                                    if (e_location_div) { e_location_div.style.width = '150px';}
+                                }
+                                clearElements('levels', 'remove');
+                            });
+                        }
+                        
                         
                         // Simulate kills
                         fe_level.kills += 1;
@@ -189,8 +214,10 @@ function display_locations(selected_loc = null, selected_lvl = null) {
                         }
                         // Simulate unlock
                         display_locations(loc, lvl);
+                        lock_elements();
                     }
                     // Clear the prepare_battle_div and recreate the button
+                    const e_prepare_battle_div = document.getElementById('prepare_battle_div');
                     e_prepare_battle_div.innerHTML = ''; // Remove any existing content in the div
                     const prepare_battle_btn = create_el('prepare_battle_btn', 'button', e_prepare_battle_div);
                     prepare_battle_btn.innerHTML = 'START BATTLE HERE';

@@ -10,6 +10,9 @@
           "levels": [
             { "id": "starting_zone_1", "lbl": "Village Start 1", "kills": 0, "unlocked": true, "next_unlock": [
               { "id": "starting_zone_2" }
+              ], 
+            "enemies": [ 
+                { "id": "random", "lbl": "Random" }, { "id": "SLIME", "lbl": "Slime" }, { "id": "ANGRY_LIZARD", "lbl": "Angry Lizard" }, { "id": "LEPER_SCOUT", "lbl": "Leper Scout" }
               ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
@@ -17,14 +20,16 @@
             },
             { "id": "starting_zone_2", "lbl": "Village Start 2", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "starting_zone_3" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
             },
             { "id": "starting_zone_3", "lbl": "Village Start 3", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "dark_plains_1" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
@@ -38,21 +43,24 @@
           "levels": [
             { "id": "dark_plains_1", "lbl": "Dark Plains 1", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "dark_plains_2" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
             },
             { "id": "dark_plains_2", "lbl": "Dark Plains 2", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "dark_plains_3" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
             },
             { "id": "dark_plains_3", "lbl": "Dark Plains 3", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "dark_highlands_1" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
@@ -66,21 +74,24 @@
           "levels": [
             { "id": "dark_highlands_1", "lbl": "Dark Highlands 1", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "dark_highlands_2" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
             },
             { "id": "dark_highlands_2", "lbl": "Dark Highlands 2", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "dark_highlands_3" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
             },
             { "id": "dark_highlands_3", "lbl": "Dark Highlands 3", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "dark_forest_1" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
@@ -94,21 +105,24 @@
           "levels": [
             { "id": "dark_forest_1", "lbl": "Dark Forest 1", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "dark_forest_2" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
             },
             { "id": "dark_forest_2", "lbl": "Dark Forest 2", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": "dark_forest_3" }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]
             },
             { "id": "dark_forest_3", "lbl": "Dark Forest 3", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": null }
-              ],
+              ], 
+            "enemies": [ { "id": "random", "lbl": "Random" } ],
             "next_req": [ 
                 { "id": "kills", "cnt": 3, "req_met": false }
               ]

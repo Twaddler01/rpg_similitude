@@ -1,0 +1,46 @@
+[
+  {
+    "location": 1,
+    "enemy_list": [
+      {
+        "type": "beast",
+        "name1": [
+          { "id": "Large", "health_mult": 0.7, "attack_mult": 0.7 },
+          { "id": "Ferocious", "health_mult": 0.8, "attack_mult": 0.8 },
+          { "id": "Vicious", "health_mult": 0.9, "attack_mult": 0.9 }
+        ],
+        "name2": [ 
+          { "id": "Buck" }, { "id": "Elephant" }, { "id": "Bear" },
+          { "id": "Chipmunk" }, { "id": "Boar" }, { "id": "Cougar" },
+          { "id": "Lion" }, { "id": "Tiger" }, { "id": "Zebra" }
+        ],
+        "loot": [ 
+          { "id": "beast_essence" }, { "id": "tooth" }, { "id": "bone" },
+          { "id": "leather" }
+        ]
+      }
+    ]
+  },
+  {
+    "location": 1,
+    "enemy_list": [
+      {
+        "type": "humanoid",
+        "name1": [
+          { "id": "Apprentice", "health_mult": 0.7, "attack_mult": 0.7 },
+          { "id": "Trained", "health_mult": 0.8, "attack_mult": 0.8 },
+          { "id": "Royal", "health_mult": 0.9, "attack_mult": 0.9 }
+        ],
+        "name2": [ 
+          { "id": "Buckler" }, { "id": "Marksman" }, { "id": "Ninja" },
+          { "id": "Fighter" }, { "id": "Rogue" }, { "id": "Citizen" },
+          { "id": "Wizard" }, { "id": "Magician" }, { "id": "Sorcerer" }
+        ],
+        "loot": [ 
+          { "id": "humanoid_essence" }, { "id": "torn_cloth" }, { "id": "gold" },
+          { "id": "basic_cloth" }
+        ]
+      }
+    ]
+  }
+]

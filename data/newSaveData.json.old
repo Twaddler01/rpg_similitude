@@ -12,6 +12,7 @@
       ],
       "savedCharacterData": [
         {
+          "char_created": true,
           "char_name": "Legolas",
           "char_race": "Human",
           "char_class": "Fighter",
@@ -226,9 +227,39 @@
           "lvl": 1,
           "xp_amt": 0,
           "inventory": [
-            { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 },
-            { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 },
-            { "cnt": 0 }, { "cnt": 0 }, { "cnt": 0 }
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            }
           ]
         },
         {
@@ -267,7 +298,7 @@
   },
   {
     "slotId": 2,
-    "state": "New Game",
+    "state": "New Game", 
     "data": {
       "killsData": [
         { "kills": 0 }, { "kills": 0 }, { "kills": 0 }, { "kills": 0 },
@@ -278,6 +309,7 @@
       ],
       "savedCharacterData": [
         {
+          "char_created": false,
           "char_name": null,
           "char_race": null,
           "char_class": null,
@@ -488,65 +520,67 @@
       "gatherData": [
         {
           "id": "herbgather",
-          "name": "Herb Gathering",
-          "cost": 200,
-          "gather_str": 4,
-          "gather_str_mult": 1.08,
-          "xp_lvl_mult": 1.5,
-          "learned": false,
+          "learned": true,
           "lvl": 1,
           "xp_amt": 0,
           "inventory": [
-            { "id": "greenleaf", "cnt": 0 }, { "id": "jadeleaf", "cnt": 0 }, { "id": "goldenclove", "cnt": 0 }, { "id": "foxglove", "cnt": 0 },
-            { "id": "thornypike", "cnt": 0 }, { "id": "deathglory", "cnt": 0 }, {  "id": "morningglade", "cnt": 0 }, { "id": "judegloom", "cnt": 0 },
-            { "id": "nightblade", "cnt": 0 }, {  "id": "bloodroot", "cnt": 0 }, { "id": "elderberry", "cnt": 0 }
-          ],
-          "materials": [
-            { "id": "greenleaf", "name": "Green Leaf", "hp": 10, "lvl_req": 0 },
-            { "id": "jadeleaf", "name": "Jade Leaf", "hp": 200, "lvl_req": 2 },
-            { "id": "goldenclove", "name": "Golden Clove", "hp": 200, "lvl_req": 5 },
-            { "id": "foxglove", "name": "Fox Glove", "hp": 200, "lvl_req": 5 },
-            { "id": "thornypike", "name": "Thorny Pike", "hp": 200, "lvl_req": 5 },
-            { "id": "deathglory", "name": "Death Glory", "hp": 200, "lvl_req": 5 },
-            { "id": "morningglade", "name": "Morning Glade", "hp": 200, "lvl_req": 5 },
-            { "id": "judegloom", "name": "Jude Gloom", "hp": 200, "lvl_req": 5 },
-            { "id": "nightblade", "name": "Night Blade", "hp": 200, "lvl_req": 5 },
-            { "id": "bloodroot", "name": "Blood Root", "hp": 200, "lvl_req": 5 },
-            { "id": "elderberry", "name": "Elder Berry", "hp": 200, "lvl_req": 5 }
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            },
+            {
+              "cnt": 0
+            }
           ]
         },
         {
           "id": "oremine",
-          "name": "Ore Mining",
-          "cost": 200,
-          "gather_str": 4,
-          "gather_str_mult": 1.08,
-          "xp_lvl_mult": 1.5,
           "learned": false,
           "lvl": 1,
           "xp_amt": 0,
           "inventory": [
-            { "id": "copper", "cnt": 0 }
-          ],
-          "materials": [
-            { "id": "copper", "name": "Copper", "hp": 100, "lvl_req": 1 }
+            {
+              "id": "copper",
+              "cnt": 0
+            }
           ]
         },
         {
           "id": "tailor",
-          "name": "Tailor",
-          "cost": 200,
-          "gather_str": 4,
-          "gather_str_mult": 1.08,
-          "xp_lvl_mult": 1.5,
           "learned": false,
           "lvl": 1,
           "xp_amt": 0,
           "inventory": [
-            { "id": "basic_cloth", "cnt": 0 }
-          ],
-          "materials": [
-            { "id": "basic_cloth", "name": "Basic Cloth", "hp": 100, "lvl_req": 1 }
+            {
+              "id": "basic_cloth",
+              "cnt": 0
+            }
           ]
         }
       ],

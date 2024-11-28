@@ -17,6 +17,16 @@ import * as d from './database.js';
 gf.logExport();
 gf.htmlExport();
 
+/*
+//DEBUG
+try {
+//DEBUG
+} catch (error) {
+    console.error('ERROR:' + error);
+    console.error('STACK:' + error.stack)
+}
+*/
+
 // DB FLAG
 export const dbState = {
     slot_selected: null,
@@ -293,39 +303,39 @@ export async function layout_loadTabs() {
     new_content.id = 'new_content';
     title_section.insertAdjacentElement('afterend', new_content);
     new_content.innerHTML = `
-    <div style="position: relative;">
-      <div id="scrollable-container">
-        <div id="game_messages_lbl"><b>MESSAGES</b></div>
-          <div id="game_messages">Welcome to RPG Similitude!</div>
-        </div>
-      <div id="scroll-gradient"></div>
-    </div>
+<div style="position: relative;">
+  <div id="scrollable-container">
+<div id="game_messages_lbl"><b>MESSAGES</b></div>
+  <div id="game_messages">Welcome to RPG Similitude!</div>
+</div>
+  <div id="scroll-gradient"></div>
+</div>
 
-    <div id="playerInfo_div" style="border: 1px solid #ccc; padding: 5px;">
-      <div id="playerInfo_name"><b>noname</b></div>
-      <div id="playerInfo_level">Level nolevel norace noclass</div>
-    </div>
+<div id="playerInfo_div" style="border: 1px solid #ccc; padding: 5px;">
+  <div id="playerInfo_name"><b>noname</b></div>
+  <div id="playerInfo_level">Level nolevel norace noclass</div>
+</div>
 
-    <div class="tab-wrapper">
-      <div class="tab-container">
-        <div class="tab" onclick="showTabContent(1)">MAIN</div>
-        <div class="tab" onclick="showTabContent(2)">EQUIPMENT</div>
-        <div class="tab" onclick="showTabContent(3)">STATS</div>
-        <div class="tab" onclick="showTabContent(4)">INVENTORY</div>
-        <div class="tab" onclick="showTabContent(5)">BATTLE</div>
-        <div class="tab" onclick="showTabContent(6)">GATHER</div>
-        <div class="tab" onclick="showTabContent(7)">Tab 7</div>
-      </div>
-    </div>
-    <div id="content-container">
-      <div id="tab_main" class="location_box_style"></div>
-      <div id="tab_player_equipment" class="location_box_style"></div>
-      <div id="tab_player_stats" class="location_box_style"></div>
-      <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
-      <div id="tab_player_battle"></div>
-      <div id="tab_player_gather" class="location_box_style"></div>
-      <!-- <div id="tab_7" class="location_box_style"></div> -->
-    </div>
+<div class="tab-wrapper">
+  <div class="tab-container">
+<div class="tab" onclick="showTabContent(1)">MAIN</div>
+<div class="tab" onclick="showTabContent(2)">EQUIPMENT</div>
+<div class="tab" onclick="showTabContent(3)">STATS</div>
+<div class="tab" onclick="showTabContent(4)">INVENTORY</div>
+<div class="tab" onclick="showTabContent(5)">BATTLE</div>
+<div class="tab" onclick="showTabContent(6)">GATHER</div>
+<div class="tab" onclick="showTabContent(7)">Tab 7</div>
+  </div>
+</div>
+<div id="content-container">
+  <div id="tab_main" class="location_box_style"></div>
+  <div id="tab_player_equipment" class="location_box_style"></div>
+  <div id="tab_player_stats" class="location_box_style"></div>
+  <div id="tab_player_inventory" class="location_box_style" style="background:black"></div>
+  <div id="tab_player_battle"></div>
+  <div id="tab_player_gather" class="location_box_style"></div>
+  <!-- <div id="tab_7" class="location_box_style"></div> -->
+</div>
     `;
 
     // Display player info

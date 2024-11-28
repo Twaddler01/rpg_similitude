@@ -55,6 +55,11 @@ document.write(`
 	</style>
 `);
 
+// Preserve the original console methods before overriding
+console.ol = console.log;
+console.ow = console.warn;
+console.oe = console.error;
+
 let consoleDiv = document.getElementById('js-console');
 
 // If the browser doesn't already have a console object, create an empty one
@@ -102,6 +107,54 @@ console.error = function() {
 };
 
 // Render a new entry to the log
+console.render = function (cssClass, items, prefix) {
+    // Convert everything to a string representation
+    items = [...items].map(i => {
+        if (i === null) return 'null';
+
+        // Strings
+        if (typeof i === 'string') {
+            // Truncate long ones
+            if (i.length > 300) return i.substring(0, 300).htmlEncode() + '...';
+            return i.htmlEncode();
+        }
+
+        // Functions
+        if (typeof i === 'function') {
+            return i.toString().htmlEncode(); // 'function() {...}';
+        }
+
+        // DOM Elements
+        if (i && i.nodeType === 1 && typeof i.outerHTML === 'string') {
+            return `<pre>${i.outerHTML.htmlEncode()}</pre>`;
+        }
+
+        // Reveal properties for objects (those that are not arrays)
+        if (typeof i === 'object' && !Array.isArray(i)) {
+            i = unhideProperties(i);
+        }
+
+        // All other objects
+        try {
+            let result = JSON.stringify(i, null, 2);
+            if (typeof result === 'string') result = result.htmlEncode();
+            return result;
+        } catch (e) {
+            return 'Error: ' + e.message;
+        }
+    });
+
+    // Render in a new DIV
+    let div = document.createElement('div');
+    div.className = cssClass;
+    div.innerHTML =
+        (prefix ? `<span class="prefix">${prefix.htmlEncode()}</span>\n` : '') +
+        items.join('\n');
+    consoleDiv.appendChild(div);
+};
+
+/*
+// Render a new entry to the log
 console.render = function(cssClass, items, prefix) {
 
 	// Convert everything to a string representation
@@ -146,6 +199,7 @@ console.render = function(cssClass, items, prefix) {
 		+ items.join('\n');
 	consoleDiv.appendChild(div);
 };
+*/
 
 console.previewCommand = function(command) {
 

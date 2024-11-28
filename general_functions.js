@@ -65,6 +65,72 @@ export function logExport() {
     });
 }
 
+export function htmlExport() {
+    // Create the "Export HTML" button
+    const exportHTMLButton = document.createElement('button');
+    exportHTMLButton.id = 'exportHTMLButton';
+    exportHTMLButton.textContent = 'Export HTML';
+
+    // Append the button to the document body
+    document.body.appendChild(exportHTMLButton);
+
+    // Add an event listener to the "Export HTML" button
+    exportHTMLButton.addEventListener("click", function () {
+        // Get the HTML content of the entire document
+        let htmlContent = document.documentElement.outerHTML;
+
+        // Format the HTML content for better readability
+        let formattedHTML = formatHTML(htmlContent);
+
+        // Create a Blob containing the formatted HTML content
+        const blob = new Blob([formattedHTML], { type: 'text/html' });
+
+        // Create a download link
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'page.html';
+
+        // Append the link to the document
+        document.body.appendChild(link);
+
+        // Trigger the download
+        link.click();
+
+        // Remove the link from the document
+        document.body.removeChild(link);
+    });
+
+    // Helper function to format HTML
+    function formatHTML(html) {
+        const INDENT = '  '; // Two spaces for indentation
+        let formatted = '';
+        let level = 0;
+    
+        // Regex to match self-closing tags
+        const selfClosingTags = /^<\w[^>]*\/>|^<br\s*\/?>|^<img[^>]*\/?>|^<input[^>]*\/?>|^<meta[^>]*\/?>|^<link[^>]*\/?>/;
+    
+        // Split the HTML by tags
+        html.split(/(?=<\/?[^>]+>)/g).forEach((line) => {
+            line = line.trim(); // Trim whitespace
+    
+            if (line.match(/^<\/\w/)) {
+                // Decrease level for closing tags
+                level--;
+            }
+    
+            formatted += INDENT.repeat(level) + line + '\n';
+    
+            if (line.match(/^<\w(?!.*\/>)/) && !line.match(selfClosingTags)) {
+                // Increase level for non-self-closing opening tags
+                level++;
+            }
+        });
+    
+        return formatted;
+    }
+}
+
+/*
 // Allow exporting of HTML to inspect/debug elements
 export function htmlExport() {
     // Create the "Export HTML" button
@@ -86,7 +152,7 @@ export function htmlExport() {
         // Create a download link
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
-        link.download = 'vsim_page.html';
+        link.download = 'page.html';
 
         // Append the link to the document
         document.body.appendChild(link);
@@ -97,7 +163,7 @@ export function htmlExport() {
         // Remove the link from the document
         document.body.removeChild(link);
     });
-}
+}*/
 
 // to create new elements
 export function createNewSection(newType, newId, newClass, content, parentID) {

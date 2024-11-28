@@ -94,9 +94,9 @@ function display_locations(selected_loc = null, selected_lvl = null) {
     location_container.appendChild(prepare_battle_div);
     prepare_battle_div.id = 'prepare_battle_div';
 
-    //let filteredUnlocked_loc = locationsData.filter(l => l.unlocked === true);
+    let filteredUnlocked_loc = locationsData.filter(l => l.unlocked === true);
     
-    locationsData.forEach(fe_loc => {
+    filteredUnlocked_loc.forEach(fe_loc => {
         const all_levels = fe_loc.levels;
 
         // Location img containers
@@ -105,6 +105,7 @@ function display_locations(selected_loc = null, selected_lvl = null) {
         locations.appendChild(e_loc);
         e_loc.innerHTML = fe_loc.lbl;
         e_loc.classList.add('green_border_off');
+        e_loc.style.width = '150px';
     
         let loc_img = document.createElement('img');
         loc_img.id = 'loc_img_' + fe_loc.id;
@@ -123,7 +124,7 @@ function display_locations(selected_loc = null, selected_lvl = null) {
             // Assign location clicked
             tempLoc = fe_loc.id;
 
-            locationsData.forEach(item => {
+            filteredUnlocked_loc.forEach(item => {
                 // Clear all loc_levels elements
                 clearElements('loc_levels_' + item.id, 'clear');
     
@@ -136,10 +137,10 @@ function display_locations(selected_loc = null, selected_lvl = null) {
             });
     
             // Add buttons to levels
-            //const filteredUnlocked_lvl = all_levels.filter(l => l.unlocked === true);
-            all_levels.forEach(fe_level => {
+            const filteredUnlocked_lvl = all_levels.filter(l => l.unlocked === true);
+            
+            filteredUnlocked_lvl.forEach(fe_level => {
 
-                
                 const levelButton = document.createElement('button');
                 levelButton.innerHTML = fe_level.lbl;
                 levelButton.style.backgroundColor = 'white';
@@ -166,40 +167,71 @@ function display_locations(selected_loc = null, selected_lvl = null) {
                     // Select the new level
                     lvl = fe_level.id;
                     levelButton.style.backgroundColor = 'yellow';
+                    levelButton.style.color = 'black';
     
-                    console.log(`Location selected: ${loc} / Level selected: ${lvl}`);
+                    //console.log(`Location selected: ${loc} / Level selected: ${lvl}`);
                     
                     // Start battle init
                     const e_locations_status = document.getElementById('locations_status');
                     e_locations_status.innerHTML = `Prepared to attack <b>${fe_loc.lbl}</b>: <b>${fe_level.lbl}<b>`;
                     e_locations_status.innerHTML += `<br><span id="enemy_cnt">Enemies defeated here: ${fe_level.kills}</span>`;
-//WIP Show enemies??
+
+//WIP Show
 // Default is RANDOM
-// Need JSON update
+// Need encounterData updated
 const e_available_enemies = document.getElementById('available_enemies');
 e_available_enemies.innerHTML = `<br><b>Enemies available:</b><br>`;
+//console.log(fe_level.enemies);
+const level_enemies = fe_level.enemies;
+level_enemies.forEach(enemy => {
+    //console.log(enemy);
+    const enemy_list = create_el('enemy_list_' + enemy.id, 'span', e_available_enemies);
+    const attack_ememy_btn = create_el('attack_ememy_btn_' + enemy.id, 'button', enemy_list);
+    attack_ememy_btn.innerHTML = enemy.lbl;
+
+    function attack_enemy(loc, lvl, enemy) {
+        // Get matching loc/lvl encounter
+        //WIP *** Use enemy ID random
+
+        let encounter = encounterData.find(e => e.id === 'beginner_0');
+        // Choose random array index of enemyList;
+        let enemyList = encounter.enemy_list;
+        //console.log(enemyList);
+        enemyList.forEach(en_enemy => {
+            if (enemy.id == en_enemy.id) {
+                //console.log(enemy);
+            }
+        });
+        if (enemy.id === 'random') {
+            let random_enemy = choose_enemy(enemyList);
+            //console.log(random_enemy);
+        }
+    }
+    attack_ememy_btn.addEventListener('click', () => {
+        attack_enemy(loc, lvl, enemy);
+    });
+
+});
+
 
 
                     function prepare_battle_action(f_loc, f_lvl) {
-                        
-                        console.log(f_loc + '.' + f_lvl);
+                        //console.log(f_loc + '.' + f_lvl);
                         // Disable location and level selections
                         function lock_elements() {
-                            // Change selected colors
-                            /*let dis_e_loc = document.getElementById('location_div_' + f_loc);
-                            dis_e_loc.classList.remove('green_border_on');
-                            dis_e_loc.style.border = '5px solid black';
-                            let dis_levelButton = document.getElementById('levelButton_' + f_lvl);
-                            dis_levelButton.style.backgroundColor = 'black';
-                            dis_levelButton.style.color = 'white';*/
                             
                             // Remove all other loc/lvl elements
-                            locationsData.forEach(item => {
+                            // Refresh array
+                            filteredUnlocked_loc = locationsData.filter(l => l.unlocked === true);
+                            filteredUnlocked_loc.forEach(item => {
                                 if (item.id !== loc) {
                                     clearElements('location_div_' + item.id, 'remove');                         
                                 } else {
                                     let e_location_div = document.getElementById('location_div_' + item.id);
-                                    if (e_location_div) { e_location_div.style.width = '150px';}
+                                    if (e_location_div) {
+                                        e_location_div.style.width = '150px';
+                                        e_location_div.classList.add('green_border_off');
+                                    }
                                 }
                                 clearElements('levels', 'remove');
                             });
@@ -212,9 +244,70 @@ e_available_enemies.innerHTML = `<br><b>Enemies available:</b><br>`;
                         if (e_enemy_cnt) {
                             e_enemy_cnt.innerHTML = `Enemies defeated here: ${fe_level.kills}`;
                         }
-                        // Simulate unlock
+                        
+// Unlock checker
+function check_next_req() {
+    let next_req = fe_level.next_req;
+    let killsReq = next_req.find(r => r.id === 'kills');
+
+    // Check if the kill requirement has been met
+    if (killsReq) {
+        if (fe_level.kills >= killsReq.cnt) {
+            killsReq.req_met = true;
+        }
+    }
+
+    // If the kill requirement is met, proceed with unlocking levels
+    if (killsReq.req_met) {
+        fe_level.next_unlock.forEach(unlock => {
+            let new_location = null;
+
+            // Find the new level and unlock it
+            locationsData.forEach(l => {
+                l.levels.forEach(lev => {
+                    if (unlock.id === lev.id) {
+                        new_location = lev;
+                        //console.log(`New level unlocked: ${lev.id}`);
+                        
+                        // Re-add level elements back
+                        
+
+//WIP ***
+                    }
+                });
+            });
+
+            // If a new level is found and unlocked, check if the location should be unlocked
+            if (new_location) {
+                new_location.unlocked = true; // Unlock the level
+
+                // Now check if this level is the first level of a location and unlock the entire location
+                let location = locationsData.find(loc => loc.levels[0].id === new_location.id);
+                
+                if (location) {
+                    // Check if this is the first level in the location and unlock the entire location
+                    if (location.levels[0].unlocked) {
+                        location.unlocked = true;  // Unlock the entire location
+                        //console.log(`Location unlocked: ${location.id}`);
+                    }
+                }
+            }
+        });
+    }
+}
+
+check_next_req();
+
+                        // Refresh UI
                         display_locations(loc, lvl);
+
                         lock_elements();
+
+                        // Save to database
+                        async function updateData() {
+                            await d.updateSlotData(dbState.slot_selected, 'locationsData', locationsData);
+                        }
+                        updateData();
                     }
                     // Clear the prepare_battle_div and recreate the button
                     const e_prepare_battle_div = document.getElementById('prepare_battle_div');
@@ -235,7 +328,7 @@ e_available_enemies.innerHTML = `<br><b>Enemies available:</b><br>`;
             e_loc.classList.remove('green_border_off');
             e_loc.classList.add('green_border_on');
         }
-    
+
         e_loc.addEventListener('click', location_clicks);
 
         // Restore state for previously selected location
@@ -247,6 +340,7 @@ e_available_enemies.innerHTML = `<br><b>Enemies available:</b><br>`;
                     levelButton.click();
                 }
             }
+            e_loc.removeEventListener('click', location_clicks);
         }
 
     });

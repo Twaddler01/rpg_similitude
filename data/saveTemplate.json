@@ -3,6 +3,7 @@
     "slotId": 1,
     "state": "New Game",
     "data": {
+      "lastUnlockedLevel": "starting_zone_1",
       "locationsData": [
         { "id": "starting_zone",
           "lbl": "Starting Zone",
@@ -122,10 +123,7 @@
             { "id": "dark_forest_3", "lbl": "Dark Forest 3", "kills": 0, "unlocked": false, "next_unlock": [
               { "id": null }
               ], 
-            "enemies": [ { "id": "random", "lbl": "Random" } ],
-            "next_req": [ 
-                { "id": "kills", "cnt": 3, "req_met": false }
-              ]
+            "enemies": [ { "id": "random", "lbl": "Random" } ]
             }
           ], 
           "img": "media/img_loc_3.jpg"

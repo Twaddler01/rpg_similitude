@@ -272,10 +272,10 @@ img {
 .show {
     visibility: visible;
 }
-.green_border_on {
-    border: 5px solid green;
+.img_border_on {
+    border: 5px solid yellow;
 }
-.green_border_off {
+.img_border_off {
     border: 5px solid #333;
 }
 .location_box_style {

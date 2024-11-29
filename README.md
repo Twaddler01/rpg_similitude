@@ -25,6 +25,9 @@ https://twaddler01.github.io/rpg_similitude/
 * QUEST tab
 
 ## UPDATES
+11-29-2024
+- Updated BATTLE to show next unlock requirement (currently only kills) or if there is a newer level available than currently selected level, it instead shows that a new unlocked level is available.
+
 11-26-2024
 - In process of overhauling BATTLE tab with new database template and improved integration. This opens up level requirements beyond "kills" and can include many other checks. New structure accounts for location level names instead of just numbers. May integrate enemy level ranges for locations to better set it up for future battle/location dynamics.
 - BATTLE fights can either taeget RANDOM or specific enemies. Future template update will include this.

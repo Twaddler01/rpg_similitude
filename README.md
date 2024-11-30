@@ -16,7 +16,7 @@ https://twaddler01.github.io/rpg_similitude/
 ## PROGRESSION WIP
 * BATTLE needs to be revamped clean in preparation for battle icons, potion usage, etc.
 * BATTLE needs preparation for the ability to attack multiple enemies simultaneously.
-* At about level 6 for location 1, need potion or healing ability to surive battles.
+* (OLD) At about level 6 for location 1, need potion or healing ability to surive battles.
 * More equipment items needed.
 
 ## FUTURE FEATURES

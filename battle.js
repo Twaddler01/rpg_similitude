@@ -283,7 +283,7 @@ export async function update_locations() {
                         
                             function attack_enemy(loc, lvl, enemy) {
                                 // Get matching loc/lvl encounter
-                                //WIP *** Use enemy ID random
+                                //WIP Using enemy ID random
                                 
                                 let prev_enemy = ene;
 
@@ -328,7 +328,6 @@ export async function update_locations() {
                             });
                             
                             if (selected_ene && selected_ene === enemy.id) {
-                                console.log('clicked');
                                 attack_ememy_btn.click();
                             }
                         });
@@ -396,14 +395,28 @@ export async function update_locations() {
                                 await d.updateSlotData(dbState.slot_selected, 'locationsData', locationsData);
                             }
                             updateData();
-                        } // end prepare_battle_action()
-                        
-                        // Clear the prepare_battle_div and recreate the button
-                        const e_prepare_battle_div = document.getElementById('prepare_battle_div');
-                        e_prepare_battle_div.innerHTML = ''; // Remove any existing content in the div
-                        const prepare_battle_btn = create_el('prepare_battle_btn', 'button', e_prepare_battle_div);
-                        prepare_battle_btn.innerHTML = 'START BATTLE HERE';
+
+                            // Clear the prepare_battle_div and recreate the button
+                            const e_prepare_battle_div = document.getElementById('prepare_battle_div');
+                            const e_prepare_battle_btn = document.getElementById('prepare_battle_btn');
+                    
+                            clearElements('prepare_battle_div', 'clear');
+    
+                            if (ene || selected_ene) {
+                                prepare_battle_btn.innerHTML = 'START BATTLE HERE';
+                            } else {
+                                e_prepare_battle_div.innerHTML = '- Select Enemy -';
+                            }
+
+                            // Ready
+                            //WIP *** adding quantity
+                            console.log(`Location: ${loc} / Level: ${lvl} / Enemy: ${ene}`);
                             
+                        } // end prepare_battle_action()
+
+                        const e_prepare_battle_div = document.getElementById('prepare_battle_div');
+                        const prepare_battle_btn = create_el('prepare_battle_btn', 'button', e_prepare_battle_div);
+
                         // Add the new event listener
                         prepare_battle_btn.addEventListener('click', () => {
                             prepare_battle_action(loc, lvl, ene);
@@ -1579,8 +1592,7 @@ let noCritChance = Math.round((1 - critChance) * 1000) / 1000;
         if (encounter.cur_health <= 0) {
             //encounter.cur_health = 0;
             enemy.dead = true;
-//WIP ***
-try {
+
             locationsData.forEach((item, index) => {
                 if (locationsData[index].loc === trackingData[0].loc && locationsData[index].lvl === trackingData[0].lvl) {
                     item.kills += 1;
@@ -1590,13 +1602,6 @@ try {
                     updateKills();
                 }
             });
-
-} catch (error) {
-    console.error('ERROR:' + error);
-    console.error('STACK:' + error.stack)
-}
-
-
         }
 // COMBAT LOG
 

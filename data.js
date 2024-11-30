@@ -333,11 +333,12 @@ export const encounterData = [
     { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0, enemyDmg_min: 3, enemyDmg_max: 4, enemyNoCrit: 0.06,
         // encounterData[0]
         enemy_list: [
-            { en: 'beginner_0', cat: 'enemy', id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: [ { id: 'NPC_LOOT_SLIME', p: 0.8 }, { id: 'NPC_LOOT_SLIME_CHUNK', p: 0.2 }, ] },
-            { en: 'beginner_0', cat: 'enemy', id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: [ { id: 'NPC_LOOT_LIZARD_SCALE', p: 0.6 }, { id: 'NPC_LOOT_LIZARD_CLAW', p: 0.5 }, { id: 'NPC_LOOT_LIZARD_TAIL', p: 0.3}, ] },
-            { en: 'beginner_0', cat: 'enemy', id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: [ { id: 'NPC_LOOT_LEPER_BONE_FRAGMENT', p: 0.5 }, { id: 'GOLD', p: 0.6 }, { id: 'NPC_LOOT_LEPER_SMALL_SKULL', p: 0.4 }, { id: 'CLOTH_BASIC', p: 0.3 } ] },
+            { en: 'beginner_0', cat: 'enemy', cnt: 1, id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: [ { id: 'NPC_LOOT_SLIME', p: 0.8 }, { id: 'NPC_LOOT_SLIME_CHUNK', p: 0.2 }, ] },
+            { en: 'beginner_0', cat: 'enemy', cnt: 1, id: 'ANGRY_LIZARD', lbl: 'Angry Lizard', type: 'beast', lvl: 1, drops: [ { id: 'NPC_LOOT_LIZARD_SCALE', p: 0.6 }, { id: 'NPC_LOOT_LIZARD_CLAW', p: 0.5 }, { id: 'NPC_LOOT_LIZARD_TAIL', p: 0.3}, ] },
+            { en: 'beginner_0', cat: 'enemy', cnt: 1, id: 'LEPER_SCOUT', lbl: 'Leper Scout', type: 'humanoid', lvl: 1, drops: [ { id: 'NPC_LOOT_LEPER_BONE_FRAGMENT', p: 0.5 }, { id: 'GOLD', p: 0.6 }, { id: 'NPC_LOOT_LEPER_SMALL_SKULL', p: 0.4 }, { id: 'CLOTH_BASIC', p: 0.3 } ] },
         ] },
     // WIP dynamic entries
+    // needs cnt
     // start_encounter()
 
     /*{ id: 'group_loc1', loc: 1, lvl: 1,

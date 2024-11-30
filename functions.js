@@ -7,6 +7,18 @@ import * as inv from './inventory.js';
 import * as d from './database.js';
 import { dbState } from './main.js';
 
+// Get element id
+export function getEl(id) {
+    let fetched_element = document.getElementById(id);
+    if (fetched_element) {
+        return fetched_element;
+    /*} else {
+        const error = new Error(`${id} is null or invalid.`);
+        console.error(error.message + error.stack);
+        return;*/
+    }
+}
+
 // Reset saveData to defaults
 export async function clearSaveData() {
 

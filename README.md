@@ -26,6 +26,9 @@ https://twaddler01.github.io/rpg_similitude/
 * QUEST tab
 
 ## UPDATES
+12-03-2024
+- BATTLE is done for location, level, enemy, and counts. Progress on battle elements is next, allowing for multiple enemies.
+
 12-02-2024
 - BATTLE remembers last selected level/enemy/count per session and will auto select them. Remaining work here is to load last location selected on refresh of tab (update_locations). Selections of enemies do not yet save after session, but may implement feature after further testing.
 

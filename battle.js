@@ -30,11 +30,6 @@ const lastBattle = [];
 let lastUnlockedLevel = null;
 export async function update_locations() {
 
-    //let selected_loc = loc;
-    //let selected_lvl = lvl;
-    //let selected_ene = ene;
-    //let selected_cnt = cnt;
-
     async function getData() {
         lastUnlockedLevel = await d.getSlotData(dbState.slot_selected, 'lastUnlockedLevel');
     }
@@ -94,32 +89,6 @@ export async function update_locations() {
         }
     }
 
-    function get_lastSelections(f_loc) {
-        lastSelections.forEach(fe_sel => {
-            if (fe_sel.loc === f_loc && fe_sel.lvl === f_lvl) {
-                
-            }
-            /*if (fe_sel.loc === loc && fe_sel.lvl === lvl) {
-                if (fe_sel.ene) {
-                    fe_sel.ene = ene;
-                    let select_ememy_btn = document.getElementById('select_ememy_btn_' + ene);
-                    if (select_ememy_btn) {
-                        //select_ememy_btn.click();
-                    }
-                } else {
-                    ene = null;
-                    clearElements('enemies_cnt_div', 'clear');
-                }
-                if (fe_sel.cnt !== 0) {
-                    fe_sel.cnt = cnt;
-                } else {
-                    cnt = 0;
-                    //clearElements('prepare_battle_div', 'clear');
-                }
-            }*/
-        });
-    }
-
     // For choosing locations
     const location_container = create_el('location_container', 'div', e_tab_player_battle);
     location_container.classList.add('location_box_style');
@@ -134,8 +103,6 @@ export async function update_locations() {
 
     // Load unlocked locations/levels
     function display_locations() {
-
-        //TEMP let tempLoc = null; // Temporarily holds the clicked location
 
         // Reset location_container
         let e_location_container = document.getElementById('location_container');
@@ -249,7 +216,10 @@ export async function update_locations() {
                         const e_enemy_cnt = document.getElementById('enemy_cnt');
 
                         if (lastUnlockedLevel && (lastUnlockedLevel.id === lvl || lastUnlockedLevel.id === f_lvl)) {
-
+                            
+                            lastBattle[0].loc = fe_loc.id;
+                            lastBattle[0].lvl = lastUnlockedLevel.id;
+                            
                             e_new_lvl_requires_title.innerHTML = '<b>Next Unlock Requires:</b>';
 
                             let next_req_kills = fe_level.next_req.find(r => r.id === 'kills');
@@ -287,28 +257,21 @@ export async function update_locations() {
                     function level_clicks() {
                         clearElements('prepare_battle_div', 'clear');
 
-                        //TEMP loc = tempLoc;
                         loc = fe_loc.id;
-                        
                         let prev_lvl = lvl;
 
-                        // Reset elements
-                        // If enemy??
-                        //
-// If any one of check_lastSelections is missing, reset selection elements
-function check_lastSelections() {
-    lastSelections.forEach(fe_sel => {
-        if (fe_sel.loc !== loc || fe_sel.lvl !== lvl && fe_sel.ene !== ene || fe_sel.cnt !== cnt) {
-            clearElements('available_enemies', 'clear');
-            clearElements('enemies_cnt_div', 'clear');
-            clearElements('prepare_battle_div', 'clear');
-        }
-    });
-}
-check_lastSelections();
-                        //
-console.log(json(lastSelections));
-                        //
+                        // If any one of check_lastSelections is missing, reset selection elements
+                        function check_lastSelections() {
+                            lastSelections.forEach(fe_sel => {
+                                if (fe_sel.loc !== loc || fe_sel.lvl !== lvl && fe_sel.ene !== ene || fe_sel.cnt !== cnt) {
+                                    clearElements('available_enemies', 'clear');
+                                    clearElements('enemies_cnt_div', 'clear');
+                                    clearElements('prepare_battle_div', 'clear');
+                                }
+                            });
+                        }
+                        check_lastSelections();
+                        //console.log(json(lastSelections));
 
                         cnt = 0;
                         lastSelections.forEach(fe_sel => {
@@ -333,17 +296,16 @@ console.log(json(lastSelections));
                         levelButton.style.backgroundColor = 'yellow';
                         levelButton.style.color = 'black';
 
-                        //
-lastSelections.forEach(fe_sel => {
-    if (fe_sel.lvl === lvl && fe_sel.loc === loc) {
-        if (fe_sel.ene) {
-            ene = fe_sel.ene;
-        }
-    }
-});
-//console.log(json(lastSelections));
-                        //
-unlock_requirements();
+                        lastSelections.forEach(fe_sel => {
+                            if (fe_sel.lvl === lvl && fe_sel.loc === loc) {
+                                if (fe_sel.ene) {
+                                    ene = fe_sel.ene;
+                                }
+                            }
+                        });
+                        //console.log(json(lastSelections));
+                        
+                        unlock_requirements();
 
                         function show_unlocked_level() {
 
@@ -369,16 +331,6 @@ unlock_requirements();
                                 new_level_message.innerHTML = `<b>A newer level is unlocked: ${lastUnlockedLevel.lbl} in ${newest_location}</b>`;
                                 e_unlock_messages.appendChild(new_level_message); // Add the newest message to the screen
                             }
-                            
-                            //console.log('NEW LEVEL -- lastUnlockedLevel.id = ' + lastUnlockedLevel.id + ' / lvl: ' + lvl);
-                            /*if (lvl === lastUnlockedLevel.id && cnt !== 0) {
-                                console.log('STEP 2');
-                                
-                                selected_ene = null;
-                                selected_cnt = 0;
-                                clearElements('enemies_cnt_div', 'clear');
-                                clearElements('prepare_battle_div', 'clear');
-                            }*/
                         }
 
                         // Get lastUnlockedLevel
@@ -438,9 +390,7 @@ unlock_requirements();
                                     encounterCnt = 3;
                                 }
 
-                                //if (select_ememy_btn.id !== selected_ene) {
-                                    select_ememy_btn.style.backgroundColor = 'yellow';
-                                //} 
+                                select_ememy_btn.style.backgroundColor = 'yellow';
 
                                 const e_enemy_status = document.getElementById('enemy_status');
                                 enemy_status.innerHTML = `<br>Preparing to attack <b>${enemy.lbl}</b>`;
@@ -452,7 +402,6 @@ unlock_requirements();
                                     let prevEnemyButton = document.getElementById('select_ememy_btn_' + prev_enemy);
                                     if (prevEnemyButton) {
                                         prevEnemyButton.style.backgroundColor = 'white';
-                                        console.log('clicked: ' + enemy.id);
                                         clearElements('prepare_battle_div', 'clear')
 
                                     }
@@ -465,34 +414,27 @@ unlock_requirements();
                                         if (index + 1 === selectedCount) {
                                             cnt = selectedCount;
 
-lastSelections.forEach(fe_sel => {
-    if (lvl === fe_sel.lvl && fe_sel.loc === loc) {
-        //TEST
-        fe_sel.ene = ene;
-        fe_sel.cnt = cnt;
-    }
-});
-
-// Clear the prepare_battle_div and recreate the button
-const e_prepare_battle_div = document.getElementById('prepare_battle_div');
-const e_prepare_battle_btn = document.getElementById('prepare_battle_btn');
-
-clearElements('prepare_battle_div', 'clear');
-
-if (cnt !== 0) {
-    let prepare_battle_btn = create_el('prepare_battle_btn', 'button', e_prepare_battle_div);
-    prepare_battle_btn.innerHTML = 'START BATTLE HERE';
-    // Add event listener
-    prepare_battle_btn.addEventListener('click', () => {
-        prepare_battle_action(loc, lvl, ene, cnt);
-    });
-}
-
-
-
-
-
-
+                                            lastSelections.forEach(fe_sel => {
+                                                if (lvl === fe_sel.lvl && fe_sel.loc === loc) {
+                                                    fe_sel.ene = ene;
+                                                    fe_sel.cnt = cnt;
+                                                }
+                                            });
+                                            
+                                            // Clear the prepare_battle_div and recreate the button
+                                            const e_prepare_battle_div = document.getElementById('prepare_battle_div');
+                                            const e_prepare_battle_btn = document.getElementById('prepare_battle_btn');
+                                            
+                                            clearElements('prepare_battle_div', 'clear');
+                                            
+                                            if (cnt !== 0) {
+                                                let prepare_battle_btn = create_el('prepare_battle_btn', 'button', e_prepare_battle_div);
+                                                prepare_battle_btn.innerHTML = 'START BATTLE HERE';
+                                                // Add event listener
+                                                prepare_battle_btn.addEventListener('click', () => {
+                                                    prepare_battle_action(loc, lvl, ene, cnt);
+                                                });
+                                            }
                                         }
                                     });
                                 }
@@ -506,7 +448,7 @@ if (cnt !== 0) {
                                     enemyCntBtn.addEventListener('click', () => {
                                         select_enemy_quantity(i);
                                     });
-                                    //
+
                                     lastSelections.forEach(fe_sel => {
                                     if (lvl === fe_sel.lvl && fe_sel.ene === ene && fe_sel.cnt === i) {
                                             let e_enemy_cnt_btn_cnt = document.getElementById('enemy_cnt_btn_' + i + '_' + ene);
@@ -517,7 +459,6 @@ if (cnt !== 0) {
                                             }
                                         }
                                     });
-                                    //
                                 }
 
                                 if (encounterCnt === 1) {
@@ -532,18 +473,17 @@ if (cnt !== 0) {
                             select_ememy_btn.addEventListener('click', () => {
                                 select_enemy(loc, lvl, enemy);
                             });
-                            //
-lastSelections.forEach(fe_sel => {
-    if (fe_sel.lvl === lvl && fe_sel.loc === loc && fe_sel.ene === enemy.id) {
-        let select_ememy_btn_ene = document.getElementById('select_ememy_btn_' + fe_sel.ene);
-        if (select_ememy_btn_ene) {
-            // Autoclick for refresh
-            select_ememy_btn_ene.click();
-            //console.log('clicked ENE');
-        }
-    }
-});
-                            //
+
+                            lastSelections.forEach(fe_sel => {
+                                if (fe_sel.lvl === lvl && fe_sel.loc === loc && fe_sel.ene === enemy.id) {
+                                    let select_ememy_btn_ene = document.getElementById('select_ememy_btn_' + fe_sel.ene);
+                                    if (select_ememy_btn_ene) {
+                                        // Autoclick for refresh
+                                        select_ememy_btn_ene.click();
+                                        //console.log('clicked ENE');
+                                    }
+                                }
+                            });
                         });
 
                         function prepare_battle_action(f_loc, f_lvl, f_ene, f_cnt) {
@@ -624,25 +564,25 @@ lastSelections.forEach(fe_sel => {
 // Before start of battle check
 console.log(`SUBMIT: Location: ${loc} / Level: ${lvl} / Enemy: ${ene} / Quantity: ${cnt}`);
 // Store selections
-lastSelections.forEach(fe_sel => {
-    if (fe_sel.lvl === lvl && fe_sel.loc === loc) {
-        fe_sel.ene = ene;
-        let select_ememy_btn_ene = document.getElementById('select_ememy_btn_' + fe_sel.ene);
-        if (select_ememy_btn_ene) {
-            // Autoclick for refresh
-            select_ememy_btn_ene.click();
-            //console.log('clicked ENE on SUBMIT');
-        }
-    }
-});
-//console.log(json(lastSelections));
+                            lastSelections.forEach(fe_sel => {
+                                if (fe_sel.lvl === lvl && fe_sel.loc === loc) {
+                                    fe_sel.ene = ene;
+                                    let select_ememy_btn_ene = document.getElementById('select_ememy_btn_' + fe_sel.ene);
+                                    if (select_ememy_btn_ene) {
+                                        // Autoclick for refresh
+                                        select_ememy_btn_ene.click();
+                                        //console.log('clicked ENE on SUBMIT');
+                                    }
+                                }
+                            });
+                            //console.log(json(lastSelections));
+    
+                            // Assign latest loc, lvl, ene, cnt
+                            lastBattle[0].loc = loc;
+                            lastBattle[0].lvl = lvl;
+                            lastBattle[0].ene = ene;
+                            lastBattle[0].cnt = cnt;
 
-// Assign latest loc, lvl, ene, cnt
-lastBattle[0].loc = loc;
-lastBattle[0].lvl = lvl;
-lastBattle[0].ene = ene;
-lastBattle[0].cnt = cnt;
-console.log(lastBattle[0]);
                         } // end prepare_battle_action()
                     }
 
@@ -656,30 +596,19 @@ console.log(lastBattle[0]);
             }
 
             e_loc.addEventListener('click', location_clicks);
-            /*if (lastBattle[0].loc) {
-                let prev_location = document.getElementById('location_div_' + lastBattle[0].loc);
-                if (prev_location) prev_location.click();
-                //let prev_level = document.getElementById('loc_levels_' + lastBattle[0].lvl);
-                //if (prev_location && prev_level) prev_level.click();
-            }*/
         });
     } // end display_locations()
     display_locations();
 
-console.log('for loc click...');
-let prev_location = document.getElementById('location_div_' + lastBattle[0].loc);
-if (prev_location) prev_location.click();
-
-console.log('for lvl click...');
-console.log(lastBattle[0].lvl);
-let prev_level = document.getElementById('levelButton_' + lastBattle[0].lvl);
-if (prev_level) prev_level.click();
+    let prev_location = document.getElementById('location_div_' + lastBattle[0].loc);
+    if (prev_location) prev_location.click();
+    let prev_level = document.getElementById('levelButton_' + lastBattle[0].lvl);
+    if (prev_level) prev_level.click();
 
     let spacer = document.createElement('div');
     e_tab_player_battle.appendChild(spacer);
     spacer.classList.add('location_box_style');
     spacer.style.paddingBottom = '50px';
-
 }
 
 // FOR WHEN BATTLE STARTS

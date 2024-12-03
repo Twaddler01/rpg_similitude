@@ -24,6 +24,8 @@ let ene = null;
 let cnt = null;
 // Store all previous selections globally
 const lastSelections = [];
+// The bsttle to load on losding of tab
+const lastBattle = [];
 // Stores the most recently unlocked level globally
 let lastUnlockedLevel = null;
 export async function update_locations() {
@@ -69,6 +71,15 @@ export async function update_locations() {
         });
     }
     //json(lastSelections);
+    
+    if (lastBattle.length === 0) {
+        lastBattle.push({
+            loc: null,
+            lvl: null,
+            ene: null,
+            cnt: 0,
+        });
+    }
 
     // Immediately update loc, lvl display -- autoclick for refresh
     function update_for_nextUnlock(fe_loc_id, fe_level_id) {
@@ -209,9 +220,6 @@ export async function update_locations() {
 
             function location_clicks() {
 
-                // Assign location clicked
-                //TEMP tempLoc = fe_loc.id;
-
                 filteredUnlocked_loc.forEach(item => {
                     // Clear all loc_levels elements
                     clearElements('loc_levels_' + item.id, 'clear');
@@ -283,7 +291,7 @@ export async function update_locations() {
                         loc = fe_loc.id;
                         
                         let prev_lvl = lvl;
-                        
+
                         // Reset elements
                         // If enemy??
                         //
@@ -299,7 +307,7 @@ function check_lastSelections() {
 }
 check_lastSelections();
                         //
-//console.log(json(lastSelections));
+console.log(json(lastSelections));
                         //
 
                         cnt = 0;
@@ -399,7 +407,7 @@ unlock_requirements();
                                 select_ememy_btn.style.backgroundColor = 'yellow';
                             }
                             select_ememy_btn.innerHTML = enemy.lbl;
-
+                            
                             function select_enemy(loc, lvl, enemy) {
                                 // Get matching loc/lvl encounter
                                 //WIP Using enemy ID random
@@ -444,6 +452,9 @@ unlock_requirements();
                                     let prevEnemyButton = document.getElementById('select_ememy_btn_' + prev_enemy);
                                     if (prevEnemyButton) {
                                         prevEnemyButton.style.backgroundColor = 'white';
+                                        console.log('clicked: ' + enemy.id);
+                                        clearElements('prepare_battle_div', 'clear')
+
                                     }
                                 }
 
@@ -453,10 +464,11 @@ unlock_requirements();
                                         button.style.backgroundColor = (index + 1 === selectedCount) ? 'yellow' : 'white';
                                         if (index + 1 === selectedCount) {
                                             cnt = selectedCount;
-// Click before start of battle check
-//console.log(`CLICK: Location: ${loc} / Level: ${lvl} / Enemy: ${ene} / Quantity: ${cnt}`);
+
 lastSelections.forEach(fe_sel => {
     if (lvl === fe_sel.lvl && fe_sel.loc === loc) {
+        //TEST
+        fe_sel.ene = ene;
         fe_sel.cnt = cnt;
     }
 });
@@ -516,6 +528,7 @@ if (cnt !== 0) {
                                     }
                                 }
                             }
+                            
                             select_ememy_btn.addEventListener('click', () => {
                                 select_enemy(loc, lvl, enemy);
                             });
@@ -536,7 +549,7 @@ lastSelections.forEach(fe_sel => {
                         function prepare_battle_action(f_loc, f_lvl, f_ene, f_cnt) {
                             // Simulate kills
                             fe_level.kills += 1;
-
+                            
                             function check_next_req() {
                                 let new_location = null; // Tracks the current unlock operation
 
@@ -624,11 +637,17 @@ lastSelections.forEach(fe_sel => {
 });
 //console.log(json(lastSelections));
 
-
+// Assign latest loc, lvl, ene, cnt
+lastBattle[0].loc = loc;
+lastBattle[0].lvl = lvl;
+lastBattle[0].ene = ene;
+lastBattle[0].cnt = cnt;
+console.log(lastBattle[0]);
                         } // end prepare_battle_action()
                     }
 
                     levelButton.addEventListener('click', level_clicks);
+
                 });
 
                 // Add green border to clicked element
@@ -637,9 +656,24 @@ lastSelections.forEach(fe_sel => {
             }
 
             e_loc.addEventListener('click', location_clicks);
+            /*if (lastBattle[0].loc) {
+                let prev_location = document.getElementById('location_div_' + lastBattle[0].loc);
+                if (prev_location) prev_location.click();
+                //let prev_level = document.getElementById('loc_levels_' + lastBattle[0].lvl);
+                //if (prev_location && prev_level) prev_level.click();
+            }*/
         });
     } // end display_locations()
     display_locations();
+
+console.log('for loc click...');
+let prev_location = document.getElementById('location_div_' + lastBattle[0].loc);
+if (prev_location) prev_location.click();
+
+console.log('for lvl click...');
+console.log(lastBattle[0].lvl);
+let prev_level = document.getElementById('levelButton_' + lastBattle[0].lvl);
+if (prev_level) prev_level.click();
 
     let spacer = document.createElement('div');
     e_tab_player_battle.appendChild(spacer);

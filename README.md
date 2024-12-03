@@ -27,7 +27,7 @@ https://twaddler01.github.io/rpg_similitude/
 
 ## UPDATES
 12-02-2024
-- BATTLE remembers last attacked location per session and will auto select them. Selections of enemies do not yet update after a new enemy selection is chosen.
+- BATTLE remembers last selected location/level/enemy/count per session and will auto select them. Selections of enemies do not yet save after session, but may implement feature after further testing. So far, it appears prepared enough to move on.
 
 11-29-2024
 - Updated BATTLE to show next unlock requirement (currently only kills) or if there is a newer level available than currently selected level, it instead shows that a new unlocked level is available.

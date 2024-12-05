@@ -837,7 +837,8 @@ all_ui_container
         if (e_enemy_ui_container) e_enemy_ui_container.innerHTML = '';
         
         let firstEnemy = null; // To track the first enemy
-
+        
+        // TEMP
         if (s_ene === 'random_' + s_lvl) {
 
             let encounter = encounterData.find(e => e.id === 'beginner_0');

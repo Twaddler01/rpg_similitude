@@ -26,6 +26,9 @@ https://twaddler01.github.io/rpg_similitude/
 * QUEST tab
 
 ## UPDATES
+12-04-2024
+- BATTLE: Added multiple enemy support and 3 basic player abilities. Not 100% sure of current ability layout quite yet, but it's similar to what I'm aiming for. Need a # of turns cooldown support for abilities and a very basic tooltip next.
+
 12-03-2024
 - BATTLE is done for location, level, enemy, and counts. Progress on battle elements is next, allowing for multiple enemies.
 

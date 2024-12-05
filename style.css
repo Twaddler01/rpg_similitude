@@ -181,6 +181,16 @@ img {
     text-align: right;
 }
 
+.tall_bar_with_border_container {
+    position: relative;  /* Position relative for inner elements */
+    height: 50px;
+    width: 100%;
+    border: solid 1px white;
+    display: flex;
+    /*flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;*/
+}
 .bar_with_border_container {
     position: relative;  /* Position relative for inner elements */
     height: 20px;

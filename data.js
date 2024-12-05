@@ -1,5 +1,11 @@
 // data.js
 
+export const playerAbiliy = [
+    { id: 'reg_attack', lbl: 'Attack', abiliy_slot: 1, img: 'media/icons/battle/att_icon_01.png' },
+    { id: 'forceful_attack', lbl: 'Forceful Attack', abiliy_slot: 2, img: 'media/icons/battle/att_icon_02.png' },
+    { id: 'self_heal_1', lbl: 'First Aid 1', abiliy_slot: 3, img: 'media/icons/battle/att_icon_03.png' }
+];
+
 export const equipmentElements = [
     { num: 1, type: 'equip_slot', id: 'head' },
     { num: 2, type: 'equip_slot', id: 'shoulders' },
@@ -330,7 +336,7 @@ export const characterData = [
 
 export const encounterData = [
 
-    { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0, enemyDmg_min: 3, enemyDmg_max: 4, enemyNoCrit: 0.06,
+    { id: 'beginner_0', loc: 0, lvl: 1, hp_min: 20, hp_max: 30, cur_health: 0, max_health: 0, log_cnt: 0, enemyDmg_min: 3, enemyDmg_max: 5, enemyNoCrit: 0.06,
         // encounterData[0]
         enemy_list: [
             { en: 'beginner_0', cat: 'enemy', cnt: 1, id: 'SLIME', lbl: 'Slime', type: 'elemental', lvl: 1, drops: [ { id: 'NPC_LOOT_SLIME', p: 0.8 }, { id: 'NPC_LOOT_SLIME_CHUNK', p: 0.2 }, ] },

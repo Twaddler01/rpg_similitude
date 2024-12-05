@@ -1,12 +1,11 @@
 // battle.js
 
-import { characterData, trackingData, encounterData, itemData } from './data.js';
-import { create_el, randomize, json, getEl } from './functions.js';
+import { characterData, trackingData, encounterData, itemData, playerAbiliy } from './data.js';
+import { create_el, randomize, json, getEl, add_message } from './functions.js';
 import { update_battleStats } from './equipment.js';
 import { toggleElement } from './general_functions.js';
 import { updateLootCount } from './inventory.js';
 import { disableTabs, restoreTabs, dbState } from './main.js';
-import { add_message } from './functions.js';
 import * as d from './database.js';
 
 /*
@@ -158,6 +157,12 @@ export async function update_locations() {
         const prepare_battle_div = document.createElement('div');
         location_container.appendChild(prepare_battle_div);
         prepare_battle_div.id = 'prepare_battle_div';
+        prepare_battle_div.style.paddingBottom = '20px';
+
+        const start_battle_div = document.createElement('div');
+        location_container.appendChild(start_battle_div);
+        start_battle_div.id = 'start_battle_div';
+        start_battle_div.style.paddingBottom = '20px';
 
         let filteredUnlocked_loc = locationsData.filter(l => l.unlocked === true);
 
@@ -256,6 +261,7 @@ export async function update_locations() {
 
                     function level_clicks() {
                         clearElements('prepare_battle_div', 'clear');
+                        clearElements('battle_ui_container', 'clear');
 
                         loc = fe_loc.id;
                         let prev_lvl = lvl;
@@ -429,7 +435,7 @@ export async function update_locations() {
                                             
                                             if (cnt !== 0) {
                                                 let prepare_battle_btn = create_el('prepare_battle_btn', 'button', e_prepare_battle_div);
-                                                prepare_battle_btn.innerHTML = 'START BATTLE HERE';
+                                                prepare_battle_btn.innerHTML = 'PREPARE BATTLE';
                                                 // Add event listener
                                                 prepare_battle_btn.addEventListener('click', () => {
                                                     prepare_battle_action(loc, lvl, ene, cnt);
@@ -558,12 +564,16 @@ export async function update_locations() {
                             updateData();
 
                             // Autoclick for refresh
-                            update_for_nextUnlock(loc, lvl);
+                            update_for_nextUnlock(f_loc, f_lvl);
 
 //WIP *** Ready for next steps...
 // Before start of battle check
-console.log(`SUBMIT: Location: ${loc} / Level: ${lvl} / Enemy: ${ene} / Quantity: ${cnt}`);
-// Store selections
+console.log(`SUBMIT: Location: ${f_loc} / Level: ${f_lvl} / Enemy: ${f_ene} / Quantity: ${f_cnt}`);
+
+// Setup battle elements
+load_battle_elements(f_loc, f_lvl, f_ene, f_cnt);
+
+                            // Store selections
                             lastSelections.forEach(fe_sel => {
                                 if (fe_sel.lvl === lvl && fe_sel.loc === loc) {
                                     fe_sel.ene = ene;
@@ -607,9 +617,759 @@ console.log(`SUBMIT: Location: ${loc} / Level: ${lvl} / Enemy: ${ene} / Quantity
 
     let spacer = document.createElement('div');
     e_tab_player_battle.appendChild(spacer);
-    spacer.classList.add('location_box_style');
     spacer.style.paddingBottom = '50px';
 }
+
+async function load_battle_elements(s_loc, s_lvl, s_ene, s_cnt) {
+
+    // Add start battle button
+    const e_start_battle_div = document.getElementById('start_battle_div');
+
+    create_el('battle_overview', 'div', e_start_battle_div);
+    create_el('start_battle_btn', 'button', e_start_battle_div);
+    start_battle_btn.innerHTML = 'READY';
+
+    // DATA
+    const d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+    const d_player_character = d_savedCharacterData[0];
+
+    let playerStats = characterData.find(d => d.id === 'player_stats');
+
+    async function fetch_playerStats(opt) {
+        let stats = await update_battleStats();
+    
+        playerStats.max_health = await stats.calc_totalHealth();
+        playerStats.max_resource = await stats.calc_resource_melee();
+    
+        if (opt === 'new') {
+            // Reset current health
+            playerStats.cur_health = playerStats.max_health;
+            // Reset current resource
+            playerStats.cur_resource = playerStats.max_resource;
+        }
+    }
+
+    await fetch_playerStats('new');
+
+    // ELEMENTS
+    const e_battle_ui_container = document.getElementById('battle_ui_container');
+    // Stores player, verses, and enemy ui
+    const all_ui_container = create_el('all_ui_container', 'div', e_battle_ui_container);
+
+    // all_ui_container -- all ui elements
+    // Player UI
+    const player_ui_container = create_el('player_ui_container', 'div', all_ui_container);
+    // In between (status)
+    const verses_ui_container = create_el('verses_ui_container', 'div', all_ui_container);
+    // Enemy UI
+    const enemy_ui_container = create_el('enemy_ui_container', 'div', all_ui_container);
+    // Insert combat log
+    const combat_log_container = create_el('combat_log_container', 'div', all_ui_container);
+
+    // Player UI
+    function create_player_ui() {
+        
+        const player_battle_status_bars = create_el('player_battle_status_bars', 'div', player_ui_container);
+        player_battle_status_bars.style.width = "100%";
+        player_battle_status_bars.style.border = 'solid 5px black';
+        // Toggle combat on
+        //player_battle_status_bars.style.border = 'solid 5px red';
+    
+        // Player labels
+        // Add to group player_battle_status_bars
+        const player_name_level = create_el('player_name_level', 'div', player_battle_status_bars);
+        player_name_level.classList.add('bar_label_container');
+    
+        const player_name = create_el('player_name', 'span', player_name_level);
+        player_name.classList.add('bar_left_label');
+        player_name.innerHTML = d_player_character.char_name;
+    
+        const player_level = create_el('player_level', 'span', player_name_level);
+        player_level.classList.add('bar_right_label');
+        player_level.innerHTML = 'Level: ' + d_player_character.char_level;
+
+        // Add to group player_battle_status_bars
+        const battle_ui_container2 = create_el('battle_ui_container2', 'div', player_battle_status_bars);
+    
+        // Create player health container
+        const player_health_container = create_el('player_health_container', 'div', battle_ui_container2);
+        player_health_container.classList.add('bar_with_border_container');
+    
+        // Create the player_health bar fill (blue bar)
+        const player_health_bar_fill = create_el('player_health_bar_fill', 'div', player_health_container);
+        player_health_bar_fill.classList.add('bar_with_border_fill');
+        player_health_bar_fill.style.backgroundColor = 'green';
+        player_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+        // Fill calculated below
+    
+        const player_current_health_text = create_el('player_current_health_text', 'span', player_health_container);
+        player_current_health_text.classList.add('bar_with_border_text');
+        player_current_health_text.innerHTML = 'Player Health: <span id="e_char_health">' + playerStats.cur_health + '</span>&nbsp;/&nbsp;';
+        // Inserts e_char_health
+    
+        const player_maximum_health = create_el('player_maximum_health', 'span', player_current_health_text);
+        player_maximum_health.innerHTML = playerStats.max_health;
+    
+        const player_current_health_percent = create_el('player_current_health_percent', 'span', player_health_container);
+        player_current_health_percent.classList.add('bar_with_border_percent');
+        let d_player_health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
+        d_player_health_percent = Math.round(d_player_health_percent * 10) / 10;
+        player_current_health_percent.innerHTML = d_player_health_percent + '%';
+    
+        // Display bar width fill
+        player_health_bar_fill.style.width = d_player_health_percent + '%';
+
+        // Player resource
+        // Add to group player_battle_status_bars
+        const battle_ui_container3 = create_el('battle_ui_container3', 'div', player_battle_status_bars);
+    
+        // Create player resource container
+        const player_resource_container = create_el('player_resource_container', 'div', battle_ui_container3);
+        player_resource_container.classList.add('bar_with_border_container');
+    
+        // Create the player_resource bar fill (yellow bar)
+        const player_resource_bar_fill = create_el('player_resource_bar_fill', 'div', player_resource_container);
+        player_resource_bar_fill.classList.add('bar_with_border_fill');
+        player_resource_bar_fill.style.backgroundColor = '#6E6800';
+        player_resource_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+        // Fill calculated below
+    
+        const player_current_resource_text = create_el('player_current_resource_text', 'span', player_resource_container);
+        player_current_resource_text.classList.add('bar_with_border_text');
+        player_current_resource_text.innerHTML = 'Player Resource: <span id="e_char_resource">' + playerStats.cur_resource + '</span>&nbsp;/&nbsp;';
+        // Inserts e_char_resource
+    
+        const player_maximum_resource = create_el('player_maximum_resource', 'span', player_current_resource_text);
+        player_maximum_resource.innerHTML = playerStats.max_resource;
+    
+        const player_current_resource_percent = create_el('player_current_resource_percent', 'span', player_resource_container);
+        player_current_resource_percent.classList.add('bar_with_border_percent');
+        let d_player_resource_percent = (playerStats.cur_resource / playerStats.max_resource) * 100;
+        d_player_resource_percent = Math.round(d_player_resource_percent * 10) / 10;
+        player_current_resource_percent.innerHTML = d_player_resource_percent + '%';
+    
+        // Display bar width fill
+        player_resource_bar_fill.style.width = d_player_resource_percent + '%';
+
+        // Player experience
+        const experience_container = create_el('experience_container', 'div', player_battle_status_bars);
+        experience_container.classList.add('bar_with_border_container');
+    
+        // Create the experience bar fill (blue bar)
+        const experience_bar_fill = create_el('experience_bar_fill', 'div', experience_container);
+        experience_bar_fill.classList.add('bar_with_border_fill');
+        experience_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+    
+        const experience_text = create_el('experience_text', 'span', experience_container);
+        experience_text.classList.add('bar_with_border_text');
+        experience_text.innerHTML = 'Experience: <span id="e_char_exp">' + d_player_character.char_exp + '</span>&nbsp;/&nbsp;';
+        // Inserts e_char_exp
+    
+        const experience_percent = create_el('experience_percent', 'span', experience_container);
+        experience_percent.classList.add('bar_with_border_percent');
+    
+        // Calculate experience values
+        let d_exp_filter = characterData.filter(c => c.type === 'exp');
+        let d_exp = d_exp_filter[0];
+    
+        // Store experience values for each level
+        d_exp.experienceValues = [];
+    
+        for (let i = 1; i <= d_exp.level_cap; i++) {
+            let expToLevel = Math.round((d_exp.starting_val * (i**1.5 + d_exp.level_rate)) / 10) * 10;
+            d_exp.experienceValues.push({
+                level: i,
+                exp_to_level: expToLevel,
+                //diff: expToLevel - Math.round((d_exp.starting_val * ((i - 1)**1.5 + d_exp.level_rate)) / 10) * 10 // Uncomment if you need the diff
+            });
+        }
+    
+        // Log experience values for each level
+        d_exp.experienceValues.forEach(xp => {
+            //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}`);
+            //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}, Diff: ${xp.diff}`);
+            if (d_player_character.char_level === xp.level) {
+                d_player_character.char_exp_to_level = xp.exp_to_level;
+            }
+        });
+    
+        const experience_to_level = create_el('experience_to_level', 'span', experience_text);
+        experience_to_level.innerHTML = d_player_character.char_exp_to_level;
+
+        // Player battle abilities
+        const player_ability_container = create_el('player_ability_container', 'div', player_battle_status_bars);
+
+        async function updateData() {
+            await d.updateSlotData(dbState.slot_selected, 'savedCharacterData', d_savedCharacterData);
+        }
+        updateData();
+
+// WIP Need update_resource
+
+    }
+    create_player_ui();
+    
+    // Setup battle verses_ui_container
+    verses_ui_container.innerHTML = '<p style="text-align:center;font-size:16px;color:red;" id="player_to_enemy_label">[ READY TO ATTACK ]</p>';
+
+/*
+all_ui_container
+...
+    enemy_ui_container
+        enemy_div
+            enemy_name_level
+                enemy_name
+                enemy_level
+            enemy_health_container
+                enemy_health_bar_fill
+                enemy_current_health_text
+                    enemy_maximum_health
+                enemy_current_health_percent
+    combat_log_container
+*/
+
+    // ENEMY
+    const enemy_stats = [];
+    const enemyCounter = {}; // To track counts of each enemy id
+    function create_enemy_ui() {
+        // Enemy UI
+        let e_enemy_ui_container = document.getElementById('enemy_ui_container');
+        if (e_enemy_ui_container) e_enemy_ui_container.innerHTML = '';
+        
+        let firstEnemy = null; // To track the first enemy
+
+        if (s_ene === 'random_' + s_lvl) {
+
+            let encounter = encounterData.find(e => e.id === 'beginner_0');
+            let enemyList = encounter.enemy_list;
+    
+            for (let i = 1; i <= s_cnt; i++) {
+
+                let random_enemy = choose_enemy(enemyList);
+    
+                // Initialize or increment the counter for this enemy id
+                if (!enemyCounter[random_enemy.id]) {
+                    enemyCounter[random_enemy.id] = 1;
+                } else {
+                    enemyCounter[random_enemy.id]++;
+                }
+    
+                // Unique ID and label
+                let uniqueId = random_enemy.id + (enemyCounter[random_enemy.id] > 1 ? `_${enemyCounter[random_enemy.id]}` : '');
+                let uniqueLabel = random_enemy.lbl + (enemyCounter[random_enemy.id] > 1 ? ` ${enemyCounter[random_enemy.id]}` : '');
+    
+                // e_enemy_clicked output is temporary
+                battle_overview.innerHTML = `Select an enemy or primary target below to start battle.
+                <br>You have selected: <span id="e_enemy_clicked">[ NONE ]</span>`;
+    
+                if (!firstEnemy && s_cnt === 1) {
+                    firstEnemy = random_enemy; // Save the first random enemy
+                }
+    
+                // Create enemy stats
+                enemy_stats.push({
+                    num: i,
+                    id: uniqueId,
+                    lbl: uniqueLabel,
+                    lvl: encounter.lvl,
+                    max_health: randomize(encounter.hp_min, encounter.hp_max, 1),
+                    enemyDmg_min: encounter.enemyDmg_min,
+                    enemyDmg_max: encounter.enemyDmg_max
+                });
+            }
+
+            // Sort enemy_stats by id to group duplicates together
+            enemy_stats.sort((a, b) => a.id.localeCompare(b.id));
+
+            enemy_stats.forEach(fe_enemy => {
+                // Set enemy health full
+                fe_enemy.cur_health = fe_enemy.max_health;
+                // Randomize enemy damage ranges
+                let dmg_min_var = fe_enemy.enemyDmg_min;
+                fe_enemy.enemyDmg_min = randomize((dmg_min_var * 0.8), (dmg_min_var * 1.2), 0.1);
+                fe_enemy.enemyDmg_min = Math.round(fe_enemy.enemyDmg_min * 10) / 10;
+                let dmg_max_var = fe_enemy.enemyDmg_max;
+                fe_enemy.enemyDmg_max = randomize((dmg_max_var * 0.8), (dmg_max_var * 1.2), 0.1);
+                fe_enemy.enemyDmg_max = Math.round(fe_enemy.enemyDmg_max * 10) / 10;
+                if (fe_enemy.enemyDmg_min > fe_enemy.enemyDmg_max) fe_enemy.enemyDmg_min = fe_enemy.enemyDmg_max - (fe_enemy.enemyDmg_max * 0.8);
+                
+                // Elements
+                const enemy_div = create_el('enemy_div_' + fe_enemy.id, 'div', e_enemy_ui_container);
+                enemy_div.style.width = "100%";
+                enemy_div.style.border = 'solid 5px black';
+
+                // Enemy labels
+                const enemy_name_level = create_el('enemy_name_level_' + fe_enemy.id, 'div', enemy_div);
+                enemy_name_level.style.backgroundColor = '#333';
+                enemy_name_level.style.fontSize = '18px';
+                enemy_name_level.style.color = '#00FFFF';
+                enemy_name_level.style.padding = '5px';
+                
+                const enemy_name = create_el('enemy_name_' + fe_enemy.id, 'span', enemy_name_level);
+                enemy_name.innerHTML = fe_enemy.lbl;
+                enemy_name.style.display = 'inline-block';
+                enemy_name.style.width = '50%';
+                
+                const enemy_level = create_el('enemy_level_' + fe_enemy.id, 'span', enemy_name_level);
+                enemy_level.innerHTML = 'Level: ' + fe_enemy.lvl;
+                enemy_level.style.display = 'inline-block';
+                enemy_level.style.width = '50%';
+                enemy_level.style.textAlign = 'right';
+                
+                // Enemy health
+                // Create enemy health container
+                const enemy_health_container = create_el('enemy_health_container_' + fe_enemy.id, 'div', enemy_div);
+                enemy_health_container.classList.add('bar_with_border_container');
+                
+                // Create the enemy_health bar fill (blue bar)
+                const enemy_health_bar_fill = create_el('enemy_health_bar_fill_' + fe_enemy.id, 'div', enemy_health_container);
+                enemy_health_bar_fill.classList.add('bar_with_border_fill');
+                enemy_health_bar_fill.style.backgroundColor = 'green';
+                enemy_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+                // Fill calculated below
+                
+                const enemy_current_health_text = create_el('enemy_current_health_text_' + fe_enemy.id, 'span', enemy_health_container);
+                enemy_current_health_text.classList.add('bar_with_border_text');
+                enemy_current_health_text.innerHTML = 'Enemy Health: <span id="e_enemy_health">' + fe_enemy.cur_health + '</span>&nbsp;/&nbsp;';
+                // Inserts e_enemy_health
+                
+                const enemy_maximum_health = create_el('enemy_maximum_health_' + fe_enemy.id, 'span', enemy_current_health_text);
+                enemy_maximum_health.innerHTML = fe_enemy.max_health;
+                
+                const enemy_current_health_percent = create_el('enemy_current_health_percent_' + fe_enemy.id, 'span', enemy_health_container);
+                enemy_current_health_percent.classList.add('bar_with_border_percent');
+                let d_enemy_health_percent = (fe_enemy.cur_health / fe_enemy.max_health) * 100;
+                d_enemy_health_percent = Math.round(d_enemy_health_percent * 10) / 10;
+                enemy_current_health_percent.innerHTML = d_enemy_health_percent + '%';
+                
+                // Display bar width fill
+                enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
+                
+                // Sort elements to match array
+                Array.from(e_enemy_ui_container.children)
+                    .sort((a, b) => a.id.localeCompare(b.id)) // Sort by ID or another relevant attribute
+                    .forEach(child => e_enemy_ui_container.appendChild(child));
+
+                enemy_div.addEventListener('click', () => enemy_div_CLICK(fe_enemy));
+
+            }); // END enemy_stats.forEach
+
+            //console.log(enemy_stats);
+
+        }
+    }
+    create_enemy_ui();
+
+    // Called once enemy target is clicked
+    function enable_player_ability() {
+        const player_ability_container = document.getElementById('player_ability_container');
+        if (player_ability_container) {
+            player_ability_container.innerHTML = '';
+            player_ability_container.classList.add('tall_bar_with_border_container');
+
+            // Ability data (data.js only atm)
+            playerAbiliy.forEach(fe_abil => {
+                const ability_div = create_el('ability_div_' + fe_abil.abiliy_slot, 'div', player_ability_container);
+                ability_div.style.border = '5px solid black';
+                const ability_img = create_el('ability_img_' + fe_abil.abiliy_slot, 'img', ability_div);
+                ability_img.src = fe_abil.img;
+                ability_img.style.height = '40px';
+                ability_div.addEventListener('click', () => player_ability_CLICK(fe_abil));
+                
+                
+            });
+        }
+    }
+
+    let prev_ability = null;
+    function player_ability_CLICK(f_fe_abil) {
+        const e_ability_div = document.getElementById('ability_div_' + f_fe_abil.abiliy_slot);
+        if (e_ability_div) {
+            // If there's a previously selected slot and it's not the same as the current one, reset its border
+            if (prev_ability !== null && prev_ability !== f_fe_abil.abiliy_slot) {
+                const prev_ability_div = document.getElementById('ability_div_' + prev_ability);
+                if (prev_ability_div) {
+                    prev_ability_div.style.border = '5px solid black'; // Reset border color of previous slot
+                }
+            }
+            
+            // Set the border of the currently clicked ability slot to yellow
+            e_ability_div.style.border = '5px solid yellow';
+
+           // Update prev_enemy to the current one
+            prev_ability = f_fe_abil.abiliy_slot;
+            
+        }
+    }
+
+    let prev_enemy = null;
+    function enemy_div_CLICK(f_fe_enemy) {
+        // Get the clicked enemy div
+        const e_enemy_div = document.getElementById('enemy_div_' + f_fe_enemy.id);
+        
+        if (e_enemy_div) {
+            // If there's a previously selected enemy and it's not the same as the current one, reset its border
+            if (prev_enemy !== null && prev_enemy !== f_fe_enemy.id) {
+                const prev_enemy_div = document.getElementById('enemy_div_' + prev_enemy);
+                if (prev_enemy_div) {
+                    prev_enemy_div.style.border = '5px solid black'; // Reset border color of previous enemy
+                }
+            }
+    
+            // Set the border of the currently clicked enemy to red
+            e_enemy_div.style.border = '5px solid red';
+
+            // Add player abilities
+            enable_player_ability();
+            
+            const e_enemy_clicked = document.getElementById('e_enemy_clicked');
+            if (e_enemy_clicked) e_enemy_clicked.innerHTML = f_fe_enemy.lbl;
+
+            // Update prev_enemy to the current one
+            prev_enemy = f_fe_enemy.id;
+        }
+    }
+}
+
+export async function start_battle(locationsData, killsData, loc, lvl) {
+
+    // Data
+    //OLD let d_player_character = saveData[1].savedCharacterData[0];
+    const d_savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+    const d_player_character = d_savedCharacterData[0];
+
+    let playerStats = characterData.find(d => d.id === 'player_stats');
+
+    await fetch_playerStats('new');
+
+    // Main battle container
+    let battle_section_container = document.getElementById('tab_player_battle');
+
+    // All battle specific elements
+    const all_battle_ui_elements = create_el('all_battle_ui_elements', 'div', battle_section_container);
+
+    // Clear all Elements
+    let e_battle_ui_container = document.getElementById('battle_ui_container');
+    if (e_battle_ui_container) {
+        e_battle_ui_container.innerHTML = '';
+    }
+
+    // Parent for ui, resets each update
+    const battle_ui_container = create_el('battle_ui_container', 'div', all_battle_ui_elements);
+    battle_ui_container.classList.add('location_box_style');
+
+    // Spacer
+    const spacer_player_combat_status = create_el('spacer_player_combat_status', 'div', all_battle_ui_elements);
+    spacer_player_combat_status.style.height = '17px';
+    spacer_player_combat_status.style.backgroundColor = 'black';
+    spacer_player_combat_status.style.height = '17px';
+    // Toggle combat on
+    //spacer_player_combat_status.style.height = '5px';
+
+    // Spacer
+    const player_combat_status = create_el('player_combat_status', 'span', all_battle_ui_elements);
+    player_combat_status.style.textAlign = 'center';
+    player_combat_status.style.fontSize = '12px';
+    player_combat_status.style.width = '100%';
+    player_combat_status.style.display = 'none';
+    // Toggle combat on
+    //player_combat_status.style.display = 'block';
+    player_combat_status.innerHTML = '<b><span style="background-color:red;">&nbsp;&nbsp; IN COMBAT &nbsp;&nbsp;</span></b>';
+/*
+    // Place battle_ui_container2/3 here
+    const player_battle_status_bars = create_el('player_battle_status_bars', 'div', all_battle_ui_elements);
+    player_battle_status_bars.style.width = "100%";
+    player_battle_status_bars.style.border = 'solid 5px #333';
+    // Toggle combat on
+    //player_battle_status_bars.style.border = 'solid 5px red';
+
+    // Player labels
+    // Add to group player_battle_status_bars
+    const player_name_level = create_el('player_name_level', 'div', player_battle_status_bars);
+    player_name_level.classList.add('bar_label_container');
+
+    const player_name = create_el('player_name', 'span', player_name_level);
+    player_name.classList.add('bar_left_label');
+    player_name.innerHTML = d_player_character.char_name;
+
+    const player_level = create_el('player_level', 'span', player_name_level);
+    player_level.classList.add('bar_right_label');
+    player_level.innerHTML = 'Level: ' + d_player_character.char_level;
+*/
+    // Player health
+    // Add to group player_battle_status_bars
+/*
+    const battle_ui_container2 = create_el('battle_ui_container2', 'div', player_battle_status_bars);
+
+    // Create player health container
+    const player_health_container = create_el('player_health_container', 'div', battle_ui_container2);
+    player_health_container.classList.add('bar_with_border_container');
+
+    // Create the player_health bar fill (blue bar)
+    const player_health_bar_fill = create_el('player_health_bar_fill', 'div', player_health_container);
+    player_health_bar_fill.classList.add('bar_with_border_fill');
+    player_health_bar_fill.style.backgroundColor = 'green';
+    player_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+    // Fill calculated below
+
+    const player_current_health_text = create_el('player_current_health_text', 'span', player_health_container);
+    player_current_health_text.classList.add('bar_with_border_text');
+    player_current_health_text.innerHTML = 'Player Health: <span id="e_char_health">' + playerStats.cur_health + '</span>&nbsp;/&nbsp;';
+    // Inserts e_char_health
+
+    const player_maximum_health = create_el('player_maximum_health', 'span', player_current_health_text);
+    player_maximum_health.innerHTML = playerStats.max_health;
+
+    const player_current_health_percent = create_el('player_current_health_percent', 'span', player_health_container);
+    player_current_health_percent.classList.add('bar_with_border_percent');
+    let d_player_health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
+    d_player_health_percent = Math.round(d_player_health_percent * 10) / 10;
+    player_current_health_percent.innerHTML = d_player_health_percent + '%';
+
+    // Display bar width fill
+    player_health_bar_fill.style.width = d_player_health_percent + '%';
+*/
+    // Initial display
+    update_health();
+/*
+    // Player resource
+    // Add to group player_battle_status_bars
+    const battle_ui_container3 = create_el('battle_ui_container3', 'div', player_battle_status_bars);
+
+    // Create player resource container
+    const player_resource_container = create_el('player_resource_container', 'div', battle_ui_container3);
+    player_resource_container.classList.add('bar_with_border_container');
+
+    // Create the player_resource bar fill (yellow bar)
+    const player_resource_bar_fill = create_el('player_resource_bar_fill', 'div', player_resource_container);
+    player_resource_bar_fill.classList.add('bar_with_border_fill');
+    player_resource_bar_fill.style.backgroundColor = '#6E6800';
+    player_resource_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+    // Fill calculated below
+
+    const player_current_resource_text = create_el('player_current_resource_text', 'span', player_resource_container);
+    player_current_resource_text.classList.add('bar_with_border_text');
+    player_current_resource_text.innerHTML = 'Player Resource: <span id="e_char_resource">' + playerStats.cur_resource + '</span>&nbsp;/&nbsp;';
+    // Inserts e_char_resource
+
+    const player_maximum_resource = create_el('player_maximum_resource', 'span', player_current_resource_text);
+    player_maximum_resource.innerHTML = playerStats.max_resource;
+
+    const player_current_resource_percent = create_el('player_current_resource_percent', 'span', player_resource_container);
+    player_current_resource_percent.classList.add('bar_with_border_percent');
+    let d_player_resource_percent = (playerStats.cur_resource / playerStats.max_resource) * 100;
+    d_player_resource_percent = Math.round(d_player_resource_percent * 10) / 10;
+    player_current_resource_percent.innerHTML = d_player_resource_percent + '%';
+
+    // Display bar width fill
+    player_resource_bar_fill.style.width = d_player_resource_percent + '%';
+*/
+/*
+    // Create the experience container
+    const experience_container = create_el('experience_container', 'div', player_battle_status_bars);
+    experience_container.classList.add('bar_with_border_container');
+
+    // Create the experience bar fill (blue bar)
+    const experience_bar_fill = create_el('experience_bar_fill', 'div', experience_container);
+    experience_bar_fill.classList.add('bar_with_border_fill');
+    experience_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+
+    const experience_text = create_el('experience_text', 'span', experience_container);
+    experience_text.classList.add('bar_with_border_text');
+    experience_text.innerHTML = 'Experience: <span id="e_char_exp">' + d_player_character.char_exp + '</span>&nbsp;/&nbsp;';
+    // Inserts e_char_exp
+
+    const experience_percent = create_el('experience_percent', 'span', experience_container);
+    experience_percent.classList.add('bar_with_border_percent');
+
+    // Calculate experience values
+    let d_exp_filter = characterData.filter(c => c.type === 'exp');
+    let d_exp = d_exp_filter[0];
+
+    // Store experience values for each level
+    d_exp.experienceValues = [];
+
+    for (let i = 1; i <= d_exp.level_cap; i++) {
+        let expToLevel = Math.round((d_exp.starting_val * (i**1.5 + d_exp.level_rate)) / 10) * 10;
+        d_exp.experienceValues.push({
+            level: i,
+            exp_to_level: expToLevel,
+            //diff: expToLevel - Math.round((d_exp.starting_val * ((i - 1)**1.5 + d_exp.level_rate)) / 10) * 10 // Uncomment if you need the diff
+        });
+    }
+
+    // Log experience values for each level
+    d_exp.experienceValues.forEach(xp => {
+        //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}`);
+        //console.log(`Level: ${xp.level}, Exp to Level: ${xp.exp_to_level}, Diff: ${xp.diff}`);
+        if (d_player_character.char_level === xp.level) {
+            d_player_character.char_exp_to_level = xp.exp_to_level;
+        }
+    });
+
+    const experience_to_level = create_el('experience_to_level', 'span', experience_text);
+    experience_to_level.innerHTML = d_player_character.char_exp_to_level;
+
+    await d.updateSlotData(dbState.slot_selected, 'savedCharacterData', d_savedCharacterData);
+*/
+    // Initial display
+    await update_xp();
+/*
+// WIP Need update_resource
+
+    // Setup battle encounter
+    const battle_verses_box = create_el('battle_verses_box', 'div', all_battle_ui_elements);
+    battle_verses_box.innerHTML = '<p style="text-align:center;font-size:16px;color:red;" id="player_to_enemy_btn">[ TARGETING ]</p>';
+
+// WIP need multiple enemies
+*/
+/*
+    // Place enemy_ui_containers here
+    const enemy_battle_status_bars = create_el('enemy_battle_status_bars', 'div', all_battle_ui_elements);
+    enemy_battle_status_bars.style.width = "100%";
+    enemy_battle_status_bars.style.border = 'solid 5px #333';
+
+    // Enemy labels
+    // Add to group enemy_battle_status_bars
+    const enemy_name_level = create_el('enemy_name_level', 'div', enemy_battle_status_bars);
+    enemy_name_level.style.backgroundColor = '#333';
+    enemy_name_level.style.fontSize = '18px';
+    enemy_name_level.style.color = '#00FFFF';
+    enemy_name_level.style.padding = '5px';
+*/
+    // Enemy data
+    let encounter = null;
+    let random_enemy = null;
+
+console.log(loc + ' / ' + lvl);
+
+    // Choose encounter & enemy
+    // First encounter
+    if (loc === 0 && lvl === 1) {
+        // Encounters need to be set up with loc, lvl linked
+        //
+        encounter = encounterData.find(e => e.id === 'beginner_0');
+        // Choose random array index of enemyList;
+        let enemyList = encounter.enemy_list;
+        random_enemy = choose_enemy(enemyList);
+        // Mark enemy alive
+        random_enemy.dead = false;
+        trackingData[0].current_enemy = random_enemy.id;
+    } else {
+        // All other encounters
+        let enemy_loc = loc;
+        let enemy_lvl = lvl;
+
+        // Get matching loc/lvl encounter
+        encounter = encounterData.find(e => e.id === 'group_lvl_' + enemy_lvl && e.loc === enemy_loc && e.lvl === enemy_lvl);
+
+        // Choose random array index of enemyList;
+        let enemyList = encounter.enemy_list;
+        random_enemy = choose_enemy(enemyList);
+
+        // Mark enemy alive
+        random_enemy.dead = false;
+        trackingData[0].current_enemy = random_enemy.id;
+
+        //// WIP more array data needed
+    }
+
+    if (encounter && random_enemy) {
+
+        const enemy_name = create_el('enemy_name', 'span', enemy_name_level);
+        enemy_name.innerHTML = random_enemy.lbl;
+        enemy_name.style.display = 'inline-block';
+        enemy_name.style.width = '50%';
+
+        const enemy_level = create_el('enemy_level', 'span', enemy_name_level);
+        enemy_level.innerHTML = 'Level: ' + random_enemy.lvl;
+        enemy_level.style.display = 'inline-block';
+        enemy_level.style.width = '50%';
+        enemy_level.style.textAlign = 'right';
+
+        // Enemy health
+        // Add to group player_battle_status_bars
+        const battle_ui_enemy_container = create_el('battle_ui_enemy_container', 'div', enemy_battle_status_bars);
+
+        // Create player health container
+        const enemy_health_container = create_el('enemy_health_container', 'div', battle_ui_enemy_container);
+        enemy_health_container.classList.add('bar_with_border_container');
+
+        // Create the player_health bar fill (blue bar)
+        const enemy_health_bar_fill = create_el('enemy_health_bar_fill', 'div', enemy_health_container);
+        enemy_health_bar_fill.classList.add('bar_with_border_fill');
+        enemy_health_bar_fill.style.backgroundColor = 'green';
+        enemy_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+        // Fill calculated below
+
+        // Get random enemy max health value
+        encounter.max_health = randomize(encounter.hp_min, encounter.hp_max, 1);
+        encounter.cur_health = encounter.max_health;
+
+        const enemy_current_health_text = create_el('enemy_current_health_text', 'span', enemy_health_container);
+        enemy_current_health_text.classList.add('bar_with_border_text');
+        enemy_current_health_text.innerHTML = 'Enemy Health: <span id="e_enemy_health">' + encounter.cur_health + '</span>&nbsp;/&nbsp;';
+        // Inserts e_enemy_health
+
+        const enemy_maximum_health = create_el('enemy_maximum_health', 'span', enemy_current_health_text);
+        enemy_maximum_health.innerHTML = encounter.max_health;
+
+        const enemy_current_health_percent = create_el('enemy_current_health_percent', 'span', enemy_health_container);
+        enemy_current_health_percent.classList.add('bar_with_border_percent');
+        let d_enemy_health_percent = (encounter.cur_health / encounter.max_health) * 100;
+        d_enemy_health_percent = Math.round(d_enemy_health_percent * 10) / 10;
+        enemy_current_health_percent.innerHTML = d_enemy_health_percent + '%';
+
+        // Display bar width fill
+        enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
+
+        // Insert combat log
+        const combat_log_container = create_el('combat_log_container', 'div', all_battle_ui_elements);
+    }
+
+    toggleElement('h', 'new_battle_button');
+    toggleElement('s', 'attack_box_button');
+
+    // Fetch or create attack button
+    let e_attack_box_button = document.getElementById('attack_box_button');
+    if (e_attack_box_button) {
+        e_attack_box_button.addEventListener('click', () => {
+            toggleElement('s', 'change_location_button');
+            attack_box_button(locationsData, killsData, e_attack_box_button, random_enemy, encounter);
+            trackingData[0].level_selected = false;
+        });
+    } else if (!trackingData[0].level_selected) {
+        e_attack_box_button = document.createElement('button');
+        let e_location_container = document.getElementById('location_container');
+        e_location_container.appendChild(e_attack_box_button);
+        e_attack_box_button.innerHTML = '<b><font style="font-size: 24px;"> ATTACK </font></b>';
+        e_attack_box_button.classList.add('location_box_style');
+        e_attack_box_button.classList.add('center');
+        trackingData[0].level_selected = true;
+        e_attack_box_button.addEventListener('click', () => {
+            toggleElement('s', 'change_location_button');
+            attack_box_button(locationsData, killsData, e_attack_box_button, random_enemy, encounter);
+        });
+    }
+
+    let e_change_location = document.getElementById('change_location_button');
+    e_change_location.addEventListener('click', () => {
+        toggleElement('h', 'change_location_button');
+        // Reset battle ui elements
+        reset_battle();
+    });
+
+    if (trackingData[0].next_attack) {
+        attack_box_button(locationsData, killsData, e_attack_box_button, random_enemy, encounter);
+    }
+}
+
+
+
+
+
+
+
 
 // FOR WHEN BATTLE STARTS
 // NEED ENEMY SELECTIONS FIRST

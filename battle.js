@@ -797,6 +797,7 @@ async function load_battle_elements(s_loc, s_lvl, s_ene, s_cnt) {
         experience_to_level.innerHTML = d_player_character.char_exp_to_level;
 
         // Player battle abilities
+        const player_ability_title = create_el('player_ability_title', 'div', player_battle_status_bars);
         const player_ability_container = create_el('player_ability_container', 'div', player_battle_status_bars);
 
         async function updateData() {
@@ -838,131 +839,140 @@ all_ui_container
         
         let firstEnemy = null; // To track the first enemy
         
-        // TEMP
-        if (s_ene === 'random_' + s_lvl) {
+// TEMP
+//if (s_ene === 'random_' + s_lvl) {
 
-            let encounter = encounterData.find(e => e.id === 'beginner_0');
-            let enemyList = encounter.enemy_list;
-    
-            for (let i = 1; i <= s_cnt; i++) {
+        let encounter = encounterData.find(e => e.id === 'beginner_0');
+        let enemyList = encounter.enemy_list;
+        let enemy = null;
 
-                let random_enemy = choose_enemy(enemyList);
-    
-                // Initialize or increment the counter for this enemy id
-                if (!enemyCounter[random_enemy.id]) {
-                    enemyCounter[random_enemy.id] = 1;
-                } else {
-                    enemyCounter[random_enemy.id]++;
-                }
-    
-                // Unique ID and label
-                let uniqueId = random_enemy.id + (enemyCounter[random_enemy.id] > 1 ? `_${enemyCounter[random_enemy.id]}` : '');
-                let uniqueLabel = random_enemy.lbl + (enemyCounter[random_enemy.id] > 1 ? ` ${enemyCounter[random_enemy.id]}` : '');
-    
-                // e_enemy_clicked output is temporary
-                battle_overview.innerHTML = `Select an enemy or primary target below to start battle.
-                <br>You have selected: <span id="e_enemy_clicked">[ NONE ]</span>`;
-    
-                if (!firstEnemy && s_cnt === 1) {
-                    firstEnemy = random_enemy; // Save the first random enemy
-                }
-    
-                // Create enemy stats
-                enemy_stats.push({
-                    num: i,
-                    id: uniqueId,
-                    lbl: uniqueLabel,
-                    lvl: encounter.lvl,
-                    max_health: randomize(encounter.hp_min, encounter.hp_max, 1),
-                    enemyDmg_min: encounter.enemyDmg_min,
-                    enemyDmg_max: encounter.enemyDmg_max
-                });
+        for (let i = 1; i <= s_cnt; i++) {
+
+            if (s_ene === 'random_' + s_lvl) {
+                enemy = choose_enemy(enemyList);
+            } else {
+                enemy = enemyList.find(e => e.id === s_ene);
+            }
+            
+            // Initialize or increment the counter for this enemy id
+            if (!enemyCounter[enemy.id]) {
+                enemyCounter[enemy.id] = 1;
+            } else {
+                enemyCounter[enemy.id]++;
             }
 
-            // Sort enemy_stats by id to group duplicates together
-            enemy_stats.sort((a, b) => a.id.localeCompare(b.id));
+            // Unique ID and label
+            let uniqueId = enemy.id + (enemyCounter[enemy.id] > 1 ? `_${enemyCounter[enemy.id]}` : '');
+            let uniqueLabel = enemy.lbl + (enemyCounter[enemy.id] > 1 ? ` ${enemyCounter[enemy.id]}` : '');
 
-            enemy_stats.forEach(fe_enemy => {
-                // Set enemy health full
-                fe_enemy.cur_health = fe_enemy.max_health;
-                // Randomize enemy damage ranges
-                let dmg_min_var = fe_enemy.enemyDmg_min;
-                fe_enemy.enemyDmg_min = randomize((dmg_min_var * 0.8), (dmg_min_var * 1.2), 0.1);
-                fe_enemy.enemyDmg_min = Math.round(fe_enemy.enemyDmg_min * 10) / 10;
-                let dmg_max_var = fe_enemy.enemyDmg_max;
-                fe_enemy.enemyDmg_max = randomize((dmg_max_var * 0.8), (dmg_max_var * 1.2), 0.1);
-                fe_enemy.enemyDmg_max = Math.round(fe_enemy.enemyDmg_max * 10) / 10;
-                if (fe_enemy.enemyDmg_min > fe_enemy.enemyDmg_max) fe_enemy.enemyDmg_min = fe_enemy.enemyDmg_max - (fe_enemy.enemyDmg_max * 0.8);
-                
-                // Elements
-                const enemy_div = create_el('enemy_div_' + fe_enemy.id, 'div', e_enemy_ui_container);
-                enemy_div.style.width = "100%";
-                enemy_div.style.border = 'solid 5px black';
+            // e_enemy_clicked output is temporary
+            battle_overview.innerHTML = `Select an enemy or primary target below to start battle.
+            <br>You have selected: <span id="e_enemy_clicked">[ NONE ]</span>`;
 
-                // Enemy labels
-                const enemy_name_level = create_el('enemy_name_level_' + fe_enemy.id, 'div', enemy_div);
-                enemy_name_level.style.backgroundColor = '#333';
-                enemy_name_level.style.fontSize = '18px';
-                enemy_name_level.style.color = '#00FFFF';
-                enemy_name_level.style.padding = '5px';
-                
-                const enemy_name = create_el('enemy_name_' + fe_enemy.id, 'span', enemy_name_level);
-                enemy_name.innerHTML = fe_enemy.lbl;
-                enemy_name.style.display = 'inline-block';
-                enemy_name.style.width = '50%';
-                
-                const enemy_level = create_el('enemy_level_' + fe_enemy.id, 'span', enemy_name_level);
-                enemy_level.innerHTML = 'Level: ' + fe_enemy.lvl;
-                enemy_level.style.display = 'inline-block';
-                enemy_level.style.width = '50%';
-                enemy_level.style.textAlign = 'right';
-                
-                // Enemy health
-                // Create enemy health container
-                const enemy_health_container = create_el('enemy_health_container_' + fe_enemy.id, 'div', enemy_div);
-                enemy_health_container.classList.add('bar_with_border_container');
-                
-                // Create the enemy_health bar fill (blue bar)
-                const enemy_health_bar_fill = create_el('enemy_health_bar_fill_' + fe_enemy.id, 'div', enemy_health_container);
-                enemy_health_bar_fill.classList.add('bar_with_border_fill');
-                enemy_health_bar_fill.style.backgroundColor = 'green';
-                enemy_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
-                // Fill calculated below
-                
-                const enemy_current_health_text = create_el('enemy_current_health_text_' + fe_enemy.id, 'span', enemy_health_container);
-                enemy_current_health_text.classList.add('bar_with_border_text');
-                enemy_current_health_text.innerHTML = 'Enemy Health: <span id="e_enemy_health">' + fe_enemy.cur_health + '</span>&nbsp;/&nbsp;';
-                // Inserts e_enemy_health
-                
-                const enemy_maximum_health = create_el('enemy_maximum_health_' + fe_enemy.id, 'span', enemy_current_health_text);
-                enemy_maximum_health.innerHTML = fe_enemy.max_health;
-                
-                const enemy_current_health_percent = create_el('enemy_current_health_percent_' + fe_enemy.id, 'span', enemy_health_container);
-                enemy_current_health_percent.classList.add('bar_with_border_percent');
-                let d_enemy_health_percent = (fe_enemy.cur_health / fe_enemy.max_health) * 100;
-                d_enemy_health_percent = Math.round(d_enemy_health_percent * 10) / 10;
-                enemy_current_health_percent.innerHTML = d_enemy_health_percent + '%';
-                
-                // Display bar width fill
-                enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
-                
-                // Sort elements to match array
-                Array.from(e_enemy_ui_container.children)
-                    .sort((a, b) => a.id.localeCompare(b.id)) // Sort by ID or another relevant attribute
-                    .forEach(child => e_enemy_ui_container.appendChild(child));
+            if (!firstEnemy && s_cnt === 1) {
+                firstEnemy = enemy; // Save the first random enemy
+            }
 
-                enemy_div.addEventListener('click', () => enemy_div_CLICK(fe_enemy));
-
-            }); // END enemy_stats.forEach
-
-            //console.log(enemy_stats);
-
+            // Create enemy stats
+            enemy_stats.push({
+                num: i,
+                id: uniqueId,
+                lbl: uniqueLabel,
+                lvl: encounter.lvl,
+                max_health: randomize(encounter.hp_min, encounter.hp_max, 1),
+                enemyDmg_min: encounter.enemyDmg_min,
+                enemyDmg_max: encounter.enemyDmg_max
+            });
         }
+
+        // Sort enemy_stats by id to group duplicates together
+        enemy_stats.sort((a, b) => a.id.localeCompare(b.id));
+
+        enemy_stats.forEach(fe_enemy => {
+            // Set enemy health full
+            fe_enemy.cur_health = fe_enemy.max_health;
+            // Randomize enemy damage ranges
+            let dmg_min_var = fe_enemy.enemyDmg_min;
+            fe_enemy.enemyDmg_min = randomize((dmg_min_var * 0.8), (dmg_min_var * 1.2), 0.1);
+            fe_enemy.enemyDmg_min = Math.round(fe_enemy.enemyDmg_min * 10) / 10;
+            let dmg_max_var = fe_enemy.enemyDmg_max;
+            fe_enemy.enemyDmg_max = randomize((dmg_max_var * 0.8), (dmg_max_var * 1.2), 0.1);
+            fe_enemy.enemyDmg_max = Math.round(fe_enemy.enemyDmg_max * 10) / 10;
+            if (fe_enemy.enemyDmg_min > fe_enemy.enemyDmg_max) fe_enemy.enemyDmg_min = fe_enemy.enemyDmg_max - (fe_enemy.enemyDmg_max * 0.8);
+            
+            // Elements
+            const enemy_div = create_el('enemy_div_' + fe_enemy.id, 'div', e_enemy_ui_container);
+            enemy_div.style.width = "100%";
+            enemy_div.style.border = 'solid 5px black';
+
+            // Enemy labels
+            const enemy_name_level = create_el('enemy_name_level_' + fe_enemy.id, 'div', enemy_div);
+            enemy_name_level.style.backgroundColor = '#333';
+            enemy_name_level.style.fontSize = '18px';
+            enemy_name_level.style.color = '#00FFFF';
+            enemy_name_level.style.padding = '5px';
+            
+            const enemy_name = create_el('enemy_name_' + fe_enemy.id, 'span', enemy_name_level);
+            enemy_name.innerHTML = fe_enemy.lbl;
+            enemy_name.style.display = 'inline-block';
+            enemy_name.style.width = '50%';
+            
+            const enemy_level = create_el('enemy_level_' + fe_enemy.id, 'span', enemy_name_level);
+            enemy_level.innerHTML = 'Level: ' + fe_enemy.lvl;
+            enemy_level.style.display = 'inline-block';
+            enemy_level.style.width = '50%';
+            enemy_level.style.textAlign = 'right';
+            
+            // Enemy health
+            // Create enemy health container
+            const enemy_health_container = create_el('enemy_health_container_' + fe_enemy.id, 'div', enemy_div);
+            enemy_health_container.classList.add('bar_with_border_container');
+            
+            // Create the enemy_health bar fill (blue bar)
+            const enemy_health_bar_fill = create_el('enemy_health_bar_fill_' + fe_enemy.id, 'div', enemy_health_container);
+            enemy_health_bar_fill.classList.add('bar_with_border_fill');
+            enemy_health_bar_fill.style.backgroundColor = 'green';
+            enemy_health_bar_fill.style.transition = 'width 0.3s ease'; // Smooth transition effect
+            // Fill calculated below
+            
+            const enemy_current_health_text = create_el('enemy_current_health_text_' + fe_enemy.id, 'span', enemy_health_container);
+            enemy_current_health_text.classList.add('bar_with_border_text');
+            enemy_current_health_text.innerHTML = 'Enemy Health: <span id="e_enemy_health_' + fe_enemy.id + '">' + fe_enemy.cur_health + '</span>&nbsp;/&nbsp;';
+            // Inserts e_enemy_health
+            
+            const enemy_maximum_health = create_el('enemy_maximum_health_' + fe_enemy.id, 'span', enemy_current_health_text);
+            enemy_maximum_health.innerHTML = fe_enemy.max_health;
+            
+            const enemy_current_health_percent = create_el('enemy_current_health_percent_' + fe_enemy.id, 'span', enemy_health_container);
+            enemy_current_health_percent.classList.add('bar_with_border_percent');
+            let d_enemy_health_percent = (fe_enemy.cur_health / fe_enemy.max_health) * 100;
+            d_enemy_health_percent = Math.round(d_enemy_health_percent * 10) / 10;
+            enemy_current_health_percent.innerHTML = d_enemy_health_percent + '%';
+            
+            // Display bar width fill
+            enemy_health_bar_fill.style.width = d_enemy_health_percent + '%';
+            
+            // Sort elements to match array
+            Array.from(e_enemy_ui_container.children)
+                .sort((a, b) => a.id.localeCompare(b.id)) // Sort by ID or another relevant attribute
+                .forEach(child => e_enemy_ui_container.appendChild(child));
+
+            enemy_div.addEventListener('click', () => enemy_div_CLICK(fe_enemy, enemy_stats));
+
+        }); // END enemy_stats.forEach
+
+        //console.log(enemy_stats);
+
+//}
     }
     create_enemy_ui();
 
     // Called once enemy target is clicked
-    function enable_player_ability() {
+    function enable_player_ability(f_main_enemy, f_secondary_enemies, f_enemy_stats) {
+        const player_ability_title = document.getElementById('player_ability_title');
+        if (player_ability_title) {
+            player_ability_title.innerHTML = 'AVAILABLE ABILITIES:';
+        }
         const player_ability_container = document.getElementById('player_ability_container');
         if (player_ability_container) {
             player_ability_container.innerHTML = '';
@@ -975,15 +985,13 @@ all_ui_container
                 const ability_img = create_el('ability_img_' + fe_abil.abiliy_slot, 'img', ability_div);
                 ability_img.src = fe_abil.img;
                 ability_img.style.height = '40px';
-                ability_div.addEventListener('click', () => player_ability_CLICK(fe_abil));
-                
-                
+                ability_div.addEventListener('click', () => player_ability_CLICK(fe_abil, f_main_enemy, f_secondary_enemies, f_enemy_stats));
             });
         }
     }
 
     let prev_ability = null;
-    function player_ability_CLICK(f_fe_abil) {
+    function player_ability_CLICK(f_fe_abil, f_main_enemy, f_secondary_enemies, f_enemy_stats) {
         const e_ability_div = document.getElementById('ability_div_' + f_fe_abil.abiliy_slot);
         if (e_ability_div) {
             // If there's a previously selected slot and it's not the same as the current one, reset its border
@@ -997,6 +1005,14 @@ all_ui_container
             // Set the border of the currently clicked ability slot to yellow
             e_ability_div.style.border = '5px solid yellow';
 
+            // TEST -- ENEMY
+            f_main_enemy.cur_health -= 7;
+            update_enemy(f_main_enemy);
+            
+            // TEST -- PLAYER
+            //playerStats.cur_health -= 10;
+            //update_health();
+
            // Update prev_enemy to the current one
             prev_ability = f_fe_abil.abiliy_slot;
             
@@ -1004,7 +1020,7 @@ all_ui_container
     }
 
     let prev_enemy = null;
-    function enemy_div_CLICK(f_fe_enemy) {
+    function enemy_div_CLICK(f_fe_enemy, f_enemy_stats) {
         // Get the clicked enemy div
         const e_enemy_div = document.getElementById('enemy_div_' + f_fe_enemy.id);
         
@@ -1020,14 +1036,62 @@ all_ui_container
             // Set the border of the currently clicked enemy to red
             e_enemy_div.style.border = '5px solid red';
 
+            // Clicked enemy/main target
+            let main_enemy = f_enemy_stats.find(e => e.id === f_fe_enemy.id);
+            
+            // All other enemies besides clicked/main
+            let secondary_enemies = null;
+            if (f_enemy_stats.length > 1) {
+                secondary_enemies = f_enemy_stats.filter(e => e.id !== f_fe_enemy.id);
+            }
+            
+            //console.log('MAIN: ');
+            //console.log(main_enemy.id);
+            if (secondary_enemies) { 
+                //console.log('OTHERS: ');
+                //secondary_enemies.forEach(e => console.log(e.id));
+            }
+
             // Add player abilities
-            enable_player_ability();
+            enable_player_ability(main_enemy, secondary_enemies, f_enemy_stats);
             
             const e_enemy_clicked = document.getElementById('e_enemy_clicked');
             if (e_enemy_clicked) e_enemy_clicked.innerHTML = f_fe_enemy.lbl;
-
+            
             // Update prev_enemy to the current one
             prev_enemy = f_fe_enemy.id;
+        }
+    }
+    
+    function update_health() {
+        if (playerStats.cur_health < 0) playerStats.cur_health = 0;
+        let health_percent = (playerStats.cur_health / playerStats.max_health) * 100;
+        health_percent = Math.round(health_percent * 10) / 10;
+        const player_health_bar_fill = document.getElementById('player_health_bar_fill');
+        player_health_bar_fill.style.width = health_percent + '%';
+        const player_current_health_percent = document.getElementById('player_current_health_percent');
+        player_current_health_percent.innerHTML = health_percent + '%';
+        const e_char_health = document.getElementById('e_char_health');
+        e_char_health.innerHTML = playerStats.cur_health;
+    }
+    
+    function update_enemy(f_main_enemy) {
+        let v_enemy_health = Math.round(f_main_enemy.cur_health * 10) / 10;
+        let v_enemy_health_ratio = (f_main_enemy.cur_health / f_main_enemy.max_health) * 100;
+        v_enemy_health_ratio = Math.round(v_enemy_health_ratio * 10) / 10;
+        const e_enemy_health = document.getElementById('e_enemy_health_' + f_main_enemy.id);
+        if (e_enemy_health) e_enemy_health.innerHTML = v_enemy_health;
+        const enemy_current_health_percent = document.getElementById('enemy_current_health_percent_' + f_main_enemy.id);
+        enemy_current_health_percent.innerHTML = v_enemy_health_ratio + '%';
+        const enemy_health_bar_fill = document.getElementById('enemy_health_bar_fill_' + f_main_enemy.id);
+        enemy_health_bar_fill.style.width = v_enemy_health_ratio + '%';
+        
+        if (f_main_enemy.cur_health <= 0) {
+            f_main_enemy.cur_health = 0;
+            const enemy_current_health_text = document.getElementById('enemy_current_health_text_' + f_main_enemy.id);
+            enemy_current_health_text.innerHTML = '[ DEAD ]';
+            enemy_current_health_percent.innerHTML = '0%';
+            enemy_health_bar_fill.style.width = 0;
         }
     }
 }

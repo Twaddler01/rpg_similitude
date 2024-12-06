@@ -18,6 +18,9 @@ gf.logExport();
 gf.htmlExport();
 
 /*
+//REGEX (reverse tab)
+^ {4}
+
 //DEBUG
 try {
 //DEBUG

@@ -28,6 +28,7 @@ https://twaddler01.github.io/rpg_similitude/
 ## UPDATES
 12-06-2024
 - BATTLE: Updating functions for newer battle elements. Updated functions: update_xp(), update_health(), update_enemy(). Combat log will be done differently with updates pushed to it instead of adding so much redundant code.
+- Still need enemy array data revamped for different battle setups using new l9cation/level design.
 
 12-04-2024
 - BATTLE: Added multiple enemy support and 3 basic player abilities (random only). Not 100% sure of current ability layout quite yet, but it's similar to what I'm aiming for. Need a # of turns cooldown support for abilities and a very basic tooltip next. Also need other enemy besides "random" choices, but will start this work when more enemies for each level are added to array (currently only random is available unless on very first location/level).

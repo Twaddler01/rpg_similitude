@@ -767,6 +767,7 @@ async function load_battle_elements(s_loc, s_lvl, s_ene, s_cnt) {
     
         const experience_percent = create_el('experience_percent', 'span', experience_container);
         experience_percent.classList.add('bar_with_border_percent');
+        experience_percent.innerHTML = '0%';
     
         // Calculate experience values
         let d_exp_filter = characterData.filter(c => c.type === 'exp');
@@ -795,6 +796,9 @@ async function load_battle_elements(s_loc, s_lvl, s_ene, s_cnt) {
     
         const experience_to_level = create_el('experience_to_level', 'span', experience_text);
         experience_to_level.innerHTML = d_player_character.char_exp_to_level;
+
+        // Initial display
+        update_xp(null);
 
         // Player battle abilities
         const player_ability_title = create_el('player_ability_title', 'div', player_battle_status_bars);
@@ -881,7 +885,8 @@ all_ui_container
                 lvl: encounter.lvl,
                 max_health: randomize(encounter.hp_min, encounter.hp_max, 1),
                 enemyDmg_min: encounter.enemyDmg_min,
-                enemyDmg_max: encounter.enemyDmg_max
+                enemyDmg_max: encounter.enemyDmg_max,
+                dead: false
             });
         }
 
@@ -1009,6 +1014,7 @@ all_ui_container
             f_main_enemy.cur_health -= 7;
             update_enemy(f_main_enemy);
             
+            
             // TEST -- PLAYER
             //playerStats.cur_health -= 10;
             //update_health();
@@ -1076,6 +1082,9 @@ all_ui_container
     }
     
     function update_enemy(f_main_enemy) {
+        // Skip if enemy is dead
+        if (f_main_enemy.dead) return;
+        
         let v_enemy_health = Math.round(f_main_enemy.cur_health * 10) / 10;
         let v_enemy_health_ratio = (f_main_enemy.cur_health / f_main_enemy.max_health) * 100;
         v_enemy_health_ratio = Math.round(v_enemy_health_ratio * 10) / 10;
@@ -1092,7 +1101,71 @@ all_ui_container
             enemy_current_health_text.innerHTML = '[ DEAD ]';
             enemy_current_health_percent.innerHTML = '0%';
             enemy_health_bar_fill.style.width = 0;
+            update_xp(f_main_enemy, true);
+            f_main_enemy.dead = true;
         }
+        //json(f_main_enemy);
+    }
+    
+    async function update_xp(f_main_enemy, f_enemyDefeated = false) {
+        // Data
+        const savedCharacterData = await d.getSlotData(dbState.slot_selected, 'savedCharacterData');
+        let d_player_character = savedCharacterData[0];
+
+        // Experience to level
+        let d_exp_filter = characterData.filter(c => c.type === 'exp');
+        let experienceValues = d_exp_filter[0].experienceValues;
+        let char_exp_to_level = experienceValues.find(e => e.level === d_player_character.char_level);
+
+        // Experience earned
+        if (f_main_enemy && f_enemyDefeated) {
+            let earned_xp = xp_gain(f_main_enemy.lvl);
+            d_player_character.char_exp += earned_xp;
+            
+            // Level up
+            if (d_player_character.char_exp >= char_exp_to_level.exp_to_level) {
+                d_player_character.char_level += 1;
+                let leftover_xp = d_player_character.char_exp - char_exp_to_level.exp_to_level;
+                char_exp_to_level = experienceValues.find(e => e.level === d_player_character.char_level);
+                add_message('Congratulations! You have reached level ' + d_player_character.char_level + '!');
+                const player_level = document.getElementById('player_level');
+                player_level.innerHTML = 'Level: ' + d_player_character.char_level;
+                d_player_character.char_exp = leftover_xp;
+                const experience_to_level = document.getElementById('experience_to_level');
+                experience_to_level.innerHTML = char_exp_to_level.exp_to_level;
+            }
+        }
+
+        const e_char_exp = document.getElementById('e_char_exp');
+        if (e_char_exp) e_char_exp.innerHTML = d_player_character.char_exp;
+        let xp_percent = (d_player_character.char_exp / char_exp_to_level.exp_to_level) * 100;
+        xp_percent = Math.round(xp_percent * 10) / 10;
+        
+        const experience_percent = document.getElementById('experience_percent');
+        experience_percent.innerHTML = xp_percent + '%';
+        
+        const experience_bar_fill = document.getElementById('experience_bar_fill');
+        experience_bar_fill.style.width = xp_percent + '%';
+
+        await d.updateSlotData(dbState.slot_selected, 'savedCharacterData', savedCharacterData);
+    }
+
+    function xp_gain(lvl) {
+        //let exp_array = encounterData.find(e => e.id === 'experience');
+        //let experienceGains = exp_array.experienceGains;
+        let random_exp = 0;
+    
+        for (let i=1; i<=20; i++) {
+            if (lvl === i) {
+                random_exp = randomize(80, 99, 1) * i * 2;
+                //experienceGains.push({
+                //    lvl: i,
+                //    xp: random_exp,
+                //});
+            }
+        }
+        //console.log(experienceGains);
+        return random_exp;
     }
 }
 
@@ -1752,6 +1825,7 @@ for (let i = 0; i <= max_location; i++) { // Include max_location in the loop.
 }
 /*/
 
+/*
 export function selectLocation(locationsData, killsData, loc, lvl) {
 try {
 //DEBUG
